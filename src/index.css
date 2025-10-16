@@ -8,89 +8,216 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
+    /* atomicTracker Dark Theme - Roxo/Cinza */
+    --background: 222.2 47% 11%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 215 28% 17%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 222.2 47% 11%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* Roxo Primário */
+    --primary: 258 90% 66%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 217.2 32.6% 17.5%;
+    /* Roxo Escuro */
+    --primary-dark: 258 67% 44%;
+    
+    /* Roxo Claro */
+    --primary-light: 258 78% 76%;
+    
+    /* Roxo Ultra Claro */
+    --primary-ultralight: 258 100% 96%;
+
+    --secondary: 215 28% 17%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 214 32% 72%;
 
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 258 90% 66%;
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --success: 158 64% 52%;
+    --warning: 38 92% 50%;
+
+    --border: 215 28% 30%;
+    --input: 215 28% 25%;
+    --ring: 258 90% 66%;
+
+    --radius: 0.75rem;
+
+    /* Gradientes */
+    --gradient-primary: linear-gradient(135deg, hsl(258 90% 66%) 0%, hsl(258 78% 76%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(258 67% 44%) 0%, hsl(258 90% 66%) 50%, hsl(258 78% 76%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(222.2 47% 11%) 0%, hsl(215 28% 17%) 100%);
+    
+    /* Sombras */
+    --shadow-glow: 0 0 40px hsl(258 90% 66% / 0.4);
+    --shadow-glow-sm: 0 0 20px hsl(258 90% 66% / 0.3);
+    --shadow-violet: 0 10px 30px -10px hsl(258 90% 66% / 0.3);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+}
+
+@layer utilities {
+  /* Glow Effects */
+  .glow-violet {
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+  }
+
+  .glow-violet-hover:hover {
+    box-shadow: 0 0 30px rgba(124, 58, 237, 0.5);
+  }
+
+  /* Glass Effect */
+  .glass {
+    @apply bg-slate-800/90 backdrop-blur-xl border border-slate-700;
+  }
+
+  .glass-violet {
+    @apply bg-violet-900/30 backdrop-blur-xl border border-violet-500/30;
+  }
+
+  /* Gradient Text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent;
+  }
+
+  /* Animations */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes pulse-violet {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.7);
+    }
+    50% {
+      box-shadow: 0 0 0 10px rgba(124, 58, 237, 0);
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes spin-gradient {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes checkmark {
+    0% {
+      stroke-dashoffset: 100;
+    }
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.2s ease-out;
+  }
+
+  .animate-pulse-violet {
+    animation: pulse-violet 2s infinite;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-spin-gradient {
+    animation: spin-gradient 4s linear infinite;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+  }
+
+  /* Hover Scale */
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105;
+  }
+
+  .hover-scale-sm {
+    @apply transition-transform duration-200 hover:scale-[1.02];
+  }
+
+  /* Custom Scrollbar */
+  .scrollbar-violet::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+  }
+
+  .scrollbar-violet::-webkit-scrollbar-track {
+    @apply bg-slate-800 rounded-full;
+  }
+
+  .scrollbar-violet::-webkit-scrollbar-thumb {
+    @apply bg-violet-600 rounded-full hover:bg-violet-500;
   }
 }
 
