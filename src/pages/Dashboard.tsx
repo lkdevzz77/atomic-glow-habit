@@ -1,16 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Flame, CheckCircle2, TrendingUp, Plus, Sparkles } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
 import Button from "@/components/Button";
 import HabitCard from "@/components/HabitCard";
 import CoachAI from "@/components/CoachAI";
-import Heatmap from "@/components/Heatmap";
+import WeeklyChecklist from "@/components/WeeklyChecklist";
 import BadgeScroll from "@/components/BadgeScroll";
+import NewHabitModal from "@/components/NewHabitModal";
 
 const Dashboard = () => {
   const { user, habits } = useApp();
   const navigate = useNavigate();
+  const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
 
   if (!user) {
     navigate("/onboarding");
@@ -118,7 +120,11 @@ const Dashboard = () => {
           <div className="lg:col-span-8 space-y-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold text-slate-50">Hábitos de Hoje</h2>
-              <Button variant="primary" size="sm">
+              <Button 
+                variant="primary" 
+                size="sm"
+                onClick={() => setIsNewHabitModalOpen(true)}
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 Novo Hábito
               </Button>
@@ -152,10 +158,10 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Heatmap */}
+        {/* Weekly Checklist */}
         {habits.length > 0 && (
           <div className="mt-8">
-            <Heatmap habits={habits} />
+            <WeeklyChecklist habits={habits} />
           </div>
         )}
 
@@ -166,6 +172,12 @@ const Dashboard = () => {
           </div>
         )}
       </div>
+
+      {/* New Habit Modal */}
+      <NewHabitModal 
+        open={isNewHabitModalOpen} 
+        onClose={() => setIsNewHabitModalOpen(false)} 
+      />
     </div>
   );
 };
