@@ -79,7 +79,7 @@ const Auth = () => {
         <div className="text-center mb-8 animate-fade-in">
           <div className="flex items-center justify-center gap-3 mb-4">
             <img 
-              src="/atom-logo.svg" 
+              src="/atom-logo.png" 
               alt="atomicTracker" 
               className="w-12 h-12 sm:w-16 sm:h-16"
               style={{

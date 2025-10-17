@@ -38,7 +38,7 @@ const CoachAI = () => {
         <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
           <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center overflow-hidden">
             <img 
-              src="/atom-logo.svg" 
+              src="/atom-logo.png" 
               alt=""
               className="w-6 h-6 sm:w-8 sm:h-8 opacity-80"
               style={{

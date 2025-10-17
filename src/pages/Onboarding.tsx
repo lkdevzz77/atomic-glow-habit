@@ -6,6 +6,7 @@ import Input from "@/components/Input";
 import Textarea from "@/components/Textarea";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import { useApp } from "@/contexts/AppContext";
+import { useAuth } from "@/contexts/AuthContext";
 import Step1Welcome from "@/components/onboarding/Step1Welcome";
 import Step2Identity from "@/components/onboarding/Step2Identity";
 import Step3Vision from "@/components/onboarding/Step3Vision";
@@ -21,6 +22,7 @@ import Step11Summary from "@/components/onboarding/Step11Summary";
 const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const { onboardingData, updateOnboardingData } = useApp();
+  const { updateOnboardingStatus } = useAuth();
   const navigate = useNavigate();
 
   const totalSteps = 11;
@@ -42,7 +44,7 @@ const Onboarding = () => {
   const canGoNext = () => {
     switch (currentStep) {
       case 0:
-        return onboardingData.name && onboardingData.name.trim().length > 0;
+        return true; // Nome já foi coletado no signup
       case 1:
         return onboardingData.desiredIdentity && onboardingData.desiredIdentity.trim().length > 10;
       case 2:
@@ -68,11 +70,12 @@ const Onboarding = () => {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < totalSteps - 1 && canGoNext()) {
       setCurrentStep(currentStep + 1);
     } else if (currentStep === totalSteps - 1) {
-      // Finish onboarding and create first habit
+      // Mark onboarding as completed and redirect to dashboard
+      await updateOnboardingStatus(true);
       navigate("/dashboard");
     }
   };
@@ -89,7 +92,14 @@ const Onboarding = () => {
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
           <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="text-4xl animate-float">⚛️</div>
+            <img
+              src="/atom-logo.png"
+              alt=""
+              className="w-12 h-12 animate-float"
+              style={{
+                filter: "drop-shadow(0 0 20px rgba(124, 58, 237, 0.6))"
+              }}
+            />
             <span className="text-3xl font-bold gradient-text">atomicTracker</span>
           </div>
           

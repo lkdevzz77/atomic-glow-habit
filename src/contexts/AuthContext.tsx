@@ -10,6 +10,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   loading: boolean;
+  updateOnboardingStatus: (completed: boolean) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -82,8 +83,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     navigate('/');
   };
 
+  const updateOnboardingStatus = async (completed: boolean) => {
+    if (!user) return;
+    
+    await supabase.auth.updateUser({
+      data: {
+        onboarding_completed: completed
+      }
+    });
+    
+    // Update local user state with new metadata
+    if (session) {
+      setSession({
+        ...session,
+        user: {
+          ...session.user,
+          user_metadata: {
+            ...session.user.user_metadata,
+            onboarding_completed: completed
+          }
+        }
+      });
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, signUp, signIn, signOut, loading }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      session, 
+      signUp, 
+      signIn, 
+      signOut, 
+      loading,
+      updateOnboardingStatus 
+    }}>
       {children}
     </AuthContext.Provider>
   );

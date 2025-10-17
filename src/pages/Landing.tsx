@@ -42,7 +42,7 @@ const Landing = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3">
               <img 
-                src="/atom-logo.svg" 
+                src="/atom-logo.png" 
                 alt="atomicTracker" 
                 className="w-8 h-8 sm:w-9 sm:h-9 transition-all duration-300 hover:scale-110 hover:rotate-12"
                 style={{
@@ -70,7 +70,14 @@ const Landing = () => {
             <span className="gradient-text">Transforme sua vida</span>
             <br />
             <span className="text-slate-50">1% por dia</span>
-            <span className="text-5xl sm:text-6xl ml-2 sm:ml-4 inline-block animate-float">⚛️</span>
+            <img
+              src="/atom-logo.png"
+              alt=""
+              className="w-12 h-12 sm:w-16 sm:h-16 ml-2 sm:ml-4 inline-block animate-float"
+              style={{
+                filter: "drop-shadow(0 0 20px rgba(124, 58, 237, 0.6))"
+              }}
+            />
           </h1>
           
           <p className="text-lg sm:text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto px-4">

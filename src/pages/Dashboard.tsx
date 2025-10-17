@@ -5,7 +5,8 @@ import { useApp } from "@/contexts/AppContext";
 import Button from "@/components/Button";
 import HabitCard from "@/components/HabitCard";
 import CoachAI from "@/components/CoachAI";
-import WeeklyChecklist from "@/components/WeeklyChecklist";
+import WeeklyChart from "@/components/WeeklyChart";
+import { mockWeekData } from "@/mock/weekData";
 import BadgeScroll from "@/components/BadgeScroll";
 import NewHabitModal from "@/components/NewHabitModal";
 
@@ -49,7 +50,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3">
               <img 
-                src="/atom-logo.svg" 
+                src="/atom-logo.png" 
                 alt="atomicTracker" 
                 className="w-8 h-8 sm:w-10 sm:h-10 transition-all duration-300 hover:scale-110 hover:rotate-12"
                 style={{
@@ -200,7 +201,7 @@ const Dashboard = () => {
         {/* Weekly Checklist */}
         {habits.length > 0 && (
           <div className="mt-8">
-            <WeeklyChecklist habits={habits} />
+            <WeeklyChart weekData={mockWeekData} />
           </div>
         )}
 

@@ -1,9 +1,17 @@
 import React from "react";
-import Input from "@/components/Input";
+import { useAuth } from "@/contexts/AuthContext";
 import { useApp } from "@/contexts/AppContext";
 
 const Step1Welcome = () => {
-  const { onboardingData, updateOnboardingData } = useApp();
+  const { user } = useAuth();
+  const { updateOnboardingData } = useApp();
+  
+  // Set user's name from auth context when component mounts
+  React.useEffect(() => {
+    if (user?.user_metadata?.name) {
+      updateOnboardingData({ name: user.user_metadata.name });
+    }
+  }, [user, updateOnboardingData]);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -13,29 +21,30 @@ const Step1Welcome = () => {
         </h1>
         <h2 className="text-5xl font-bold gradient-text flex items-center justify-center gap-3">
           pequenos hábitos
-          <span className="text-6xl animate-float" style={{ filter: "drop-shadow(0 0 20px rgba(124, 58, 237, 0.6))" }}>
-            ⚛️
-          </span>
+          <img
+            src="/atom-logo.png"
+            alt=""
+            className="w-16 h-16 animate-float"
+            style={{
+              filter: "drop-shadow(0 0 20px rgba(124, 58, 237, 0.6))"
+            }}
+          />
         </h2>
       </div>
 
       <div className="mt-12">
         <h3 className="text-2xl font-semibold text-slate-50 mb-6 text-center">
-          Primeiro, como podemos te chamar?
+          {user?.user_metadata?.name ? (
+            <>Olá, {user.user_metadata.name}! 👋</>
+          ) : (
+            <>Olá! 👋</>
+          )}
         </h3>
-        
-        <Input
-          type="text"
-          value={onboardingData.name || ""}
-          onChange={(e) => updateOnboardingData({ name: e.target.value })}
-          placeholder="Digite seu nome"
-          className="text-lg text-center"
-        />
 
-        <div className="mt-4 flex items-start gap-3 bg-slate-800 border-l-4 border-violet-500 rounded-lg p-4">
+        <div className="flex items-start gap-3 bg-slate-800 border-l-4 border-violet-500 rounded-lg p-4">
           <span className="text-2xl">💡</span>
           <p className="text-slate-300">
-            Seu nome será usado pelo coach IA para personalizar sua experiência
+            Vamos começar sua jornada de transformação através de pequenos hábitos diários.
           </p>
         </div>
       </div>

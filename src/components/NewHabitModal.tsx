@@ -146,7 +146,14 @@ const NewHabitModal = ({ open, onClose }: NewHabitModalProps) => {
           </button>
 
           <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="text-2xl animate-float">⚛️</div>
+            <img
+              src="/atom-logo.png"
+              alt=""
+              className="w-8 h-8 animate-float"
+              style={{
+                filter: "drop-shadow(0 0 20px rgba(124, 58, 237, 0.6))"
+              }}
+            />
             <span className="text-xl font-bold gradient-text">atomicTracker</span>
           </div>
 
