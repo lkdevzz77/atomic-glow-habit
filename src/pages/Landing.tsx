@@ -54,7 +54,7 @@ const Landing = () => {
             <Button 
               variant="ghost" 
               size="sm"
-              onClick={() => navigate("/onboarding")}
+              onClick={() => navigate("/auth")}
               className="text-sm sm:text-base"
             >
               Entrar
@@ -81,7 +81,7 @@ const Landing = () => {
           <div className="pt-4 sm:pt-6">
             <Button 
               size="xl" 
-              onClick={() => navigate("/onboarding")}
+              onClick={() => navigate("/auth")}
               className="group w-full sm:w-auto text-sm sm:text-base"
             >
               Começar Agora - Grátis
@@ -167,7 +167,7 @@ const Landing = () => {
           </h2>
           <Button 
             size="xl" 
-            onClick={() => navigate("/onboarding")}
+            onClick={() => navigate("/auth")}
             className="group animate-pulse-violet"
           >
             Começar Minha Jornada

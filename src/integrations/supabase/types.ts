@@ -14,13 +14,254 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      badges: {
+        Row: {
+          category: string
+          description: string
+          icon: string
+          id: string
+          name: string
+          target: number
+        }
+        Insert: {
+          category: string
+          description: string
+          icon: string
+          id: string
+          name: string
+          target: number
+        }
+        Update: {
+          category?: string
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
+          target?: number
+        }
+        Relationships: []
+      }
+      habit_completions: {
+        Row: {
+          completed_at: string
+          date: string
+          habit_id: number
+          id: number
+          percentage: number
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          date?: string
+          habit_id: number
+          id?: number
+          percentage?: number
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          date?: string
+          habit_id?: number
+          id?: number
+          percentage?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habit_completions_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: false
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "habit_completions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      habits: {
+        Row: {
+          created_at: string
+          current_phase: number
+          environment_prep: string | null
+          goal_current: number
+          goal_target: number
+          goal_unit: string
+          icon: string
+          id: number
+          last_completed: string | null
+          longest_streak: number
+          reward_milestone: Json | null
+          social_reinforcement: string | null
+          sound_enabled: boolean | null
+          status: string
+          streak: number
+          temptation_bundle: string | null
+          title: string
+          total_completions: number
+          tracking_preferences: Json | null
+          trigger_activity: string | null
+          two_minute_rule: Json | null
+          updated_at: string
+          user_id: string
+          vibration_enabled: boolean | null
+          when_time: string
+          where_location: string
+        }
+        Insert: {
+          created_at?: string
+          current_phase?: number
+          environment_prep?: string | null
+          goal_current?: number
+          goal_target: number
+          goal_unit?: string
+          icon?: string
+          id?: number
+          last_completed?: string | null
+          longest_streak?: number
+          reward_milestone?: Json | null
+          social_reinforcement?: string | null
+          sound_enabled?: boolean | null
+          status?: string
+          streak?: number
+          temptation_bundle?: string | null
+          title: string
+          total_completions?: number
+          tracking_preferences?: Json | null
+          trigger_activity?: string | null
+          two_minute_rule?: Json | null
+          updated_at?: string
+          user_id: string
+          vibration_enabled?: boolean | null
+          when_time: string
+          where_location: string
+        }
+        Update: {
+          created_at?: string
+          current_phase?: number
+          environment_prep?: string | null
+          goal_current?: number
+          goal_target?: number
+          goal_unit?: string
+          icon?: string
+          id?: number
+          last_completed?: string | null
+          longest_streak?: number
+          reward_milestone?: Json | null
+          social_reinforcement?: string | null
+          sound_enabled?: boolean | null
+          status?: string
+          streak?: number
+          temptation_bundle?: string | null
+          title?: string
+          total_completions?: number
+          tracking_preferences?: Json | null
+          trigger_activity?: string | null
+          two_minute_rule?: Json | null
+          updated_at?: string
+          user_id?: string
+          vibration_enabled?: boolean | null
+          when_time?: string
+          where_location?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          desired_identity: string | null
+          id: string
+          longest_streak: number
+          name: string
+          points: number
+          specific_change: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          desired_identity?: string | null
+          id: string
+          longest_streak?: number
+          name: string
+          points?: number
+          specific_change?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          desired_identity?: string | null
+          id?: string
+          longest_streak?: number
+          name?: string
+          points?: number
+          specific_change?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_badges: {
+        Row: {
+          badge_id: string
+          id: number
+          progress: number
+          unlocked: boolean
+          unlocked_at: string | null
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          id?: number
+          progress?: number
+          unlocked?: boolean
+          unlocked_at?: string | null
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          id?: number
+          progress?: number
+          unlocked?: boolean
+          unlocked_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_badges_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      initialize_user_badges: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
