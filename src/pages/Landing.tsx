@@ -38,41 +38,51 @@ const Landing = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-900/20 to-slate-900">
       {/* Header */}
       <header className="sticky top-0 z-50 glass border-b border-slate-700">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="text-3xl animate-float">⚛️</div>
-            <span className="text-2xl font-bold gradient-text">atomicTracker</span>
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <img 
+                src="/atom-logo.svg" 
+                alt="atomicTracker" 
+                className="w-8 h-8 sm:w-9 sm:h-9 transition-all duration-300 hover:scale-110 hover:rotate-12"
+                style={{
+                  filter: 'drop-shadow(0 0 8px rgba(124, 58, 237, 0.6))'
+                }}
+              />
+              <span className="text-lg sm:text-2xl font-extrabold tracking-tighter gradient-text">atomicTracker</span>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => navigate("/onboarding")}
+              className="text-sm sm:text-base"
+            >
+              Entrar
+            </Button>
           </div>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => navigate("/onboarding")}
-          >
-            Entrar
-          </Button>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 py-20 md:py-32">
-        <div className="text-center space-y-8 animate-fade-in">
-          <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 md:py-32">
+        <div className="text-center space-y-6 sm:space-y-8 animate-fade-in">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tighter leading-tight">
             <span className="gradient-text">Transforme sua vida</span>
             <br />
             <span className="text-slate-50">1% por dia</span>
-            <span className="text-6xl ml-4 inline-block animate-float">⚛️</span>
+            <span className="text-5xl sm:text-6xl ml-2 sm:ml-4 inline-block animate-float">⚛️</span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto px-4">
             Construa hábitos que duram usando as{" "}
             <span className="text-violet-400 font-semibold">4 Leis da Mudança de Comportamento</span>
           </p>
 
-          <div className="pt-6">
+          <div className="pt-4 sm:pt-6">
             <Button 
               size="xl" 
               onClick={() => navigate("/onboarding")}
-              className="group"
+              className="group w-full sm:w-auto text-sm sm:text-base"
             >
               Começar Agora - Grátis
               <ArrowRight className="ml-2 inline-block group-hover:translate-x-1 transition-transform" />

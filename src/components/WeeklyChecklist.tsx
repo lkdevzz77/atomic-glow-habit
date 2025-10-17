@@ -71,20 +71,20 @@ const WeeklyChecklist = ({ habits }: WeeklyChecklistProps) => {
   const overallRate = totalPossible > 0 ? Math.round((totalCompleted / totalPossible) * 100) : 0;
 
   return (
-    <div className="glass rounded-2xl p-6 md:p-8 animate-fade-in">
-      <h2 className="text-2xl font-bold text-slate-50 mb-6">📋 Checklist Semanal</h2>
+    <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 animate-fade-in">
+      <h2 className="text-xl sm:text-2xl font-bold heading-section text-slate-50 mb-4 sm:mb-6">📋 Checklist Semanal</h2>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto scrollbar-violet -mx-2 px-2">
         <div className="min-w-[600px]">
           {/* Header */}
-          <div className="grid grid-cols-[200px_repeat(7,1fr)_80px] gap-2 mb-3 pb-3 border-b border-slate-700">
+          <div className="grid grid-cols-[180px_repeat(7,1fr)_70px] sm:grid-cols-[200px_repeat(7,1fr)_80px] gap-2 mb-3 pb-3 border-b border-slate-700">
             <div className="text-xs font-medium text-slate-400"></div>
             {days.map((day, index) => (
               <div
                 key={day}
                 className={cn(
                   "text-xs font-medium text-center",
-                  index === todayIndex ? "text-violet-400" : "text-slate-400"
+                  index === todayIndex ? "text-violet-400 font-bold" : "text-slate-400"
                 )}
               >
                 {day}
@@ -101,11 +101,11 @@ const WeeklyChecklist = ({ habits }: WeeklyChecklistProps) => {
             return (
               <div
                 key={habit.id}
-                className="grid grid-cols-[200px_repeat(7,1fr)_80px] gap-2 py-3 hover:bg-slate-700/30 rounded-lg transition-all group"
+                className="grid grid-cols-[180px_repeat(7,1fr)_70px] sm:grid-cols-[200px_repeat(7,1fr)_80px] gap-2 py-2 sm:py-3 hover:bg-slate-700/30 rounded-lg transition-all group"
               >
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">{habit.icon}</span>
-                  <span className="text-sm font-medium text-slate-200 truncate">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="text-base sm:text-xl">{habit.icon}</span>
+                  <span className="text-xs sm:text-sm font-medium text-slate-200 truncate">
                     {habit.title}
                   </span>
                 </div>
@@ -136,10 +136,10 @@ const WeeklyChecklist = ({ habits }: WeeklyChecklistProps) => {
           })}
 
           {/* Footer */}
-          <div className="mt-6 pt-4 border-t border-slate-600 bg-slate-700/50 rounded-lg p-4">
+          <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-slate-600 bg-slate-700/50 rounded-lg p-3 sm:p-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-semibold text-slate-300">Total:</span>
-              <span className="text-sm font-semibold text-slate-300">
+              <span className="text-xs sm:text-sm font-semibold text-slate-300">Total:</span>
+              <span className="text-xs sm:text-sm font-semibold text-slate-300">
                 {totalCompleted}/{totalPossible} ({overallRate}%)
               </span>
             </div>

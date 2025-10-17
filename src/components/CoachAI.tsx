@@ -32,25 +32,33 @@ const CoachAI = () => {
     : 0;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {/* AI Coach Card */}
-      <div className="glass-violet border-2 border-violet-500/30 rounded-2xl p-6 sticky top-24 animate-pulse-violet">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 flex items-center justify-center animate-spin-gradient">
-            <div className="w-14 h-14 rounded-full bg-slate-900 flex items-center justify-center">
-              <Sparkles className="w-7 h-7 text-violet-400" />
-            </div>
+      <div className="glass-violet border-2 border-violet-500/30 rounded-xl sm:rounded-2xl p-4 sm:p-6">
+        <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+          <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center overflow-hidden">
+            <img 
+              src="/atom-logo.svg" 
+              alt=""
+              className="w-6 h-6 sm:w-8 sm:h-8 opacity-80"
+              style={{
+                animation: 'spin-slow 8s linear infinite'
+              }}
+            />
           </div>
-          <h3 className="text-xl font-bold text-violet-400">Seu Coach IA</h3>
+          <div>
+            <h3 className="text-sm sm:text-base lg:text-lg font-bold heading-sub text-violet-400">💡 Seu Coach IA</h3>
+            <p className="text-xs text-violet-400/70">Análise em tempo real</p>
+          </div>
         </div>
 
-        <div className="h-px bg-gradient-to-r from-transparent via-violet-500 to-transparent mb-4" />
+        <div className="h-px bg-gradient-to-r from-transparent via-violet-500 to-transparent mb-3 sm:mb-4" />
 
-        <p className="text-slate-200 leading-relaxed min-h-[80px]">
+        <p className="text-slate-200 body-text text-sm sm:text-base leading-relaxed min-h-[60px] sm:min-h-[80px]">
           {aiTips[currentTipIndex]}
         </p>
 
-        <button className="text-violet-400 text-sm hover:text-violet-300 transition-colors mt-4">
+        <button className="text-violet-400 text-xs sm:text-sm hover:text-violet-300 transition-colors mt-3 sm:mt-4">
           Ver mais dicas →
         </button>
       </div>

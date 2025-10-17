@@ -40,30 +40,29 @@ const HabitCard = ({ habit }: HabitCardProps) => {
   return (
     <div
       className={cn(
-        "glass rounded-2xl p-6 transition-all duration-300 hover-scale-sm",
+        "glass rounded-xl sm:rounded-2xl p-4 sm:p-6 transition-all duration-300 hover-scale-sm",
         isCompleted 
           ? "border-2 border-violet-500 bg-gradient-to-br from-violet-900/30 to-slate-800/90 shadow-xl shadow-violet-500/30" 
           : "border-2 border-slate-700 hover:border-violet-500/50 hover:shadow-lg hover:shadow-violet-500/20"
       )}
     >
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-4 flex-1">
-          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center shadow-lg shrink-0">
-            <Icon className="w-7 h-7 text-white" />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-xl font-bold text-slate-50 mb-1">{habit.title}</h3>
-            <div className="flex flex-wrap gap-2 text-sm text-slate-400">
-              <span>⏰ {habit.when}</span>
-              <span>·</span>
-              <span>📍 {habit.where}</span>
-              {habit.trigger && (
-                <>
-                  <span>·</span>
-                  <span>⚡ Após {habit.trigger}</span>
-                </>
-              )}
-            </div>
+      <div className="flex items-start gap-3 mb-3 sm:mb-4">
+        <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center shadow-lg">
+          <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+        </div>
+        
+        <div className="flex-1 min-w-0">
+          <h3 className="text-base sm:text-xl font-bold heading-sub text-slate-50 mb-1 truncate">{habit.title}</h3>
+          <div className="space-y-1 sm:space-y-0 sm:flex sm:flex-wrap sm:gap-2 text-xs sm:text-sm text-slate-400">
+            <span className="block sm:inline">⏰ {habit.when}</span>
+            <span className="hidden sm:inline">·</span>
+            <span className="block sm:inline">📍 {habit.where}</span>
+            {habit.trigger && (
+              <>
+                <span className="hidden sm:inline">·</span>
+                <span className="block sm:inline">⚡ Após {habit.trigger}</span>
+              </>
+            )}
           </div>
         </div>
 
@@ -71,14 +70,14 @@ const HabitCard = ({ habit }: HabitCardProps) => {
           onClick={handleComplete}
           disabled={isCompleted}
           className={cn(
-            "w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-200 shrink-0",
+            "flex-shrink-0 w-10 h-10 sm:w-10 sm:h-10 rounded-full border-2 flex items-center justify-center transition-all duration-200",
             isCompleted
               ? "bg-violet-600 border-violet-500 shadow-lg shadow-violet-500/50"
               : "border-slate-600 hover:border-violet-500 hover:scale-110",
             isCompleting && "animate-scale-in"
           )}
         >
-          {isCompleted && <Check className="w-6 h-6 text-white" />}
+          {isCompleted && <Check className="w-5 h-5 sm:w-6 sm:h-6 text-white" />}
         </button>
       </div>
 
