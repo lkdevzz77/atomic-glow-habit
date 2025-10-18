@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Flame, CheckCircle2, TrendingUp, Plus, Sparkles } from "lucide-react";
-import { useApp } from "@/contexts/AppContext";
 import { useHabits } from "@/hooks/useHabits";
+import { useStats } from "@/hooks/useStats";
 import { useAuth } from "@/contexts/AuthContext";
 import Button from "@/components/Button";
 import HabitCard from "@/components/HabitCard";
 import CoachAI from "@/components/CoachAI";
 import WeeklyChart from "@/components/WeeklyChart";
-import { mockWeekData } from "@/mock/weekData";
 import BadgeScroll from "@/components/BadgeScroll";
 import NewHabitModal from "@/components/NewHabitModal";
 
 const Dashboard = () => {
   const { user } = useAuth();
   const { data: habits, isLoading: habitsLoading } = useHabits('active');
+  const { weeklyStats } = useStats();
   const navigate = useNavigate();
   const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
 
@@ -224,10 +224,23 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Weekly Checklist */}
-        {habits.length > 0 && (
+        {/* Weekly Chart */}
+        {habits && habits.length > 0 && (
           <div className="mt-8">
-            <WeeklyChart weekData={mockWeekData} />
+            {weeklyStats.isLoading ? (
+              <div className="glass rounded-xl sm:rounded-2xl p-8 text-center">
+                <div className="animate-pulse">
+                  <div className="h-8 bg-slate-700 rounded w-48 mx-auto mb-4"></div>
+                  <div className="h-64 bg-slate-700 rounded"></div>
+                </div>
+              </div>
+            ) : weeklyStats.data ? (
+              <WeeklyChart weekData={weeklyStats.data.days} />
+            ) : (
+              <div className="glass rounded-xl p-6 text-center text-slate-400">
+                Carregando estatísticas...
+              </div>
+            )}
           </div>
         )}
 

@@ -48,9 +48,13 @@ export function useHabits(status: 'active' | 'archived' = 'active') {
       return result.data;
     },
     onSuccess: () => {
+      // Invalidar todas as queries relacionadas
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status) });
+      queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'weekly'] });
+      queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'streaks'] });
+      
       toast({
-        title: 'Hábito criado!',
+        title: '✅ Hábito criado!',
         description: 'Seu novo hábito foi criado com sucesso.',
       });
     },
@@ -121,9 +125,12 @@ export function useHabits(status: 'active' | 'archived' = 'active') {
       if (result.error) throw result.error;
     },
     onSuccess: (data, { habitId, percentage }) => {
+      // Invalidar todas as queries relacionadas para atualização imediata
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status) });
+      queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'weekly'] });
+      queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'streaks'] });
       
-      // Optimistic update
+      // Optimistic update para feedback instantâneo
       const oldData = queryClient.getQueryData<Habit[]>(QUERY_KEYS.userHabits(user?.id || '', status));
       if (oldData) {
         queryClient.setQueryData(
@@ -132,12 +139,13 @@ export function useHabits(status: 'active' | 'archived' = 'active') {
             habit.id === habitId
               ? {
                   ...habit,
-                  last_completion: new Date().toISOString().split('T')[0],
+                  last_completed: new Date().toISOString(),
                   streak: (habit.streak || 0) + (percentage >= 100 ? 1 : 0),
                   longest_streak: Math.max(
                     (habit.longest_streak || 0),
                     (habit.streak || 0) + (percentage >= 100 ? 1 : 0)
-                  )
+                  ),
+                  status: 'completed',
                 }
               : habit
           )
@@ -146,7 +154,7 @@ export function useHabits(status: 'active' | 'archived' = 'active') {
 
       toast({
         title: '🎉 Hábito completado!',
-        description: percentage >= 100 ? 'Meta atingida!' : 'Progresso registrado!',
+        description: percentage >= 100 ? 'Meta atingida! Continue assim!' : 'Progresso registrado!',
       });
     },
     onError: (error: Error) => {

@@ -1,13 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { addDays, startOfDay, endOfDay, formatISO } from 'date-fns';
+import { addDays, startOfDay, endOfDay, formatISO, startOfWeek } from 'date-fns';
 
 interface DayStats {
   date: string;
   completed: number;
   total: number;
   percentage: number;
+  day: string;
+  isToday: boolean;
   habits: {
     id: string;
     completed: boolean;
@@ -52,87 +54,120 @@ export function useStats() {
   const weeklyStats = useQuery<WeeklyStats>({
     queryKey: QUERY_KEYS.weeklyStats(user?.id || ''),
     queryFn: async () => {
-      if (!user) return null;
+      if (!user) throw new Error('User not authenticated');
 
-      // Get last 7 days
+      const today = new Date();
+      const startOfCurrentWeek = startOfWeek(today, { weekStartsOn: 1 }); // Segunda-feira
+
+      // Gerar array com os 7 dias da semana
       const days = Array.from({ length: 7 }).map((_, i) => {
-        const date = addDays(new Date(), -i);
+        const date = addDays(startOfCurrentWeek, i);
         return {
           start: formatISO(startOfDay(date)),
           end: formatISO(endOfDay(date)),
           date: formatISO(date, { representation: 'date' }),
+          dayOfWeek: i,
         };
       });
 
-      // Get all active habits
-      const { data: habits } = await supabase
+      // Buscar todos os hábitos ativos
+      const { data: habits, error: habitsError } = await supabase
         .from('habits')
-        .select('*')
+        .select('id')
         .eq('user_id', user.id)
         .eq('status', 'active');
 
-      if (!habits) {
-        throw new Error('Failed to fetch habits');
-      }
+      if (habitsError) throw habitsError;
+      if (!habits) throw new Error('Failed to fetch habits');
 
-      // Get completions for last 7 days
-      const { data: completions } = await supabase
+      // Buscar completions da semana
+      const { data: completions, error: completionsError } = await supabase
         .from('habit_completions')
         .select('*')
         .eq('user_id', user.id)
-        .gte('date', days[6].start)
-        .lte('date', days[0].end);
+        .gte('date', days[0].date)
+        .lte('date', days[6].date);
 
-      // Calculate stats for each day
-      const dayStats = days.map(({ date }) => {
-        const dayCompletions = (completions || []).filter(c => 
-          c.date.startsWith(date)
+      if (completionsError) throw completionsError;
+
+      // Processar dados por dia
+      const dayStats: DayStats[] = days.map(({ date, dayOfWeek }) => {
+        // Completions do dia com 100% de conclusão
+        const dayCompletions = (completions || []).filter(
+          c => c.date === date && c.percentage >= 100
         );
 
-        const habitStats = habits.map(habit => ({
-          id: habit.id.toString(),
-          completed: dayCompletions.some(c => c.habit_id === habit.id),
-          value: dayCompletions.find(c => c.habit_id === habit.id)?.percentage || 0,
-        }));
-
-        const completed = habitStats.filter(h => h.completed).length;
+        // Remover duplicatas (mesmo habit completado múltiplas vezes no mesmo dia)
+        const uniqueHabits = new Set(dayCompletions.map(c => c.habit_id));
+        const completed = uniqueHabits.size;
         const total = habits.length;
+        const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+        // Verificar se é hoje
+        const isToday = formatISO(today, { representation: 'date' }) === date;
+
+        // Nome do dia em português
+        const dayNames = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
         return {
           date,
           completed,
           total,
-          percentage: total > 0 ? (completed / total) * 100 : 0,
-          habits: habitStats,
+          percentage,
+          habits: habits.map(habit => ({
+            id: habit.id.toString(),
+            completed: dayCompletions.some(c => c.habit_id === habit.id),
+            value: dayCompletions.find(c => c.habit_id === habit.id)?.percentage || 0,
+          })),
+          day: dayNames[dayOfWeek],
+          isToday,
         };
       });
 
-      // Calculate best and worst days
-      const sortedDays = [...dayStats].sort((a, b) => b.percentage - a.percentage);
-      const bestDay = {
-        date: sortedDays[0].date,
-        percentage: sortedDays[0].percentage,
-      };
-      const worstDay = {
-        date: sortedDays[sortedDays.length - 1].date,
-        percentage: sortedDays[sortedDays.length - 1].percentage,
-      };
+      // Calcular melhor e pior dia
+      const sortedDays = [...dayStats]
+        .filter(d => d.total > 0) // Excluir dias sem hábitos
+        .sort((a, b) => b.percentage - a.percentage);
 
-      // Calculate average
-      const averageCompletion = dayStats.reduce(
-        (acc, day) => acc + day.percentage,
-        0
-      ) / dayStats.length;
+      const bestDay = sortedDays[0] || dayStats[0];
+      
+      // Pior dia: excluir hoje e dias futuros
+      const pastDays = dayStats.filter(d => {
+        const dayDate = new Date(d.date);
+        return dayDate < today && d.total > 0;
+      });
+      const worstDay = pastDays.length > 0
+        ? pastDays.reduce((worst, day) => 
+            day.percentage < worst.percentage ? day : worst
+          )
+        : bestDay;
+
+      // Calcular média apenas de dias passados
+      const completedPastDays = pastDays.filter(d => {
+        const dayDate = new Date(d.date);
+        return dayDate <= today;
+      });
+      
+      const averageCompletion = completedPastDays.length > 0
+        ? completedPastDays.reduce((acc, day) => acc + day.percentage, 0) / completedPastDays.length
+        : 0;
 
       return {
         days: dayStats,
-        bestDay,
-        worstDay,
+        bestDay: {
+          date: bestDay.date,
+          percentage: bestDay.percentage,
+        },
+        worstDay: {
+          date: worstDay.date,
+          percentage: worstDay.percentage,
+        },
         averageCompletion,
       };
     },
     enabled: !!user,
     staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes
   });
 
   const streakStats = useQuery<StreakStats>({
