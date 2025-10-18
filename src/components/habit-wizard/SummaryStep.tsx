@@ -5,9 +5,10 @@ import { Edit2 } from "lucide-react";
 interface SummaryStepProps {
   formData: HabitFormData;
   onEdit: (step: number) => void;
+  onCreateHabit: () => void;
 }
 
-const SummaryStep = ({ formData, onEdit }: SummaryStepProps) => {
+const SummaryStep = ({ formData, onEdit, onCreateHabit }: SummaryStepProps) => {
   const recommendedStart = formData.acceptedRecommendation
     ? Math.floor(formData.initialGoal / 4)
     : formData.initialGoal;
@@ -170,6 +171,22 @@ const SummaryStep = ({ formData, onEdit }: SummaryStepProps) => {
         </p>
         <p className="text-slate-400 text-sm mt-2">— James Clear</p>
       </div>
+
+      {/* Botão de Criar Hábito */}
+      <button
+        onClick={onCreateHabit}
+        className="w-full mt-8 px-8 py-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-lg font-bold rounded-xl shadow-2xl shadow-violet-500/50 hover:shadow-violet-500/70 hover:scale-[1.02] transition-all duration-200 flex items-center justify-center gap-3"
+      >
+        <span>✨ Criar Hábito</span>
+        <img 
+          src="/atom-logo.png" 
+          alt="" 
+          className="w-6 h-6 animate-spin-slow"
+          style={{
+            filter: "brightness(0) invert(1)"
+          }}
+        />
+      </button>
     </div>
   );
 };

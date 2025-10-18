@@ -26,37 +26,56 @@ export interface RuleOfTwo {
   phase3: { days: number | null; target: number };
 }
 
+import { type IconName } from '@/config/icon-map';
+
 export interface Habit {
   id: number;
+  user_id: string;
   title: string;
-  icon: string;
-  color: string;
-  goal: Goal;
+  icon: IconName;
   
   // Lei #1: Torne Óbvio
-  when: string;
-  where: string;
-  trigger: string;
+  when_time: string;
+  where_location: string;
+  trigger_activity?: string;
   
   // Lei #2: Torne Atraente
-  temptationBundle?: string;
-  environmentPrep?: string;
-  socialReinforcement?: string;
+  temptation_bundle?: string;
+  environment_prep?: string;
+  social_reinforcement?: string;
   
   // Lei #3: Torne Fácil
-  twoMinuteVersion: string;
-  ruleOfTwo: RuleOfTwo;
-  currentPhase: number;
+  goal_current: number;
+  goal_target: number;
+  goal_unit: string;
+  two_minute_rule?: {
+    phase1: { days: number; target: number };
+    phase2: { days: number; target: number };
+    phase3: { days: number | null; target: number };
+  };
+  current_phase: number;
   
   // Lei #4: Torne Satisfatório
-  rewardMilestone: { days: number; reward: string };
+  reward_milestone?: {
+    days: number;
+    reward: string;
+  };
+  tracking_preferences: {
+    graphs?: boolean;
+    streaks?: boolean;
+    badges?: boolean;
+    heatmap?: boolean;
+  };
+  sound_enabled: boolean;
+  vibration_enabled: boolean;
   
   streak: number;
-  longestStreak: number;
-  totalCompletions: number;
+  longest_streak: number;
+  total_completions: number;
   status: "pending" | "completed" | "skipped";
-  lastCompleted: string | null;
-  createdAt: string;
+  last_completed?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Completion {

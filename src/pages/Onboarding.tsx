@@ -87,50 +87,50 @@ const Onboarding = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-900/10 to-slate-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-3xl">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-900/10 to-slate-900 flex items-center justify-center p-4 px-2 sm:px-4">
+      <div className="w-full max-w-3xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8 animate-fade-in">
-          <div className="flex items-center justify-center gap-3 mb-6">
+        <div className="text-center mb-4 sm:mb-8 animate-fade-in">
+          <div className="flex items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-6">
             <img
               src="/atom-logo.png"
               alt=""
-              className="w-12 h-12 animate-float"
+              className="w-8 h-8 sm:w-12 sm:h-12 animate-float"
               style={{
                 filter: "drop-shadow(0 0 20px rgba(124, 58, 237, 0.6))"
               }}
             />
-            <span className="text-3xl font-bold gradient-text">atomicTracker</span>
+            <span className="text-2xl sm:text-3xl font-bold gradient-text">atomicTracker</span>
           </div>
           
-          <ProgressIndicator currentStep={currentStep} totalSteps={totalSteps} />
+          <ProgressIndicator currentStep={currentStep} totalSteps={totalSteps} className="scale-75 sm:scale-100" />
         </div>
 
         {/* Content Card */}
-        <div className="glass rounded-3xl p-8 md:p-12 shadow-2xl shadow-violet-900/20 animate-scale-in">
+        <div className="glass rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-12 shadow-2xl shadow-violet-900/20 animate-scale-in">
           <div className="min-h-[400px]">
             {steps[currentStep]}
           </div>
 
           {/* Navigation */}
-          <div className="flex items-center justify-between mt-12 pt-8 border-t border-slate-700">
+          <div className="flex items-center justify-between mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-slate-700">
             <Button
               variant="ghost"
               onClick={handleBack}
               disabled={currentStep === 0}
-              className="group"
+              className="group text-sm sm:text-base"
             >
-              <ArrowLeft className="mr-2 group-hover:-translate-x-1 transition-transform" />
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
               Voltar
             </Button>
 
             <Button
               onClick={handleNext}
               disabled={!canGoNext()}
-              className="group"
+              className="group text-sm sm:text-base"
             >
               {currentStep === totalSteps - 1 ? "Começar Jornada" : "Continuar"}
-              <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
         </div>

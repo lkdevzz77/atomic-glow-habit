@@ -29,11 +29,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session?.user ?? null);
         setLoading(false);
 
-        // Initialize user badges when user signs in
-        if (session?.user && event === 'SIGNED_IN') {
-          setTimeout(() => {
-            supabase.rpc('initialize_user_badges', { p_user_id: session.user.id });
-          }, 0);
+        if (session?.user) {
+          // Redirecionar baseado no status de onboarding
+          if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+            const onboardingCompleted = session.user.user_metadata?.onboarding_completed;
+            if (!onboardingCompleted) {
+              navigate('/onboarding');
+            } else {
+              navigate('/dashboard');
+            }
+          }
+          
+          // Initialize user badges
+          supabase.rpc('initialize_user_badges', { p_user_id: session.user.id });
         }
       }
     );
@@ -43,6 +51,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      
+      // Verificar status do onboarding na inicialização
+      if (session?.user && !session.user.user_metadata?.onboarding_completed) {
+        navigate('/onboarding');
+      }
     });
 
     return () => subscription.unsubscribe();

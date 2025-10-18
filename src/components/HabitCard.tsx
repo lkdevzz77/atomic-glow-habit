@@ -1,40 +1,33 @@
-import React, { useState } from "react";
-import { BookOpen, Dumbbell, Droplet, Brain, Heart, Star, Check } from "lucide-react";
+import React from "react";
+import { Check } from "lucide-react";
 import { Habit } from "@/types/habit";
-import { useApp } from "@/contexts/AppContext";
+import { useHabits } from "@/hooks/useHabits";
 import { cn } from "@/lib/utils";
+import { Icon } from "@/config/icon-map";
+import { SkeletonCard } from "./LoadingStates";
 
 interface HabitCardProps {
   habit: Habit;
+  isLoading?: boolean;
 }
 
-const HabitCard = ({ habit }: HabitCardProps) => {
-  const { completeHabit } = useApp();
-  const [isCompleting, setIsCompleting] = useState(false);
+const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
+  const { completeHabit, isCompleting } = useHabits();
 
-  const icons: Record<string, React.ComponentType<any>> = {
-    BookOpen,
-    Dumbbell,
-    Droplet,
-    Brain,
-    Heart,
-    Star
-  };
+  if (isLoading) {
+    return <SkeletonCard />;
+  }
 
-  const Icon = icons[habit.icon] || Star;
   const isCompleted = habit.status === "completed";
   const progress = habit.goal.target > 0 ? (habit.goal.current / habit.goal.target) * 100 : 0;
 
   const handleComplete = () => {
     if (isCompleted) return;
     
-    setIsCompleting(true);
-    
-    // Animation
-    setTimeout(() => {
-      completeHabit(habit.id, habit.goal.target);
-      setIsCompleting(false);
-    }, 300);
+    completeHabit({
+      habitId: habit.id,
+      percentage: habit.goal.target
+    });
   };
 
   return (
@@ -48,7 +41,11 @@ const HabitCard = ({ habit }: HabitCardProps) => {
     >
       <div className="flex items-start gap-3 mb-3 sm:mb-4">
         <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center shadow-lg">
-          <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+          <Icon
+            name={habit.icon}
+            size={24}
+            className="text-white"
+          />
         </div>
         
         <div className="flex-1 min-w-0">

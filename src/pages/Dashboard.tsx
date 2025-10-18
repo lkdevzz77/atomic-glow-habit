@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Flame, CheckCircle2, TrendingUp, Plus, Sparkles } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
+import { useHabits } from "@/hooks/useHabits";
+import { useAuth } from "@/contexts/AuthContext";
 import Button from "@/components/Button";
 import HabitCard from "@/components/HabitCard";
 import CoachAI from "@/components/CoachAI";
@@ -11,19 +13,42 @@ import BadgeScroll from "@/components/BadgeScroll";
 import NewHabitModal from "@/components/NewHabitModal";
 
 const Dashboard = () => {
-  const { user, habits } = useApp();
+  const { user } = useAuth();
+  const { data: habits, isLoading: habitsLoading } = useHabits('active');
   const navigate = useNavigate();
   const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
 
   if (!user) {
-    navigate("/onboarding");
+    navigate("/auth");
     return null;
+  }
+
+  if (habitsLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-900/10 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <img 
+            src="/atom-logo.png" 
+            alt="Loading" 
+            className="w-16 h-16 mx-auto mb-4"
+            style={{
+              filter: 'drop-shadow(0 0 30px rgba(124, 58, 237, 0.8))',
+              animation: 'pulse 2s ease-in-out infinite'
+            }}
+          />
+          <p className="text-slate-300">Carregando seus hábitos...</p>
+        </div>
+      </div>
+    );
   }
 
   const completedToday = habits.filter(h => h.status === "completed").length;
   const totalToday = habits.length;
   const completionRate = totalToday > 0 ? Math.round((completedToday / totalToday) * 100) : 0;
-  const maxStreak = Math.max(...habits.map(h => h.streak), 0);
+  const maxStreak = Math.max(...habits.map(h => h.longest_streak || 0), 0);
+  
+  // Get user name from metadata
+  const userName = user.user_metadata?.name || 'Usuário';
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -75,10 +100,10 @@ const Dashboard = () => {
             <div className="flex items-center gap-3 sm:gap-4">
               <div className="hidden sm:flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-violet-600 to-purple-600 rounded-full shadow-lg shadow-violet-500/30">
                 <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                <span className="text-white text-sm sm:text-base font-bold">{user.points}</span>
+                <span className="text-white text-sm sm:text-base font-bold">{maxStreak * 100}</span>
               </div>
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center text-white text-sm sm:text-base font-bold border-2 border-violet-500">
-                {user.name[0].toUpperCase()}
+                {userName[0].toUpperCase()}
               </div>
             </div>
           </div>
@@ -100,7 +125,7 @@ const Dashboard = () => {
           />
           
           <h1 className="relative z-10 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tighter text-slate-50 mb-1 sm:mb-2">
-            {getGreeting()}, {user.name}! 👋
+            {getGreeting()}, {userName}! 👋
           </h1>
           <p className="relative z-10 text-violet-200 text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 capitalize">{getDateString()}</p>
 
@@ -156,28 +181,29 @@ const Dashboard = () => {
           <div className="lg:col-span-8 space-y-4 sm:space-y-6">
             <div className="flex items-center justify-between mb-2 sm:mb-4">
               <h2 className="text-xl sm:text-2xl font-bold heading-section text-slate-50">Hábitos de Hoje</h2>
-              <Button 
-                variant="primary" 
-                size="sm"
-                onClick={() => setIsNewHabitModalOpen(true)}
-                className="text-xs sm:text-sm"
-              >
-                <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Novo Hábito</span>
-                <span className="sm:hidden">Novo</span>
-              </Button>
             </div>
 
             {habits.length === 0 ? (
-              <div className="glass rounded-2xl p-12 text-center">
-                <div className="text-6xl mb-4">📝</div>
-                <h3 className="text-xl font-bold text-slate-50 mb-2">
+              <div className="glass rounded-2xl p-8 sm:p-12 text-center">
+                <img 
+                  src="/atom-logo.png"
+                  alt=""
+                  className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 animate-float"
+                  style={{
+                    filter: 'drop-shadow(0 0 30px rgba(124, 58, 237, 0.5))'
+                  }}
+                />
+                <h3 className="text-lg sm:text-xl font-bold text-slate-50 mb-2">
                   Nenhum hábito ainda
                 </h3>
-                <p className="text-slate-300 mb-6">
+                <p className="text-sm sm:text-base text-slate-400 mb-6">
                   Complete o onboarding para criar seu primeiro hábito!
                 </p>
-                <Button onClick={() => navigate("/onboarding")}>
+                <Button 
+                  variant="default" 
+                  onClick={() => navigate("/onboarding")}
+                  className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 transition-all duration-200"
+                >
                   Começar Agora
                 </Button>
               </div>
@@ -212,6 +238,15 @@ const Dashboard = () => {
           </div>
         )}
       </div>
+
+      {/* Floating Action Button */}
+      <button
+        onClick={() => setIsNewHabitModalOpen(true)}
+        className="fixed bottom-6 right-6 w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-full shadow-2xl shadow-violet-500/50 hover:shadow-violet-500/70 hover:scale-105 transition-all duration-200 flex items-center justify-center"
+        aria-label="Adicionar novo hábito"
+      >
+        <Plus className="w-6 h-6 sm:w-8 sm:h-8" />
+      </button>
 
       {/* New Habit Modal */}
       <NewHabitModal 

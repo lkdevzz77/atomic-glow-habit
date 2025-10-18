@@ -59,10 +59,9 @@ export function useAuth() {
           .insert({
             id: authData.user.id,
             name,
-            email,
+            desired_identity: '',
+            specific_change: '',
             points: 0,
-            completed_onboarding: false,
-            onboarding_step: 0,
             longest_streak: 0
           });
 

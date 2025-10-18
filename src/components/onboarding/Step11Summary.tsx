@@ -3,6 +3,16 @@ import { BookOpen, Dumbbell, Droplet, Brain, Heart } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
 import { Habit, User } from "@/types/habit";
 
+import { IconName } from "@/config/icon-map";
+
+const habitIcons: Record<string, IconName> = {
+  read: "read",
+  exercise: "exercise",
+  water: "hydration",
+  meditate: "meditation",
+  gratitude: "health"
+};
+
 const Step11Summary = () => {
   const { onboardingData, addHabit, setUser } = useApp();
 
@@ -11,13 +21,6 @@ const Step11Summary = () => {
   }, []);
 
   const createHabitFromOnboarding = () => {
-    const habitIcons: Record<string, string> = {
-      read: "BookOpen",
-      exercise: "Dumbbell",
-      water: "Droplet",
-      meditate: "Brain",
-      gratitude: "Heart"
-    };
 
     const habitTitles: Record<string, string> = {
       read: "Ler páginas",
@@ -48,7 +51,7 @@ const Step11Summary = () => {
     const newHabit: Habit = {
       id: 1,
       title: habitTitle,
-      icon: habitType === "custom" ? "Star" : habitIcons[habitType],
+      icon: habitType === "custom" ? "focus" : habitIcons[habitType],
       color: "violet",
       goal: {
         current: 0,
@@ -155,7 +158,11 @@ const Step11Summary = () => {
         {/* Habit Icon & Title */}
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/50">
-            <Icon className="w-8 h-8 text-white" />
+            <Icon 
+              name={onboardingData.habitType === "custom" ? "focus" : habitIcons[onboardingData.habitType as keyof typeof habitIcons]} 
+              className="w-8 h-8 text-white"
+              size={32}
+            />
           </div>
           <h3 className="text-3xl font-bold text-slate-50">{habitTitle}</h3>
         </div>

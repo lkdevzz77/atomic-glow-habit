@@ -29,35 +29,35 @@ const Step4ChooseHabit = () => {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold text-slate-50">
+      <div className="text-center space-y-2 sm:space-y-4">
+        <h2 className="text-2xl sm:text-3xl font-bold text-slate-50">
           Com base no que você disse,
         </h2>
-        <h3 className="text-2xl font-bold gradient-text">
+        <h3 className="text-xl sm:text-2xl font-bold gradient-text">
           qual ÚNICO hábito você quer começar?
         </h3>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
         {suggestions.map((suggestion) => (
           <button
             key={suggestion.id}
             onClick={() => handleSelect(suggestion.id)}
             className={cn(
-              "glass rounded-2xl p-6 flex flex-col items-center gap-4 transition-all duration-300 hover-scale",
+              "glass rounded-xl sm:rounded-2xl p-3 sm:p-6 flex flex-col items-center gap-2 sm:gap-4 transition-all duration-300 hover-scale",
               onboardingData.habitType === suggestion.id
                 ? "border-2 border-violet-500 bg-violet-900/30 shadow-xl shadow-violet-500/50"
                 : "border-2 border-slate-700 hover:border-violet-500/50 hover:shadow-lg hover:shadow-violet-500/20"
             )}
           >
             <div className={cn(
-              "w-16 h-16 rounded-xl bg-gradient-to-br flex items-center justify-center",
+              "w-12 h-12 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl bg-gradient-to-br flex items-center justify-center",
               suggestion.color,
               "shadow-lg"
             )}>
-              <suggestion.icon className="w-8 h-8 text-white" />
+              <suggestion.icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
-            <span className="text-lg font-semibold text-slate-50">{suggestion.label}</span>
+            <span className="text-sm sm:text-lg font-semibold text-slate-50">{suggestion.label}</span>
           </button>
         ))}
       </div>

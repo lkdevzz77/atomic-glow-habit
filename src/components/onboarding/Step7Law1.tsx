@@ -32,34 +32,34 @@ const Step7Law1 = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="space-y-2">
-        <div className="flex items-center gap-3 text-violet-400 text-2xl font-bold mb-4">
-          <span className="text-3xl">🎯</span>
+        <div className="flex items-center gap-2 sm:gap-3 text-violet-400 text-xl sm:text-2xl font-bold mb-3 sm:mb-4">
+          <span className="text-2xl sm:text-3xl">🎯</span>
           <span>LEI #1: TORNE ÓBVIO</span>
         </div>
-        <p className="text-slate-300 text-lg">
+        <p className="text-slate-300 text-base sm:text-lg">
           Hábitos precisam de gatilhos claros
         </p>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         <div>
-          <label className="block text-violet-400 font-semibold mb-3">
+          <label className="block text-violet-400 font-semibold mb-2 sm:mb-3 text-sm sm:text-base">
             QUANDO você fará {getHabitLabel()}?
           </label>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
             {timeOptions.map((option) => (
               <button
                 key={option.id}
                 onClick={() => updateOnboardingData({ when: option.id })}
                 className={cn(
-                  "flex flex-col items-center gap-2 p-4 rounded-xl transition-all duration-200",
+                  "flex flex-col items-center gap-1 sm:gap-2 p-3 sm:p-4 rounded-lg sm:rounded-xl transition-all duration-200",
                   onboardingData.when === option.id
                     ? "bg-violet-900/50 border-2 border-violet-500 shadow-lg shadow-violet-500/30"
                     : "bg-slate-700 border-2 border-slate-600 hover:border-violet-500/50"
                 )}
               >
-                <option.icon className="w-6 h-6 text-violet-400" />
-                <span className="text-sm text-slate-200">{option.label}</span>
+                <option.icon className="w-5 h-5 sm:w-6 sm:h-6 text-violet-400" />
+                <span className="text-xs sm:text-sm text-slate-200">{option.label}</span>
               </button>
             ))}
           </div>
@@ -90,12 +90,12 @@ const Step7Law1 = () => {
         />
 
         {onboardingData.when && onboardingData.where && onboardingData.triggerActivity && (
-          <div className="bg-gradient-to-r from-violet-900/50 to-slate-800 border-l-4 border-violet-500 rounded-lg p-6 animate-slide-up">
-            <div className="flex items-center gap-2 text-violet-400 font-semibold mb-3">
-              <span className="text-xl">📌</span>
-              <span>SEU GATILHO</span>
+          <div className="bg-gradient-to-r from-violet-900/50 to-slate-800 border-l-4 border-violet-500 rounded-lg p-4 sm:p-6 animate-slide-up">
+            <div className="flex items-center gap-2 text-violet-400 font-semibold mb-2 sm:mb-3">
+              <span className="text-lg sm:text-xl">📌</span>
+              <span className="text-sm sm:text-base">SEU GATILHO</span>
             </div>
-            <p className="text-slate-50 text-lg">
+            <p className="text-slate-50 text-base sm:text-lg leading-relaxed">
               "Logo após <span className="font-bold text-violet-400">{onboardingData.triggerActivity}</span>, 
               vou <span className="font-bold text-violet-400">{getHabitLabel()}</span> na{" "}
               <span className="font-bold text-violet-400">{onboardingData.where}</span>"

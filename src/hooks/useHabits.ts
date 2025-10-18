@@ -1,153 +1,220 @@
-import { useState, useEffect } from 'react';
-import { useAuthContext } from '@/contexts/AuthContext';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/contexts/AuthContext';
 import { habitService } from '@/services/habitService';
+import { toast } from './use-toast';
 import type { Database } from '@/lib/supabase';
 
-type Habit = Database['public']['Tables']['habits']['Row'];
+interface Habit {
+  id: number;
+  user_id: string;
+  title: string;
+  icon: string;
+  when_time: string;
+  where_location: string;
+  trigger_activity?: string;
+  temptation_bundle?: string;
+  environment_prep?: string;
+  social_reinforcement?: string;
+  goal_current: number;
+  goal_target: number;
+  goal_unit: string;
+
+  phase1_days?: number;
+  phase1_target?: number;
+  phase2_days?: number;
+  phase2_target?: number;
+  phase3_days?: number;
+  phase3_target?: number;
+  reward_7_days?: string;
+  reward_30_days?: string;
+  tracking_graphs: boolean;
+  tracking_streaks: boolean;
+  tracking_badges: boolean;
+  tracking_heatmap: boolean;
+  sound_enabled: boolean;
+  vibration_enabled: boolean;
+  streak: number;
+  longest_streak: number;
+  total_completions: number;
+  status: 'pending' | 'completed' | 'skipped';
+  last_completed?: string;
+  created_at: string;
+  updated_at: string;
+};
+
+const QUERY_KEYS = {
+  habits: 'habits',
+  habit: (id: string) => ['habits', id],
+  userHabits: (userId: string, status: 'active' | 'archived') => ['habits', userId, status],
+} as const;
 
 export function useHabits(status: 'active' | 'archived' = 'active') {
-  const { user } = useAuthContext();
-  const [habits, setHabits] = useState<Habit[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
-  // Função para buscar hábitos
-  const fetchHabits = async () => {
-    if (!user) return;
-
-    try {
-      setLoading(true);
-      setError(null);
-      const { data, error: habitError } = await habitService.getHabits(user.id);
+  const habits = useQuery({
+    queryKey: QUERY_KEYS.userHabits(user?.id || '', status),
+    queryFn: async () => {
+      if (!user) return [];
       
-      if (habitError) throw habitError;
+      const { data, error } = await habitService.getHabits(user.id);
+      if (error) throw error;
       
-      // Filtrar por status
-      const filteredHabits = data?.filter(habit => habit.status === status) || [];
-      setHabits(filteredHabits);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch habits');
-    } finally {
-      setLoading(false);
-    }
-  };
+      return data?.filter(habit => habit.status === status) || [];
+    },
+    enabled: !!user,
+    staleTime: 1000 * 30, // 30 seconds
+    refetchInterval: 1000 * 30, // Refetch every 30 seconds
+  });
 
-  // Buscar hábitos ao montar componente ou mudar status/user
-  useEffect(() => {
-    fetchHabits();
-  }, [user, status]);
+  const createHabitMutation = useMutation({
+    mutationFn: async (data: Omit<Habit, 'id' | 'created_at' | 'updated_at' | 'user_id' | 'streak' | 'longest_streak' | 'status'>) => {
+      if (!user) throw new Error('User not authenticated');
+      const result = await habitService.createHabit(user.id, data);
+      if (result.error) throw result.error;
+      return result.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status) });
+      toast({
+        title: 'Hábito criado!',
+        description: 'Seu novo hábito foi criado com sucesso.',
+        variant: 'success',
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Erro ao criar hábito',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
 
-  // Criar novo hábito
-  const createHabit = async (data: Omit<Habit, 'id' | 'created_at' | 'updated_at' | 'user_id' | 'streak' | 'longest_streak' | 'status'>) => {
-    if (!user) return { error: new Error('User not authenticated') };
+  const updateHabitMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Habit> }) => {
+      const result = await habitService.updateHabit(id, data);
+      if (result.error) throw result.error;
+      return result.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status) });
+      toast({
+        title: 'Hábito atualizado!',
+        description: 'As alterações foram salvas com sucesso.',
+        variant: 'success',
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Erro ao atualizar hábito',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
 
-    try {
-      setError(null);
-      const { data: newHabit, error: habitError } = await habitService.createHabit(user.id, data);
+  const deleteHabitMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const result = await habitService.deleteHabit(id);
+      if (result.error) throw result.error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status) });
+      toast({
+        title: 'Hábito deletado',
+        description: 'O hábito foi removido com sucesso.',
+        variant: 'success',
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Erro ao deletar hábito',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const completeHabitMutation = useMutation({
+    mutationFn: async ({ habitId, percentage }: { habitId: string; percentage: number }) => {
+      if (!user) throw new Error('User not authenticated');
       
-      if (habitError) throw habitError;
-      
-      // Atualizar estado local
-      if (newHabit && newHabit.status === status) {
-        setHabits(prev => [newHabit, ...prev]);
-      }
-
-      return { data: newHabit, error: null };
-    } catch (err) {
-      const error = err instanceof Error ? err.message : 'Failed to create habit';
-      setError(error);
-      return { data: null, error };
-    }
-  };
-
-  // Atualizar hábito
-  const updateHabit = async (id: string, data: Partial<Habit>) => {
-    try {
-      setError(null);
-      const { data: updatedHabit, error: habitError } = await habitService.updateHabit(id, data);
-      
-      if (habitError) throw habitError;
-      
-      // Atualizar estado local
-      setHabits(prev => prev.map(habit => 
-        habit.id === id ? { ...habit, ...updatedHabit } : habit
-      ));
-
-      return { data: updatedHabit, error: null };
-    } catch (err) {
-      const error = err instanceof Error ? err.message : 'Failed to update habit';
-      setError(error);
-      return { data: null, error };
-    }
-  };
-
-  // Deletar hábito
-  const deleteHabit = async (id: string) => {
-    try {
-      setError(null);
-      const { error: habitError } = await habitService.deleteHabit(id);
-      
-      if (habitError) throw habitError;
-      
-      // Atualizar estado local
-      setHabits(prev => prev.filter(habit => habit.id !== id));
-
-      return { error: null };
-    } catch (err) {
-      const error = err instanceof Error ? err.message : 'Failed to delete habit';
-      setError(error);
-      return { error };
-    }
-  };
-
-  // Completar hábito
-  const completeHabit = async (habitId: string, percentage: number) => {
-    if (!user) return { error: new Error('User not authenticated') };
-
-    try {
-      setError(null);
       const today = new Date().toISOString().split('T')[0];
-      
-      const { error: completionError } = await habitService.completeHabit(
+      const result = await habitService.completeHabit(
         habitId,
         user.id,
         today,
         percentage
       );
       
-      if (completionError) throw completionError;
+      if (result.error) throw result.error;
+      return result.data;
+    },
+    onSuccess: (data, { habitId, percentage }) => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status) });
+      
+      // Optimistic update
+      const oldData = queryClient.getQueryData<Habit[]>(QUERY_KEYS.userHabits(user?.id || '', status));
+      if (oldData) {
+        queryClient.setQueryData(
+          QUERY_KEYS.userHabits(user?.id || '', status),
+          oldData.map(habit =>
+            habit.id === habitId
+              ? {
+                  ...habit,
+                  last_completion: new Date().toISOString().split('T')[0],
+                  streak: (habit.streak || 0) + (percentage >= 100 ? 1 : 0),
+                  longest_streak: Math.max(
+                    (habit.longest_streak || 0),
+                    (habit.streak || 0) + (percentage >= 100 ? 1 : 0)
+                  )
+                }
+              : habit
+          )
+        );
+      }
 
-      // Atualizar UI otimisticamente
-      setHabits(prev => prev.map(habit =>
-        habit.id === habitId
-          ? {
-              ...habit,
-              last_completion: today,
-              streak: (habit.streak || 0) + (percentage >= 100 ? 1 : 0),
-              longest_streak: Math.max(
-                (habit.longest_streak || 0),
-                (habit.streak || 0) + (percentage >= 100 ? 1 : 0)
-              )
-            }
-          : habit
-      ));
-
-      return { error: null };
-    } catch (err) {
-      const error = err instanceof Error ? err.message : 'Failed to complete habit';
-      setError(error);
-      return { error };
-    }
-  };
+      toast({
+        title: '🎉 Hábito completado!',
+        description: percentage >= 100 ? 'Meta atingida!' : 'Progresso registrado!',
+        variant: 'success',
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Erro ao completar hábito',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
 
   return {
-    habits,
-    loading,
-    error,
-    refetch: fetchHabits,
-    createHabit,
-    updateHabit,
-    deleteHabit,
-    completeHabit
+    // Query Results
+    data: habits.data,
+    isLoading: habits.isLoading,
+    isError: habits.isError,
+    error: habits.error as Error | null,
+    refetch: habits.refetch,
+
+    // Mutations
+    createHabit: async (data: Parameters<typeof createHabitMutation.mutate>[0]) => {
+      try {
+        return await createHabitMutation.mutateAsync(data);
+      } catch (error) {
+        console.error('Error creating habit:', error);
+        throw error;
+      }
+    },
+    updateHabit: updateHabitMutation.mutate,
+    deleteHabit: deleteHabitMutation.mutate,
+    completeHabit: completeHabitMutation.mutate,
+
+    // Mutation States
+    isCreating: createHabitMutation.isPending,
+    isUpdating: updateHabitMutation.isPending,
+    isDeleting: deleteHabitMutation.isPending,
+    isCompleting: completeHabitMutation.isPending,
   };
 }

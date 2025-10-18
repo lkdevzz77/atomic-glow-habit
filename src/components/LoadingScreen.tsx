@@ -18,11 +18,7 @@ export function LoadingScreen({ progress = 60 }: LoadingScreenProps) {
         <img 
           src="/atom-logo.png" 
           alt="atomicTracker"
-          className="w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-6"
-          style={{
-            filter: 'drop-shadow(0 0 30px rgba(124, 58, 237, 0.8))',
-            animation: 'pulse-glow 2s ease-in-out infinite'
-          }}
+          className="w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-6 drop-shadow-[0_0_30px_rgba(124,58,237,0.8)] animate-pulse-violet"
         />
         <h2 className="text-xl sm:text-2xl font-bold text-violet-400 mb-2">
           atomicTracker
@@ -37,18 +33,7 @@ export function LoadingScreen({ progress = 60 }: LoadingScreenProps) {
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes pulse-glow {
-          0%, 100% { 
-            filter: drop-shadow(0 0 20px rgba(124, 58, 237, 0.6));
-            transform: scale(1);
-          }
-          50% { 
-            filter: drop-shadow(0 0 40px rgba(124, 58, 237, 1));
-            transform: scale(1.05);
-          }
-        }
-      `}</style>
+      {/* Using Tailwind animation utility `animate-pulse-violet` defined in tailwind.config.ts */}
     </div>
   )
 }

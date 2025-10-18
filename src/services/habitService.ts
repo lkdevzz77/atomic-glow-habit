@@ -1,20 +1,63 @@
 import { supabase } from '@/lib/supabase';
 
+type HabitStatus = 'pending' | 'active' | 'completed';
+
+// Interface base para dados do hábito
 interface HabitData {
   title: string;
-  description?: string;
-  icon?: string;
-  frequency?: 'daily' | 'weekly';
-  target_value?: number;
-  reminder_time?: string;
-  location?: string;
-  trigger?: string;
-  start_date: string;
+  icon: string;
+  when_time: string;
+  where_location: string;
+  trigger_activity?: string | null;
+  temptation_bundle?: string | null;
+  environment_prep?: string | null;
+  social_reinforcement?: string | null;
+  goal_current: number;
+  goal_target: number;
+  goal_unit: string;
 }
 
+// Interface completa que representa o registro no banco
+interface HabitRecord extends Omit<HabitData, 'status'> {
+  id: number;
+  user_id: string;
+  streak: number;
+  longest_streak: number;
+  total_completions: number;
+  status: HabitStatus;
+  created_at: string;
+  updated_at: string;
+  last_completed?: string | null;
+}
+
+// Interface para conclusões de hábitos
+interface HabitCompletion {
+  id: number;
+  habit_id: number;
+  user_id: string;
+  date: string;
+  percentage: number;
+  completed_at: string;
+}
+
+// Validações
+const isValidHabitData = (data: any): data is HabitData => {
+  return (
+    typeof data.title === 'string' && data.title.trim() !== '' &&
+    typeof data.icon === 'string' && data.icon.trim() !== '' &&
+    typeof data.when_time === 'string' &&
+    typeof data.where_location === 'string' && data.where_location.trim() !== '' &&
+    typeof data.goal_current === 'number' && data.goal_current >= 0 &&
+    typeof data.goal_target === 'number' && data.goal_target > 0 &&
+    typeof data.goal_unit === 'string' && data.goal_unit.trim() !== ''
+  );
+};
+
 export const habitService = {
-  async getHabits(userId: string) {
+  async getHabits(userId: string): Promise<{ data: HabitRecord[] | null; error: any }> {
     try {
+      if (!userId) throw new Error('User ID is required');
+
       const { data, error } = await supabase
         .from('habits')
         .select('*')
@@ -22,14 +65,17 @@ export const habitService = {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return { data, error: null };
+      return { data: data as HabitRecord[], error: null };
     } catch (error) {
+      console.error('Error fetching habits:', error);
       return { data: null, error };
     }
   },
 
-  async getHabit(id: string) {
+  async getHabit(id: number): Promise<{ data: HabitRecord | null; error: any }> {
     try {
+      if (!id) throw new Error('Habit ID is required');
+
       const { data, error } = await supabase
         .from('habits')
         .select('*')
@@ -37,35 +83,50 @@ export const habitService = {
         .single();
 
       if (error) throw error;
-      return { data, error: null };
+      return { data: data as HabitRecord, error: null };
     } catch (error) {
+      console.error('Error fetching habit:', error);
       return { data: null, error };
     }
   },
 
-  async createHabit(userId: string, data: HabitData) {
+  async createHabit(userId: string, data: HabitData): Promise<{ data: HabitRecord | null; error: any }> {
     try {
+      if (!userId) throw new Error('User ID is required');
+      if (!isValidHabitData(data)) throw new Error('Invalid habit data');
+
+      const habitData = {
+        user_id: userId,
+        ...data,
+        streak: 0,
+        longest_streak: 0,
+        total_completions: 0,
+        status: 'pending' as HabitStatus
+      };
+
       const { data: habit, error } = await supabase
         .from('habits')
-        .insert({
-          user_id: userId,
-          ...data,
-          status: 'active',
-          streak: 0,
-          longest_streak: 0
-        })
+        .insert(habitData)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro ao criar hábito:', error);
+        throw error;
+      }
+
+      console.log('Hábito criado com sucesso:', habit);
       return { data: habit, error: null };
     } catch (error) {
+      console.error('Erro capturado em createHabit:', error);
       return { data: null, error };
     }
   },
 
-  async updateHabit(id: string, data: Partial<HabitData>) {
+  async updateHabit(id: number, data: Partial<HabitData>): Promise<{ data: HabitRecord | null; error: any }> {
     try {
+      if (!id) throw new Error('Habit ID is required');
+
       const { data: habit, error } = await supabase
         .from('habits')
         .update(data)
@@ -74,14 +135,17 @@ export const habitService = {
         .single();
 
       if (error) throw error;
-      return { data: habit, error: null };
+      return { data: habit as HabitRecord, error: null };
     } catch (error) {
+      console.error('Error updating habit:', error);
       return { data: null, error };
     }
   },
 
-  async deleteHabit(id: string) {
+  async deleteHabit(id: number): Promise<{ error: any }> {
     try {
+      if (!id) throw new Error('Habit ID is required');
+
       const { error } = await supabase
         .from('habits')
         .delete()
@@ -90,20 +154,27 @@ export const habitService = {
       if (error) throw error;
       return { error: null };
     } catch (error) {
+      console.error('Error deleting habit:', error);
       return { error };
     }
   },
 
-  async completeHabit(habitId: string, userId: string, date: string, percentage: number) {
+  async completeHabit(habitId: number, userId: string, date: string, percentage: number): Promise<{ error: any }> {
     try {
+      if (!habitId) throw new Error('Habit ID is required');
+      if (!userId) throw new Error('User ID is required');
+      if (!date) throw new Error('Date is required');
+      if (percentage < 0 || percentage > 100) throw new Error('Percentage must be between 0 and 100');
+
       // 1. Registrar completion
       const { error: completionError } = await supabase
-        .from('completions')
+        .from('habit_completions')
         .insert({
           habit_id: habitId,
           user_id: userId,
           date,
-          percentage
+          percentage,
+          completed_at: new Date().toISOString()
         });
 
       if (completionError) throw completionError;
@@ -113,14 +184,18 @@ export const habitService = {
 
       return { error: null };
     } catch (error) {
+      console.error('Error completing habit:', error);
       return { error };
     }
   },
 
-  async getCompletions(habitId: string, startDate: string, endDate: string) {
+  async getCompletions(habitId: number, startDate: string, endDate: string): Promise<{ data: HabitCompletion[] | null; error: any }> {
     try {
+      if (!habitId) throw new Error('Habit ID is required');
+      if (!startDate || !endDate) throw new Error('Date range is required');
+
       const { data, error } = await supabase
-        .from('completions')
+        .from('habit_completions')
         .select('*')
         .eq('habit_id', habitId)
         .gte('date', startDate)
@@ -128,25 +203,32 @@ export const habitService = {
         .order('date', { ascending: true });
 
       if (error) throw error;
-      return { data, error: null };
+      return { data: data as HabitCompletion[], error: null };
     } catch (error) {
+      console.error('Error fetching completions:', error);
       return { data: null, error };
     }
   },
 
-  async updateStreak(habitId: string) {
+  async updateStreak(habitId: number): Promise<{ error: any }> {
     try {
+      if (!habitId) throw new Error('Habit ID is required');
+
       // 1. Buscar hábito
       const { data: habit } = await this.getHabit(habitId);
       if (!habit) throw new Error('Habit not found');
 
-      // 2. Buscar completions recentes
+      // 2. Buscar completions recentes (últimos 30 dias)
       const today = new Date().toISOString().split('T')[0];
-      const { data: completions } = await this.getCompletions(
-        habitId,
-        new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        today
-      );
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      
+      const { data: completions } = await supabase
+        .from('habit_completions')
+        .select('*')
+        .eq('habit_id', habitId)
+        .gte('date', thirtyDaysAgo)
+        .lte('date', today)
+        .order('date', { ascending: true });
 
       if (!completions) return { error: new Error('Failed to fetch completions') };
 
@@ -171,13 +253,15 @@ export const habitService = {
         .update({
           streak: currentStreak,
           longest_streak: longestStreak,
-          last_completion: today
+          last_completed: today,
+          status: currentStreak > 0 ? 'active' as HabitStatus : 'pending' as HabitStatus
         })
         .eq('id', habitId);
 
       if (error) throw error;
       return { error: null };
     } catch (error) {
+      console.error('Error updating streak:', error);
       return { error };
     }
   }

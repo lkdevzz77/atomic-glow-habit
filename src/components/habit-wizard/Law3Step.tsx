@@ -11,16 +11,16 @@ const Law3Step = ({ formData, updateFormData }: Law3StepProps) => {
   const recommendedPhase2 = Math.floor(formData.initialGoal / 2);
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-violet-400 mb-2">
+    <div className="max-w-2xl mx-auto space-y-8 animate-fade-in">
+      <div className="text-center">
+        <h2 className="text-2xl sm:text-3xl font-bold text-violet-400 mb-2">
           🚀 Lei #3: TORNE FÁCIL
         </h2>
         <p className="text-slate-300">Comece absurdamente pequeno (Regra dos 2 Minutos)</p>
       </div>
 
       {/* Meta */}
-      <div>
+      <div className="max-w-xl mx-auto">
         <label className="block text-sm font-medium text-violet-400 mb-3">
           Qual sua meta?
         </label>
@@ -45,9 +45,9 @@ const Law3Step = ({ formData, updateFormData }: Law3StepProps) => {
       </div>
 
       {/* Unidade */}
-      <div>
+      <div className="max-w-xl mx-auto">
         <label className="block text-sm font-medium text-violet-400 mb-3">Unidade:</label>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {["minutos", "páginas", "repetições", "outro"].map((unit) => (
             <button
               key={unit}
@@ -65,14 +65,14 @@ const Law3Step = ({ formData, updateFormData }: Law3StepProps) => {
       </div>
 
       {/* Recomendação IA */}
-      <div className="bg-gradient-to-br from-violet-900/50 via-purple-900/30 to-slate-800 border-2 border-violet-500/50 rounded-2xl p-6 shadow-lg shadow-violet-500/30">
-        <div className="flex items-start gap-4">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 flex items-center justify-center animate-spin-slow">
+      <div className="max-w-2xl mx-auto bg-gradient-to-br from-violet-900/50 via-purple-900/30 to-slate-800 border-2 border-violet-500/50 rounded-2xl p-4 sm:p-6 shadow-lg shadow-violet-500/30">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 flex items-center justify-center animate-spin-slow shrink-0">
             <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center">
               <span className="text-2xl">✨</span>
             </div>
           </div>
-          <div className="flex-1">
+          <div className="flex-1 text-center sm:text-left">
             <h3 className="text-lg font-bold text-violet-300 mb-3">
               SEU COACH IA RECOMENDA
             </h3>
@@ -131,7 +131,7 @@ const Law3Step = ({ formData, updateFormData }: Law3StepProps) => {
       </div>
 
       {/* Redução de Atrito */}
-      <div>
+      <div className="max-w-xl mx-auto">
         <label className="flex items-center gap-2 text-sm font-medium text-violet-400 mb-2">
           <input
             type="checkbox"
