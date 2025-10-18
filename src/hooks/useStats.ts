@@ -1,11 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
-import type { Database } from '@/lib/supabase';
 import { addDays, startOfDay, endOfDay, formatISO } from 'date-fns';
-
-type HabitCompletion = Database['public']['Tables']['habit_completions']['Row'];
-type Habit = Database['public']['Tables']['habits']['Row'];
 
 interface DayStats {
   date: string;
@@ -37,7 +33,7 @@ interface StreakStats {
   longestStreak: number;
   totalDaysActive: number;
   habitStreaks: {
-    habitId: string;
+    habitId: number;
     habitTitle: string;
     currentStreak: number;
     longestStreak: number;

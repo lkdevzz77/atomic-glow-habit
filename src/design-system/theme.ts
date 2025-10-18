@@ -6,7 +6,7 @@ export const theme = {
     primary: tokens.colors.surface.background,
     secondary: tokens.colors.surface.card,
     overlay: tokens.colors.surface.overlay,
-    gradient: `linear-gradient(to bottom right, ${tokens.colors.brand[900]}, ${tokens.colors.gray[900]})`,
+    gradient: `linear-gradient(to bottom right, ${tokens.colors.primary[900]}, ${tokens.colors.gray[900]})`,
   },
 
   // Text styles
@@ -38,10 +38,10 @@ export const theme = {
     // Button variants
     button: {
       primary: {
-        background: `linear-gradient(to right, ${tokens.colors.brand[600]}, ${tokens.colors.brand[700]})`,
+        background: `linear-gradient(to right, ${tokens.colors.primary[600]}, ${tokens.colors.primary[700]})`,
         color: tokens.colors.gray[50],
         hover: {
-          background: `linear-gradient(to right, ${tokens.colors.brand[700]}, ${tokens.colors.brand[800]})`,
+          background: `linear-gradient(to right, ${tokens.colors.primary[700]}, ${tokens.colors.primary[800]})`,
           transform: 'translateY(-1px)',
         },
       },
@@ -69,9 +69,9 @@ export const theme = {
         shadow: tokens.shadows.lg,
       },
       highlight: {
-        background: `linear-gradient(135deg, ${tokens.colors.brand[900]}, ${tokens.colors.gray[800]})`,
+        background: `linear-gradient(135deg, ${tokens.colors.primary[900]}, ${tokens.colors.gray[800]})`,
         borderRadius: tokens.borderRadius.xl,
-        shadow: `${tokens.shadows.xl}, 0 0 30px ${tokens.colors.brand[900]}40`,
+        shadow: `${tokens.shadows.xl}, 0 0 30px ${tokens.colors.primary[900]}40`,
       },
     },
 
@@ -84,8 +84,8 @@ export const theme = {
         color: tokens.colors.gray[100],
         placeholder: tokens.colors.gray[500],
         focus: {
-          borderColor: tokens.colors.brand[500],
-          shadow: `0 0 0 2px ${tokens.colors.brand[500]}40`,
+          borderColor: tokens.colors.primary[500],
+          shadow: `0 0 0 2px ${tokens.colors.primary[500]}40`,
         },
       },
     },

@@ -180,27 +180,8 @@ const NewHabitModal = ({ open, onClose }: NewHabitModalProps) => {
           temptation_bundle: formData.temptationBundle,
           environment_prep: formData.environmentPrep,
           social_reinforcement: formData.socialReinforcement,
-          goal_current: 0,
           goal_target: formData.initialGoal,
-          goal_unit: formData.goalUnit,
-          // Regra dos 2 minutos
-          phase1_days: recommended.phase1.days,
-          phase1_target: recommended.phase1.target,
-          phase2_days: recommended.phase2.days,
-          phase2_target: recommended.phase2.target,
-          phase3_days: recommended.phase3.days || null,
-          phase3_target: recommended.phase3.target,
-          // Recompensas
-          reward_7_days: formData.reward7Days,
-          reward_30_days: formData.reward30Days,
-          // Preferências de tracking
-          tracking_graphs: formData.trackingPreferences.includes('graphs'),
-          tracking_streaks: formData.trackingPreferences.includes('streaks'),
-          tracking_badges: formData.trackingPreferences.includes('badges'),
-          tracking_heatmap: formData.trackingPreferences.includes('heatmap'),
-          // Notificações
-          sound_enabled: formData.enableSound,
-          vibration_enabled: formData.enableVibration
+          goal_unit: formData.goalUnit
         });
 
         onClose();

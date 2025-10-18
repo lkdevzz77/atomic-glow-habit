@@ -69,14 +69,16 @@ export default function SettingsPage() {
 
   const handleDeleteAccount = async () => {
     try {
-      const { error } = await supabase.rpc('delete_user_account');
-      if (error) throw error;
+      // Delete user data manually since RPC function doesn't exist
+      await supabase.from('habits').delete().eq('user_id', user?.id);
+      await supabase.from('habit_completions').delete().eq('user_id', user?.id);
+      await supabase.from('user_badges').delete().eq('user_id', user?.id);
+      await supabase.from('profiles').delete().eq('id', user?.id);
 
       await signOut();
       toast({
         title: "Conta deletada",
         description: "Sua conta foi excluída com sucesso. Esperamos te ver novamente!",
-        variant: "default",
       });
     } catch (error) {
       toast({

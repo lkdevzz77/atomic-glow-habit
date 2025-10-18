@@ -200,7 +200,7 @@ const Dashboard = () => {
                   Complete o onboarding para criar seu primeiro hábito!
                 </p>
                 <Button 
-                  variant="default" 
+                  variant="primary" 
                   onClick={() => navigate("/onboarding")}
                   className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 transition-all duration-200"
                 >

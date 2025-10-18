@@ -50,37 +50,31 @@ const Step11Summary = () => {
 
     const newHabit: Habit = {
       id: 1,
+      user_id: '',
       title: habitTitle,
       icon: habitType === "custom" ? "focus" : habitIcons[habitType],
-      color: "violet",
-      goal: {
-        current: 0,
-        target: recommendedStart,
-        unit: habitType === "custom" ? "vezes" : habitUnits[habitType]
-      },
-      when: getWhenLabel(),
-      where: onboardingData.where || "",
-      trigger: onboardingData.triggerActivity || "",
-      temptationBundle: onboardingData.temptationBundle,
-      environmentPrep: onboardingData.environmentPrep,
-      socialReinforcement: onboardingData.socialReinforcement,
-      twoMinuteVersion: `${Math.max(Math.floor(recommendedStart / 2), 1)} ${habitType === "custom" ? "vez" : habitUnits[habitType].slice(0, -1)}`,
-      ruleOfTwo: {
-        phase1: { days: 3, target: recommendedStart },
-        phase2: { days: 7, target: Math.ceil(recommendedStart * 1.5) },
-        phase3: { days: null, target: initialGoal }
-      },
-      currentPhase: 1,
-      rewardMilestone: {
-        days: 7,
-        reward: onboardingData.realReward || "Uma recompensa especial"
-      },
+      when_time: getWhenLabel(),
+      where_location: onboardingData.where || "",
+      trigger_activity: onboardingData.triggerActivity || "",
+      temptation_bundle: onboardingData.temptationBundle,
+      environment_prep: onboardingData.environmentPrep,
+      social_reinforcement: onboardingData.socialReinforcement,
+      goal_current: 0,
+      goal_target: recommendedStart,
+      goal_unit: habitType === "custom" ? "vezes" : habitUnits[habitType],
+      two_minute_rule: null,
+      current_phase: 1,
+      reward_milestone: null,
+      tracking_preferences: null,
+      sound_enabled: false,
+      vibration_enabled: false,
       streak: 0,
-      longestStreak: 0,
-      totalCompletions: 0,
+      longest_streak: 0,
+      total_completions: 0,
       status: "pending",
-      lastCompleted: null,
-      createdAt: new Date().toISOString()
+      last_completed: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     };
 
     addHabit(newHabit);

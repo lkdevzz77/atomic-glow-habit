@@ -19,14 +19,14 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
   }
 
   const isCompleted = habit.status === "completed";
-  const progress = habit.goal.target > 0 ? (habit.goal.current / habit.goal.target) * 100 : 0;
+  const progress = habit.goal_target > 0 ? (habit.goal_current / habit.goal_target) * 100 : 0;
 
   const handleComplete = () => {
     if (isCompleted) return;
     
     completeHabit({
       habitId: habit.id,
-      percentage: habit.goal.target
+      percentage: 100
     });
   };
 
@@ -42,7 +42,7 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
       <div className="flex items-start gap-3 mb-3 sm:mb-4">
         <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center shadow-lg">
           <Icon
-            name={habit.icon}
+            name={habit.icon as any}
             size={24}
             className="text-white"
           />
@@ -51,13 +51,13 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
         <div className="flex-1 min-w-0">
           <h3 className="text-base sm:text-xl font-bold heading-sub text-slate-50 mb-1 truncate">{habit.title}</h3>
           <div className="space-y-1 sm:space-y-0 sm:flex sm:flex-wrap sm:gap-2 text-xs sm:text-sm text-slate-400">
-            <span className="block sm:inline">⏰ {habit.when}</span>
+            <span className="block sm:inline">⏰ {habit.when_time}</span>
             <span className="hidden sm:inline">·</span>
-            <span className="block sm:inline">📍 {habit.where}</span>
-            {habit.trigger && (
+            <span className="block sm:inline">📍 {habit.where_location}</span>
+            {habit.trigger_activity && (
               <>
                 <span className="hidden sm:inline">·</span>
-                <span className="block sm:inline">⚡ Após {habit.trigger}</span>
+                <span className="block sm:inline">⚡ Após {habit.trigger_activity}</span>
               </>
             )}
           </div>
@@ -84,7 +84,7 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
           <div className="flex items-center justify-between text-sm">
             <span className="text-emerald-400 font-semibold flex items-center gap-2">
               ✨ Completado
-              {habit.lastCompleted && new Date(habit.lastCompleted).toLocaleTimeString('pt-BR', { 
+              {habit.last_completed && new Date(habit.last_completed).toLocaleTimeString('pt-BR', { 
                 hour: '2-digit', 
                 minute: '2-digit' 
               })}
@@ -95,7 +95,7 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
           </div>
         ) : (
           <div className="flex items-center justify-between text-sm text-slate-300">
-            <span>Meta: {habit.goal.current}/{habit.goal.target} {habit.goal.unit}</span>
+            <span>Meta: {habit.goal_current}/{habit.goal_target} {habit.goal_unit}</span>
             <span>{Math.round(progress)}%</span>
           </div>
         )}

@@ -124,11 +124,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const newStreak = habit.streak + 1;
     updateHabit(habitId, {
       status: "completed",
-      lastCompleted: now,
+      last_completed: now,
       streak: newStreak,
-      longestStreak: Math.max(habit.longestStreak, newStreak),
-      totalCompletions: habit.totalCompletions + 1,
-      goal: { ...habit.goal, current: value },
+      longest_streak: Math.max(habit.longest_streak, newStreak),
+      total_completions: habit.total_completions + 1,
+      goal_current: value,
     });
 
     // Update user points
