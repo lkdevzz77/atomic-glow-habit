@@ -32,48 +32,36 @@ export interface Habit {
   id: number;
   user_id: string;
   title: string;
-  icon: IconName;
+  icon: string;
   
   // Lei #1: Torne Óbvio
   when_time: string;
   where_location: string;
-  trigger_activity?: string;
+  trigger_activity?: string | null;
   
   // Lei #2: Torne Atraente
-  temptation_bundle?: string;
-  environment_prep?: string;
-  social_reinforcement?: string;
+  temptation_bundle?: string | null;
+  environment_prep?: string | null;
+  social_reinforcement?: string | null;
   
   // Lei #3: Torne Fácil
-  goal_current: number;
+  goal_current?: number;
   goal_target: number;
   goal_unit: string;
-  two_minute_rule?: {
-    phase1: { days: number; target: number };
-    phase2: { days: number; target: number };
-    phase3: { days: number | null; target: number };
-  };
+  two_minute_rule?: any | null;
   current_phase: number;
   
   // Lei #4: Torne Satisfatório
-  reward_milestone?: {
-    days: number;
-    reward: string;
-  };
-  tracking_preferences: {
-    graphs?: boolean;
-    streaks?: boolean;
-    badges?: boolean;
-    heatmap?: boolean;
-  };
-  sound_enabled: boolean;
-  vibration_enabled: boolean;
+  reward_milestone?: any | null;
+  tracking_preferences?: any | null;
+  sound_enabled?: boolean | null;
+  vibration_enabled?: boolean | null;
   
   streak: number;
   longest_streak: number;
   total_completions: number;
-  status: "pending" | "completed" | "skipped";
-  last_completed?: string;
+  status: string;
+  last_completed?: string | null;
   created_at: string;
   updated_at: string;
 }

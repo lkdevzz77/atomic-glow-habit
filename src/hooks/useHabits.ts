@@ -2,45 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { habitService } from '@/services/habitService';
 import { toast } from './use-toast';
-import type { Database } from '@/lib/supabase';
-
-interface Habit {
-  id: number;
-  user_id: string;
-  title: string;
-  icon: string;
-  when_time: string;
-  where_location: string;
-  trigger_activity?: string;
-  temptation_bundle?: string;
-  environment_prep?: string;
-  social_reinforcement?: string;
-  goal_current: number;
-  goal_target: number;
-  goal_unit: string;
-
-  phase1_days?: number;
-  phase1_target?: number;
-  phase2_days?: number;
-  phase2_target?: number;
-  phase3_days?: number;
-  phase3_target?: number;
-  reward_7_days?: string;
-  reward_30_days?: string;
-  tracking_graphs: boolean;
-  tracking_streaks: boolean;
-  tracking_badges: boolean;
-  tracking_heatmap: boolean;
-  sound_enabled: boolean;
-  vibration_enabled: boolean;
-  streak: number;
-  longest_streak: number;
-  total_completions: number;
-  status: 'pending' | 'completed' | 'skipped';
-  last_completed?: string;
-  created_at: string;
-  updated_at: string;
-};
+import type { Habit } from '@/types/habit';
 
 const QUERY_KEYS = {
   habits: 'habits',
@@ -68,9 +30,20 @@ export function useHabits(status: 'active' | 'archived' = 'active') {
   });
 
   const createHabitMutation = useMutation({
-    mutationFn: async (data: Omit<Habit, 'id' | 'created_at' | 'updated_at' | 'user_id' | 'streak' | 'longest_streak' | 'status'>) => {
+    mutationFn: async (data: {
+      title: string;
+      icon?: string;
+      when_time: string;
+      where_location: string;
+      trigger_activity?: string | null;
+      temptation_bundle?: string | null;
+      environment_prep?: string | null;
+      social_reinforcement?: string | null;
+      goal_target: number;
+      goal_unit?: string;
+    }) => {
       if (!user) throw new Error('User not authenticated');
-      const result = await habitService.createHabit(user.id, data);
+      const result = await habitService.createHabit(data);
       if (result.error) throw result.error;
       return result.data;
     },
@@ -79,7 +52,6 @@ export function useHabits(status: 'active' | 'archived' = 'active') {
       toast({
         title: 'Hábito criado!',
         description: 'Seu novo hábito foi criado com sucesso.',
-        variant: 'success',
       });
     },
     onError: (error: Error) => {
@@ -92,7 +64,7 @@ export function useHabits(status: 'active' | 'archived' = 'active') {
   });
 
   const updateHabitMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<Habit> }) => {
+    mutationFn: async ({ id, data }: { id: number; data: Partial<Habit> }) => {
       const result = await habitService.updateHabit(id, data);
       if (result.error) throw result.error;
       return result.data;
@@ -102,7 +74,6 @@ export function useHabits(status: 'active' | 'archived' = 'active') {
       toast({
         title: 'Hábito atualizado!',
         description: 'As alterações foram salvas com sucesso.',
-        variant: 'success',
       });
     },
     onError: (error: Error) => {
@@ -115,7 +86,7 @@ export function useHabits(status: 'active' | 'archived' = 'active') {
   });
 
   const deleteHabitMutation = useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async (id: number) => {
       const result = await habitService.deleteHabit(id);
       if (result.error) throw result.error;
     },
@@ -124,7 +95,6 @@ export function useHabits(status: 'active' | 'archived' = 'active') {
       toast({
         title: 'Hábito deletado',
         description: 'O hábito foi removido com sucesso.',
-        variant: 'success',
       });
     },
     onError: (error: Error) => {
@@ -137,7 +107,7 @@ export function useHabits(status: 'active' | 'archived' = 'active') {
   });
 
   const completeHabitMutation = useMutation({
-    mutationFn: async ({ habitId, percentage }: { habitId: string; percentage: number }) => {
+    mutationFn: async ({ habitId, percentage }: { habitId: number; percentage: number }) => {
       if (!user) throw new Error('User not authenticated');
       
       const today = new Date().toISOString().split('T')[0];
@@ -149,7 +119,6 @@ export function useHabits(status: 'active' | 'archived' = 'active') {
       );
       
       if (result.error) throw result.error;
-      return result.data;
     },
     onSuccess: (data, { habitId, percentage }) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status) });
@@ -178,7 +147,6 @@ export function useHabits(status: 'active' | 'archived' = 'active') {
       toast({
         title: '🎉 Hábito completado!',
         description: percentage >= 100 ? 'Meta atingida!' : 'Progresso registrado!',
-        variant: 'success',
       });
     },
     onError: (error: Error) => {

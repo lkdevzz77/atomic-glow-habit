@@ -1,60 +1,26 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 
-type HabitStatus = 'pending' | 'active' | 'completed';
+type HabitInsert = Database['public']['Tables']['habits']['Insert'];
+type HabitRow = Database['public']['Tables']['habits']['Row'];
+type HabitUpdate = Database['public']['Tables']['habits']['Update'];
 
-// Interface base para dados do hábito
-interface HabitData {
+// Interface para dados do hábito vindos do formulário
+interface HabitFormData {
   title: string;
-  icon: string;
+  icon?: string;
   when_time: string;
   where_location: string;
   trigger_activity?: string | null;
   temptation_bundle?: string | null;
   environment_prep?: string | null;
   social_reinforcement?: string | null;
-  goal_current: number;
   goal_target: number;
-  goal_unit: string;
+  goal_unit?: string;
 }
-
-// Interface completa que representa o registro no banco
-interface HabitRecord extends Omit<HabitData, 'status'> {
-  id: number;
-  user_id: string;
-  streak: number;
-  longest_streak: number;
-  total_completions: number;
-  status: HabitStatus;
-  created_at: string;
-  updated_at: string;
-  last_completed?: string | null;
-}
-
-// Interface para conclusões de hábitos
-interface HabitCompletion {
-  id: number;
-  habit_id: number;
-  user_id: string;
-  date: string;
-  percentage: number;
-  completed_at: string;
-}
-
-// Validações
-const isValidHabitData = (data: any): data is HabitData => {
-  return (
-    typeof data.title === 'string' && data.title.trim() !== '' &&
-    typeof data.icon === 'string' && data.icon.trim() !== '' &&
-    typeof data.when_time === 'string' &&
-    typeof data.where_location === 'string' && data.where_location.trim() !== '' &&
-    typeof data.goal_current === 'number' && data.goal_current >= 0 &&
-    typeof data.goal_target === 'number' && data.goal_target > 0 &&
-    typeof data.goal_unit === 'string' && data.goal_unit.trim() !== ''
-  );
-};
 
 export const habitService = {
-  async getHabits(userId: string): Promise<{ data: HabitRecord[] | null; error: any }> {
+  async getHabits(userId: string): Promise<{ data: HabitRow[] | null; error: any }> {
     try {
       if (!userId) throw new Error('User ID is required');
 
@@ -65,14 +31,14 @@ export const habitService = {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return { data: data as HabitRecord[], error: null };
+      return { data, error: null };
     } catch (error) {
       console.error('Error fetching habits:', error);
       return { data: null, error };
     }
   },
 
-  async getHabit(id: number): Promise<{ data: HabitRecord | null; error: any }> {
+  async getHabit(id: number): Promise<{ data: HabitRow | null; error: any }> {
     try {
       if (!id) throw new Error('Habit ID is required');
 
@@ -80,50 +46,75 @@ export const habitService = {
         .from('habits')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
-      return { data: data as HabitRecord, error: null };
+      return { data, error: null };
     } catch (error) {
       console.error('Error fetching habit:', error);
       return { data: null, error };
     }
   },
 
-  async createHabit(userId: string, data: HabitData): Promise<{ data: HabitRecord | null; error: any }> {
+  async createHabit(habitData: HabitFormData): Promise<{ data: HabitRow | null; error: any }> {
     try {
-      if (!userId) throw new Error('User ID is required');
-      if (!isValidHabitData(data)) throw new Error('Invalid habit data');
+      console.log('🔍 habitService.createHabit chamado com:', habitData);
 
-      const habitData = {
-        user_id: userId,
-        ...data,
+      // 1. Obter usuário autenticado
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !user) {
+        console.error('❌ Erro de autenticação:', authError);
+        return { data: null, error: 'Usuário não autenticado' };
+      }
+
+      console.log('👤 Usuário autenticado:', user.id);
+
+      // 2. Construir objeto com campos corretos do banco
+      const newHabit: HabitInsert = {
+        user_id: user.id,
+        title: habitData.title.trim(),
+        icon: habitData.icon || '⚛️',
+        when_time: habitData.when_time.trim(),
+        where_location: habitData.where_location.trim(),
+        trigger_activity: habitData.trigger_activity || null,
+        temptation_bundle: habitData.temptation_bundle || null,
+        environment_prep: habitData.environment_prep || null,
+        social_reinforcement: habitData.social_reinforcement || null,
+        goal_target: habitData.goal_target,
+        goal_unit: habitData.goal_unit || 'vezes',
         streak: 0,
         longest_streak: 0,
         total_completions: 0,
-        status: 'pending' as HabitStatus
+        status: 'pending',
       };
 
-      const { data: habit, error } = await supabase
+      console.log('📤 Dados sendo enviados:', newHabit);
+
+      // 3. Inserir no Supabase
+      const { data, error } = await supabase
         .from('habits')
-        .insert(habitData)
+        .insert(newHabit)
         .select()
         .single();
 
       if (error) {
-        console.error('Erro ao criar hábito:', error);
-        throw error;
+        console.error('❌ Erro do Supabase ao criar hábito:', error);
+        return { data: null, error: error.message };
       }
 
-      console.log('Hábito criado com sucesso:', habit);
-      return { data: habit, error: null };
+      console.log('✅ Hábito criado com sucesso:', data);
+      return { data, error: null };
     } catch (error) {
-      console.error('Erro capturado em createHabit:', error);
-      return { data: null, error };
+      console.error('❌ Erro inesperado ao criar hábito:', error);
+      return { 
+        data: null, 
+        error: error instanceof Error ? error.message : 'Erro desconhecido' 
+      };
     }
   },
 
-  async updateHabit(id: number, data: Partial<HabitData>): Promise<{ data: HabitRecord | null; error: any }> {
+  async updateHabit(id: number, data: HabitUpdate): Promise<{ data: HabitRow | null; error: any }> {
     try {
       if (!id) throw new Error('Habit ID is required');
 
@@ -135,7 +126,7 @@ export const habitService = {
         .single();
 
       if (error) throw error;
-      return { data: habit as HabitRecord, error: null };
+      return { data: habit, error: null };
     } catch (error) {
       console.error('Error updating habit:', error);
       return { data: null, error };
@@ -189,7 +180,7 @@ export const habitService = {
     }
   },
 
-  async getCompletions(habitId: number, startDate: string, endDate: string): Promise<{ data: HabitCompletion[] | null; error: any }> {
+  async getCompletions(habitId: number, startDate: string, endDate: string) {
     try {
       if (!habitId) throw new Error('Habit ID is required');
       if (!startDate || !endDate) throw new Error('Date range is required');
@@ -203,7 +194,7 @@ export const habitService = {
         .order('date', { ascending: true });
 
       if (error) throw error;
-      return { data: data as HabitCompletion[], error: null };
+      return { data, error: null };
     } catch (error) {
       console.error('Error fetching completions:', error);
       return { data: null, error };
@@ -254,7 +245,7 @@ export const habitService = {
           streak: currentStreak,
           longest_streak: longestStreak,
           last_completed: today,
-          status: currentStreak > 0 ? 'active' as HabitStatus : 'pending' as HabitStatus
+          status: currentStreak > 0 ? 'active' : 'pending'
         })
         .eq('id', habitId);
 
