@@ -157,15 +157,17 @@ export const habitService = {
       if (!date) throw new Error('Date is required');
       if (percentage < 0 || percentage > 100) throw new Error('Percentage must be between 0 and 100');
 
-      // 1. Registrar completion
+      // 1. Usar upsert em vez de insert para evitar duplicação
       const { error: completionError } = await supabase
         .from('habit_completions')
-        .insert({
+        .upsert({
           habit_id: habitId,
           user_id: userId,
           date,
           percentage,
           completed_at: new Date().toISOString()
+        }, {
+          onConflict: 'habit_id,date'
         });
 
       if (completionError) throw completionError;
