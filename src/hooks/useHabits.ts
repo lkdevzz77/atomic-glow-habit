@@ -128,36 +128,14 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
       if (result.error) throw result.error;
     },
     onSuccess: (data, { habitId, percentage }) => {
-      // Invalidar todas as queries relacionadas para atualização imediata
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status) });
+      // Invalidar queries para forçar refetch do servidor
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all') });
       queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'weekly'] });
       queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'streaks'] });
       
-      // Optimistic update para feedback instantâneo
-      const oldData = queryClient.getQueryData<Habit[]>(QUERY_KEYS.userHabits(user?.id || '', status));
-      if (oldData) {
-        queryClient.setQueryData(
-          QUERY_KEYS.userHabits(user?.id || '', status),
-          oldData.map(habit =>
-            habit.id === habitId
-              ? {
-                  ...habit,
-                  last_completed: new Date().toISOString(),
-                  streak: (habit.streak || 0) + (percentage >= 100 ? 1 : 0),
-                  longest_streak: Math.max(
-                    (habit.longest_streak || 0),
-                    (habit.streak || 0) + (percentage >= 100 ? 1 : 0)
-                  ),
-                  status: 'completed',
-                }
-              : habit
-          )
-        );
-      }
-
       toast({
         title: '🎉 Hábito completado!',
-        description: percentage >= 100 ? 'Meta atingida! Continue assim!' : 'Progresso registrado!',
+        description: 'Progresso registrado com sucesso!',
       });
     },
     onError: (error: Error) => {

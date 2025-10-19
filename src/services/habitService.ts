@@ -157,7 +157,7 @@ export const habitService = {
       if (!date) throw new Error('Date is required');
       if (percentage < 0 || percentage > 100) throw new Error('Percentage must be between 0 and 100');
 
-      // 1. Usar upsert em vez de insert para evitar duplicação
+      // 1. Registrar completion usando upsert para evitar duplicação
       const { error: completionError } = await supabase
         .from('habit_completions')
         .upsert({
@@ -172,8 +172,40 @@ export const habitService = {
 
       if (completionError) throw completionError;
 
-      // 2. Atualizar streak
-      await this.updateStreak(habitId);
+      // 2. Atualizar o hábito imediatamente
+      const { data: habit } = await this.getHabit(habitId);
+      if (!habit) throw new Error('Habit not found');
+
+      // Calcular novo streak
+      const yesterday = new Date(date);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+      const { data: yesterdayCompletion } = await supabase
+        .from('habit_completions')
+        .select('*')
+        .eq('habit_id', habitId)
+        .eq('date', yesterdayStr)
+        .gte('percentage', 100)
+        .maybeSingle();
+
+      const newStreak = yesterdayCompletion ? (habit.streak || 0) + 1 : 1;
+      const newLongestStreak = Math.max(newStreak, habit.longest_streak || 0);
+
+      // 3. Atualizar tabela habits com status "completed" e streak
+      const { error: updateError } = await supabase
+        .from('habits')
+        .update({
+          status: 'completed',
+          last_completed: new Date().toISOString(),
+          streak: newStreak,
+          longest_streak: newLongestStreak,
+          total_completions: (habit.total_completions || 0) + 1,
+          goal_current: habit.goal_target // Define current como target quando completa
+        })
+        .eq('id', habitId);
+
+      if (updateError) throw updateError;
 
       return { error: null };
     } catch (error) {
