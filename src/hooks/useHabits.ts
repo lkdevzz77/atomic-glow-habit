@@ -7,20 +7,23 @@ import type { Habit } from '@/types/habit';
 const QUERY_KEYS = {
   habits: 'habits',
   habit: (id: string) => ['habits', id],
-  userHabits: (userId: string, status: 'active' | 'archived') => ['habits', userId, status],
+  userHabits: (userId: string, status: 'active' | 'archived' | 'pending' | 'all') => ['habits', userId, status],
 } as const;
 
-export function useHabits(status: 'active' | 'archived' = 'active') {
+export function useHabits(status?: 'active' | 'archived' | 'pending') {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
   const habits = useQuery({
-    queryKey: QUERY_KEYS.userHabits(user?.id || '', status),
+    queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all'),
     queryFn: async () => {
       if (!user) return [];
       
       const { data, error } = await habitService.getHabits(user.id);
       if (error) throw error;
+      
+      // Se não especificar status, retorna todos os hábitos (pending e active)
+      if (!status) return data || [];
       
       return data?.filter(habit => habit.status === status) || [];
     },

@@ -13,7 +13,7 @@ import NewHabitModal from "@/components/NewHabitModal";
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const { data: habits, isLoading: habitsLoading } = useHabits('active');
+  const { data: habits, isLoading: habitsLoading } = useHabits(); // Busca todos os hábitos
   const { weeklyStats } = useStats();
   const navigate = useNavigate();
   const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
