@@ -1,29 +1,69 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Habit } from "@/types/habit";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface WeeklyChecklistProps {
   habits: Habit[];
 }
 
 const WeeklyChecklist = ({ habits }: WeeklyChecklistProps) => {
+  const { user } = useAuth();
   const days = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
   const today = new Date().getDay();
   const todayIndex = today === 0 ? 6 : today - 1;
+  
+  const [completionsMap, setCompletionsMap] = useState<Record<number, Record<string, number>>>({});
+
+  useEffect(() => {
+    if (!user || habits.length === 0) return;
+
+    const fetchCompletions = async () => {
+      const startOfWeek = new Date();
+      startOfWeek.setDate(startOfWeek.getDate() - todayIndex);
+      startOfWeek.setHours(0, 0, 0, 0);
+      
+      const { data } = await supabase
+        .from('habit_completions')
+        .select('habit_id, date, percentage')
+        .eq('user_id', user.id)
+        .gte('date', startOfWeek.toISOString().split('T')[0]);
+
+      if (data) {
+        const map: Record<number, Record<string, number>> = {};
+        data.forEach((completion) => {
+          if (!map[completion.habit_id]) {
+            map[completion.habit_id] = {};
+          }
+          map[completion.habit_id][completion.date] = completion.percentage;
+        });
+        setCompletionsMap(map);
+      }
+    };
+
+    fetchCompletions();
+  }, [user, habits, todayIndex]);
 
   const generateWeekData = (habit: Habit) => {
+    const habitCompletions = completionsMap[habit.id] || {};
+    
     return days.map((day, index) => {
+      const date = new Date();
+      date.setDate(date.getDate() - todayIndex + index);
+      const dateStr = date.toISOString().split('T')[0];
+      
+      const percentage = habitCompletions[dateStr] || 0;
+      
       if (index < todayIndex) {
-        const completed = Math.random() > 0.2;
-        const partial = !completed && Math.random() > 0.5;
         return {
           day,
-          status: completed ? "completed" : partial ? "partial" : "missed",
+          status: percentage >= 100 ? "completed" : percentage > 0 ? "partial" : "missed",
         };
       } else if (index === todayIndex) {
         return {
           day,
-          status: habit.status === "completed" ? "completed" : "pending",
+          status: percentage >= 100 ? "completed" : percentage > 0 ? "partial" : "pending",
         };
       } else {
         return {
