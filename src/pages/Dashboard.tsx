@@ -10,6 +10,11 @@ import CoachAI from "@/components/CoachAI";
 import WeeklyChart from "@/components/WeeklyChart";
 import BadgeScroll from "@/components/BadgeScroll";
 import NewHabitModal from "@/components/NewHabitModal";
+import { UserMenu } from "@/components/UserMenu";
+import WeeklyChecklist from "@/components/WeeklyChecklist";
+import StreakAlert from "@/components/StreakAlert";
+import UpcomingBadges from "@/components/UpcomingBadges";
+import WeeklyComparison from "@/components/WeeklyComparison";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -97,15 +102,7 @@ const Dashboard = () => {
               </button>
             </nav>
 
-            <div className="flex items-center gap-3 sm:gap-4">
-              <div className="hidden sm:flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-violet-600 to-purple-600 rounded-full shadow-lg shadow-violet-500/30">
-                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                <span className="text-white text-sm sm:text-base font-bold">{maxStreak * 100}</span>
-              </div>
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center text-white text-sm sm:text-base font-bold border-2 border-violet-500">
-                {userName[0].toUpperCase()}
-              </div>
-            </div>
+            <UserMenu points={maxStreak * 100} />
           </div>
         </div>
       </header>
@@ -175,6 +172,9 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Streak Alert */}
+        <StreakAlert habits={habits} />
+
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Habits Section */}
@@ -218,11 +218,15 @@ const Dashboard = () => {
 
           {/* Sidebar */}
           <div className="lg:col-span-4 space-y-4 sm:space-y-6">
-            <div className="lg:sticky lg:top-24">
+            <div className="lg:sticky lg:top-24 space-y-4">
               <CoachAI />
+              {habits.length > 0 && <UpcomingBadges />}
             </div>
           </div>
         </div>
+
+        {/* Weekly Comparison */}
+        {habits.length > 0 && <WeeklyComparison />}
 
         {/* Weekly Chart */}
         {habits && habits.length > 0 && (
@@ -241,6 +245,13 @@ const Dashboard = () => {
                 Carregando estatísticas...
               </div>
             )}
+          </div>
+        )}
+
+        {/* Weekly Checklist */}
+        {habits.length > 0 && (
+          <div className="mt-8">
+            <WeeklyChecklist habits={habits} />
           </div>
         )}
 

@@ -5,6 +5,7 @@ import { useHabits } from "@/hooks/useHabits";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/config/icon-map";
 import { SkeletonCard } from "./LoadingStates";
+import confetti from "canvas-confetti";
 
 interface HabitCardProps {
   habit: Habit;
@@ -27,6 +28,14 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
     completeHabit({
       habitId: habit.id,
       percentage: 100
+    });
+
+    // Trigger confetti animation
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#8B5CF6', '#A78BFA', '#C4B5FD', '#DDD6FE']
     });
   };
 
