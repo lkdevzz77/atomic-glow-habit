@@ -107,9 +107,9 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-6 sm:py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-8 sm:py-12">
         {/* Hero Section */}
-        <div className="relative bg-gradient-to-br from-violet-900 via-violet-800 to-violet-700 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-10 mb-6 sm:mb-8 shadow-2xl shadow-violet-900/50 animate-fade-in overflow-hidden">
+        <div className="relative bg-gradient-to-br from-violet-900 via-violet-800 to-violet-700 rounded-3xl sm:rounded-[2rem] p-6 sm:p-8 lg:p-12 mb-10 sm:mb-16 shadow-2xl shadow-violet-900/50 animate-fade-in overflow-hidden border border-violet-500/20">
           {/* Decorative logo */}
           <img 
             src="/atom-logo.svg" 
@@ -121,49 +121,55 @@ const Dashboard = () => {
             }}
           />
           
-          <h1 className="relative z-10 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tighter text-slate-50 mb-1 sm:mb-2">
+          <h1 className="relative z-10 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-50 mb-2 sm:mb-3">
             {getGreeting()}, {userName}! 👋
           </h1>
-          <p className="relative z-10 text-violet-200 text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 capitalize">{getDateString()}</p>
+          <p className="relative z-10 text-violet-200/90 text-base sm:text-lg lg:text-xl mb-6 sm:mb-8 capitalize font-medium">{getDateString()}</p>
 
-          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-            <div className="bg-slate-900/30 backdrop-blur border border-violet-500/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 hover:shadow-lg hover:shadow-violet-500/30 transition-all">
+          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+            <div className="bg-slate-900/40 backdrop-blur-md border border-violet-400/40 rounded-2xl p-6 sm:p-7 hover:shadow-xl hover:shadow-violet-500/30 hover:border-violet-400/60 transition-all duration-300 group">
               <div className="flex items-center justify-between sm:flex-col sm:items-start">
-                <div className="flex items-center gap-2 sm:gap-3 sm:mb-2">
-                  <Flame className="w-5 h-5 sm:w-6 sm:h-6 text-orange-400" />
-                  <span className="text-violet-300 text-sm sm:text-base font-medium">Streak</span>
-                </div>
-                <div>
-                  <div className="text-2xl sm:text-3xl font-bold metric-number text-slate-50">{maxStreak} dias</div>
-                  <div className="text-xs sm:text-sm text-violet-300 mt-0.5 sm:mt-1">Continue assim! 🎉</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-slate-900/30 backdrop-blur border border-violet-500/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 hover:shadow-lg hover:shadow-violet-500/30 transition-all">
-              <div className="flex items-center justify-between sm:flex-col sm:items-start">
-                <div className="flex items-center gap-2 sm:gap-3 sm:mb-2">
-                  <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" />
-                  <span className="text-violet-300 text-sm sm:text-base font-medium">Hoje</span>
-                </div>
-                <div>
-                  <div className="text-2xl sm:text-3xl font-bold metric-number text-slate-50">
-                    {completedToday}/{totalToday}
+                <div className="flex items-center gap-3 sm:mb-3">
+                  <div className="p-2.5 bg-orange-500/20 rounded-xl group-hover:bg-orange-500/30 transition-colors">
+                    <Flame className="w-6 h-6 sm:w-7 sm:h-7 text-orange-400" />
                   </div>
-                  <div className="text-xs sm:text-sm text-violet-300 mt-0.5 sm:mt-1">completos</div>
+                  <span className="text-violet-200 text-base sm:text-lg font-semibold">Streak</span>
+                </div>
+                <div>
+                  <div className="text-3xl sm:text-4xl font-extrabold metric-number text-slate-50">{maxStreak} <span className="text-xl sm:text-2xl text-violet-300 font-normal">dias</span></div>
+                  <div className="text-sm text-violet-300/90 mt-1.5 font-medium">Continue assim! 🎉</div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-slate-900/30 backdrop-blur border border-violet-500/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 hover:shadow-lg hover:shadow-violet-500/30 transition-all">
+            <div className="bg-slate-900/40 backdrop-blur-md border border-violet-400/40 rounded-2xl p-6 sm:p-7 hover:shadow-xl hover:shadow-violet-500/30 hover:border-violet-400/60 transition-all duration-300 group">
               <div className="flex items-center justify-between sm:flex-col sm:items-start">
-                <div className="flex items-center gap-2 sm:gap-3 sm:mb-2">
-                  <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-violet-400" />
-                  <span className="text-violet-300 text-sm sm:text-base font-medium">Semana</span>
+                <div className="flex items-center gap-3 sm:mb-3">
+                  <div className="p-2.5 bg-emerald-500/20 rounded-xl group-hover:bg-emerald-500/30 transition-colors">
+                    <CheckCircle2 className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-400" />
+                  </div>
+                  <span className="text-violet-200 text-base sm:text-lg font-semibold">Hoje</span>
                 </div>
                 <div>
-                  <div className="text-2xl sm:text-3xl font-bold metric-number text-slate-50">{completionRate}%</div>
-                  <div className="text-xs sm:text-sm text-violet-300 mt-0.5 sm:mt-1">
+                  <div className="text-3xl sm:text-4xl font-extrabold metric-number text-slate-50">
+                    {completedToday}<span className="text-2xl text-violet-300 font-normal">/{totalToday}</span>
+                  </div>
+                  <div className="text-sm text-violet-300/90 mt-1.5 font-medium">completos</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-900/40 backdrop-blur-md border border-violet-400/40 rounded-2xl p-6 sm:p-7 hover:shadow-xl hover:shadow-violet-500/30 hover:border-violet-400/60 transition-all duration-300 group">
+              <div className="flex items-center justify-between sm:flex-col sm:items-start">
+                <div className="flex items-center gap-3 sm:mb-3">
+                  <div className="p-2.5 bg-violet-500/20 rounded-xl group-hover:bg-violet-500/30 transition-colors">
+                    <TrendingUp className="w-6 h-6 sm:w-7 sm:h-7 text-violet-400" />
+                  </div>
+                  <span className="text-violet-200 text-base sm:text-lg font-semibold">Semana</span>
+                </div>
+                <div>
+                  <div className="text-3xl sm:text-4xl font-extrabold metric-number text-slate-50">{completionRate}<span className="text-2xl text-violet-300 font-normal">%</span></div>
+                  <div className="text-sm text-violet-300/90 mt-1.5 font-medium">
                     {completionRate > 80 ? "↑ Excelente!" : "↑ Melhorando"}
                   </div>
                 </div>
@@ -176,11 +182,11 @@ const Dashboard = () => {
         <StreakAlert habits={habits} />
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
           {/* Habits Section */}
-          <div className="lg:col-span-8 space-y-4 sm:space-y-6">
-            <div className="flex items-center justify-between mb-2 sm:mb-4">
-              <h2 className="text-xl sm:text-2xl font-bold heading-section text-slate-50">Hábitos de Hoje</h2>
+          <div className="lg:col-span-8 space-y-6 sm:space-y-8">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold heading-section text-slate-50 tracking-tight">Hábitos de Hoje</h2>
             </div>
 
             {habits.length === 0 ? (
@@ -217,8 +223,8 @@ const Dashboard = () => {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-4 space-y-4 sm:space-y-6">
-            <div className="lg:sticky lg:top-24 space-y-4">
+          <div className="lg:col-span-4 space-y-5 sm:space-y-6">
+            <div className="lg:sticky lg:top-24 space-y-5">
               <CoachAI />
               {habits.length > 0 && <UpcomingBadges />}
             </div>
@@ -230,9 +236,10 @@ const Dashboard = () => {
 
         {/* Weekly Chart */}
         {habits && habits.length > 0 && (
-          <div className="mt-8">
+          <div className="mt-12 sm:mt-16">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-50 mb-6 tracking-tight">Estatísticas da Semana</h2>
             {weeklyStats.isLoading ? (
-              <div className="glass rounded-xl sm:rounded-2xl p-8 text-center">
+              <div className="glass rounded-2xl sm:rounded-3xl p-8 text-center border border-slate-700/50">
                 <div className="animate-pulse">
                   <div className="h-8 bg-slate-700 rounded w-48 mx-auto mb-4"></div>
                   <div className="h-64 bg-slate-700 rounded"></div>
@@ -241,7 +248,7 @@ const Dashboard = () => {
             ) : weeklyStats.data ? (
               <WeeklyChart weekData={weeklyStats.data.days} />
             ) : (
-              <div className="glass rounded-xl p-6 text-center text-slate-400">
+              <div className="glass rounded-2xl p-6 text-center text-slate-400 border border-slate-700/50">
                 Carregando estatísticas...
               </div>
             )}
@@ -250,14 +257,16 @@ const Dashboard = () => {
 
         {/* Weekly Checklist */}
         {habits.length > 0 && (
-          <div className="mt-8">
+          <div className="mt-12 sm:mt-16">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-50 mb-6 tracking-tight">Checklist Semanal</h2>
             <WeeklyChecklist habits={habits} />
           </div>
         )}
 
         {/* Badges */}
         {habits.length > 0 && (
-          <div className="mt-8">
+          <div className="mt-12 sm:mt-16">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-50 mb-6 tracking-tight">Conquistas</h2>
             <BadgeScroll />
           </div>
         )}
