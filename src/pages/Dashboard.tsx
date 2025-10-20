@@ -1,18 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
 import { useHabits } from "@/hooks/useHabits";
+import { useStats } from "@/hooks/useStats";
 import { useAuth } from "@/contexts/AuthContext";
+import { Plus } from "lucide-react";
 import NewHabitModal from "@/components/NewHabitModal";
 import { UserMenu } from "@/components/UserMenu";
+import ViewToggle from "@/components/ViewToggle";
+import SimpleBanner from "@/components/SimpleBanner";
 import FocusView from "@/components/views/FocusView";
+import ListView from "@/components/views/ListView";
+import KanbanView from "@/components/views/KanbanView";
 import confetti from "canvas-confetti";
+import WeeklyChart from "@/components/WeeklyChart";
+import WeeklyChecklist from "@/components/WeeklyChecklist";
+import BadgeScroll from "@/components/BadgeScroll";
+
+type ViewType = 'focus' | 'list' | 'kanban';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const { data: habits, isLoading: habitsLoading, completeHabit, isCompleting } = useHabits();
+  const { data: habits, isLoading: habitsLoading, completeHabit } = useHabits();
+  const { weeklyStats } = useStats();
   const navigate = useNavigate();
   const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
+  const [view, setView] = useState<ViewType>(() => {
+    return (localStorage.getItem('dashboard-view') as ViewType) || 'focus';
+  });
+
+  // Save view preference
+  useEffect(() => {
+    localStorage.setItem('dashboard-view', view);
+  }, [view]);
+
+  const handleViewChange = (newView: ViewType) => {
+    setView(newView);
+  };
+
+  const handleCompleteHabit = async (habitId: number) => {
+    await completeHabit({ habitId, percentage: 100 });
+    
+    // Confetti animation
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  };
 
   if (!user) {
     navigate("/auth");
@@ -38,25 +72,33 @@ const Dashboard = () => {
     );
   }
 
+  const completedToday = habits.filter(h => h.status === "completed").length;
+  const totalToday = habits.length;
+  const completionRate = totalToday > 0 ? Math.round((completedToday / totalToday) * 100) : 0;
   const maxStreak = Math.max(...habits.map(h => h.longest_streak || 0), 0);
   
-  const handleCompleteHabit = (habitId: number) => {
-    completeHabit({
-      habitId,
-      percentage: 100
-    });
+  // Get user name from metadata
+  const userName = user.user_metadata?.name || 'Usuário';
 
-    // Trigger confetti animation
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#8B5CF6', '#A78BFA', '#C4B5FD', '#DDD6FE']
-    });
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Bom dia";
+    if (hour < 18) return "Boa tarde";
+    return "Boa noite";
+  };
+
+  const getDateString = () => {
+    const options: Intl.DateTimeFormatOptions = { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    };
+    return new Date().toLocaleDateString('pt-BR', options);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-900/10 to-slate-900">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 glass-violet border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-4">
@@ -73,31 +115,86 @@ const Dashboard = () => {
               <span className="text-base sm:text-xl md:text-2xl font-extrabold tracking-tighter gradient-text">atomicTracker</span>
             </div>
             
-            <nav className="hidden md:flex items-center gap-6">
-              <button 
-                className="text-slate-300 hover:text-violet-400 font-medium transition-colors"
-                onClick={() => navigate("/dashboard")}
-              >
-                Dashboard
-              </button>
-              <button className="text-slate-300 hover:text-violet-400 font-medium transition-colors">
-                Hábitos
-              </button>
-            </nav>
-
-            <UserMenu points={maxStreak * 100} />
+            <div className="flex items-center gap-4">
+              <ViewToggle currentView={view} onViewChange={handleViewChange} />
+              <UserMenu points={maxStreak * 100} />
+            </div>
           </div>
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-8 sm:py-12">
-        {/* Focus View */}
-        <FocusView
-          habits={habits}
-          onComplete={handleCompleteHabit}
-          onAddHabit={() => setIsNewHabitModalOpen(true)}
-          isCompleting={isCompleting}
+        {/* Banner */}
+        <SimpleBanner
+          userName={userName}
+          dateString={getDateString()}
+          completedToday={completedToday}
+          totalToday={totalToday}
+          completionRate={completionRate}
         />
+
+        {/* View Content */}
+        <div className="animate-fade-in">
+          {view === 'focus' && (
+            <FocusView
+              habits={habits}
+              onComplete={handleCompleteHabit}
+              onAddHabit={() => setIsNewHabitModalOpen(true)}
+              onViewAll={() => setView('list')}
+            />
+          )}
+          
+          {view === 'list' && (
+            <ListView
+              habits={habits}
+              onComplete={handleCompleteHabit}
+            />
+          )}
+          
+          {view === 'kanban' && (
+            <KanbanView
+              habits={habits}
+              onComplete={handleCompleteHabit}
+            />
+          )}
+
+        {/* Weekly Chart - Only in list/kanban view */}
+        {habits && habits.length > 0 && view !== 'focus' && (
+          <div className="mt-12 sm:mt-16">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-50 mb-6 tracking-tight">Estatísticas da Semana</h2>
+            {weeklyStats.isLoading ? (
+              <div className="glass rounded-2xl sm:rounded-3xl p-8 text-center border border-slate-700/50">
+                <div className="animate-pulse">
+                  <div className="h-8 bg-slate-700 rounded w-48 mx-auto mb-4"></div>
+                  <div className="h-64 bg-slate-700 rounded"></div>
+                </div>
+              </div>
+            ) : weeklyStats.data ? (
+              <WeeklyChart weekData={weeklyStats.data.days} />
+            ) : (
+              <div className="glass rounded-2xl p-6 text-center text-slate-400 border border-slate-700/50">
+                Carregando estatísticas...
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Weekly Checklist - Only in list/kanban view */}
+        {habits.length > 0 && view !== 'focus' && (
+          <div className="mt-12 sm:mt-16">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-50 mb-6 tracking-tight">Checklist Semanal</h2>
+            <WeeklyChecklist habits={habits} />
+          </div>
+        )}
+
+        {/* Badges - Only in list/kanban view */}
+        {habits.length > 0 && view !== 'focus' && (
+          <div className="mt-12 sm:mt-16">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-50 mb-6 tracking-tight">Conquistas</h2>
+            <BadgeScroll />
+          </div>
+        )}
+        </div>
       </div>
 
       {/* Floating Action Button */}

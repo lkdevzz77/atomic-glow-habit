@@ -1,84 +1,95 @@
-import React from "react";
-import { Icon } from "@/config/icon-map";
-import { Habit } from "@/types/habit";
-import { Flame, CheckSquare, Square } from "lucide-react";
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { CheckSquare, Square, Flame } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
+
+interface Habit {
+  id: number;
+  title: string;
+  icon: string;
+  status: string;
+  streak: number;
+  where_location: string;
+  when_time: string;
+  goal_current: number;
+  goal_target: number;
+  goal_unit: string;
+}
 
 interface HabitCardCompactProps {
   habit: Habit;
   onComplete?: () => void;
-  showCheckbox?: boolean;
 }
 
-const HabitCardCompact: React.FC<HabitCardCompactProps> = ({ 
-  habit, 
-  onComplete,
-  showCheckbox = false 
-}) => {
-  const isCompleted = habit.status === "completed";
-  const progress = habit.goal_target > 0 ? (habit.goal_current / habit.goal_target) * 100 : 0;
+const HabitCardCompact: React.FC<HabitCardCompactProps> = ({ habit, onComplete }) => {
+  const isCompleted = habit.status === 'completed';
+  
+  // Get Lucide icon
+  const getIcon = () => {
+    const iconName = habit.icon.replace(/[^a-zA-Z]/g, '');
+    const IconComponent = (LucideIcons as any)[iconName] || LucideIcons.Circle;
+    return IconComponent;
+  };
+  
+  const Icon = getIcon();
+  
+  // Category color
+  const categoryColors: Record<string, string> = {
+    health: 'text-emerald-500',
+    exercise: 'text-orange-500',
+    meditation: 'text-violet-500',
+    read: 'text-blue-500',
+    hydration: 'text-cyan-500',
+  };
+  
+  const iconColor = categoryColors[habit.icon] || 'text-slate-400';
 
   return (
     <div
-      className={cn(
-        "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
-        isCompleted 
-          ? "bg-violet-900/30 opacity-60" 
-          : "bg-slate-800/50 hover:bg-slate-700/30 hover:scale-[1.01]"
-      )}
+      className={`
+        flex flex-col sm:flex-row items-start sm:items-center gap-3
+        h-auto sm:h-[60px] px-4 py-3
+        bg-slate-800/50 hover:bg-slate-700/30 
+        border border-slate-700 rounded-lg
+        transition-all duration-200 hover:scale-[1.01]
+        ${isCompleted ? 'opacity-60' : ''}
+      `}
     >
-      {/* Checkbox (optional) */}
-      {showCheckbox && (
-        <button
-          onClick={onComplete}
-          disabled={isCompleted}
-          className="flex-shrink-0"
-        >
-          {isCompleted ? (
-            <CheckSquare className="w-6 h-6 text-violet-400" />
-          ) : (
-            <Square className="w-6 h-6 text-slate-500 hover:text-violet-400 transition-colors" />
-          )}
-        </button>
-      )}
+      {/* Checkbox */}
+      <button
+        onClick={onComplete}
+        className="flex-shrink-0 transition-colors"
+        disabled={isCompleted}
+      >
+        {isCompleted ? (
+          <CheckSquare className="w-6 h-6 text-primary" />
+        ) : (
+          <Square className="w-6 h-6 text-slate-400 hover:text-primary" />
+        )}
+      </button>
 
       {/* Icon */}
-      <div className={cn(
-        "flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center",
-        isCompleted ? "bg-slate-700/50" : "bg-violet-600/20"
-      )}>
-        <Icon 
-          name={habit.icon as any} 
-          size={20} 
-          className={isCompleted ? "text-slate-400" : "text-violet-400"} 
-        />
-      </div>
+      <Icon className={`w-5 h-5 flex-shrink-0 ${iconColor}`} />
 
       {/* Title */}
       <div className="flex-1 min-w-0">
-        <h3 className={cn(
-          "text-sm font-semibold truncate",
-          isCompleted ? "text-slate-400 line-through" : "text-slate-200"
-        )}>
+        <h3 className={`text-sm font-medium text-slate-200 truncate ${isCompleted ? 'line-through' : ''}`}>
           {habit.title}
         </h3>
       </div>
 
       {/* Metadata */}
-      <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500">
-        <span>{habit.where_location}</span>
-        <span>•</span>
-        <span>{habit.when_time}</span>
+      <div className="flex items-center gap-4 text-xs text-slate-500">
+        <span>{habit.where_location} • {habit.when_time}</span>
       </div>
 
       {/* Progress */}
-      <div className="flex-shrink-0 text-sm font-semibold text-slate-300">
+      <div className="text-sm font-semibold text-slate-300">
         {habit.goal_current}/{habit.goal_target}
       </div>
 
       {/* Streak */}
       {habit.streak > 0 && (
-        <div className="flex-shrink-0 flex items-center gap-1 text-xs text-orange-400">
+        <div className="flex items-center gap-1 text-xs text-orange-500">
           <Flame className="w-4 h-4" />
           <span>{habit.streak}d</span>
         </div>
