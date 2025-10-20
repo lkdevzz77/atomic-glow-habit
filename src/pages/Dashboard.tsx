@@ -136,12 +136,51 @@ const Dashboard = () => {
         {/* View Content */}
         <div className="animate-fade-in">
           {view === 'focus' && (
-            <FocusView
-              habits={habits}
-              onComplete={handleCompleteHabit}
-              onAddHabit={() => setIsNewHabitModalOpen(true)}
-              onViewAll={() => setView('list')}
-            />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Main Focus Column */}
+              <div className="lg:col-span-2">
+                <FocusView
+                  habits={habits}
+                  onComplete={handleCompleteHabit}
+                  onAddHabit={() => setIsNewHabitModalOpen(true)}
+                  onViewAll={() => setView('list')}
+                />
+              </div>
+
+              {/* Sidebar Stats */}
+              <div className="space-y-6">
+                {/* Stats */}
+                <div>
+                  <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
+                    ESTATÍSTICAS
+                  </h2>
+                  <div className="space-y-3">
+                    <div className="bg-slate-800 px-4 py-3 rounded-xl text-slate-200">
+                      🔥 Streak Atual: <span className="font-bold">{maxStreak} dias</span>
+                    </div>
+                    <div className="bg-slate-800 px-4 py-3 rounded-xl text-slate-200">
+                      🏆 Badges: <span className="font-bold">0/6</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Coach AI */}
+                <div>
+                  <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
+                    COACH IA
+                  </h2>
+                  <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="text-2xl">💡</span>
+                      <span className="text-white font-semibold">Seu Coach IA</span>
+                    </div>
+                    <p className="text-slate-300 text-sm">
+                      1% melhor todo dia é o caminho para a transformação.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
           
           {view === 'list' && (

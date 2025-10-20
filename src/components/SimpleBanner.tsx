@@ -23,22 +23,23 @@ const SimpleBanner: React.FC<SimpleBannerProps> = ({
   };
 
   return (
-    <div className="mb-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-6 h-12">
-        <div className="text-sm text-slate-400">
-          {getGreeting()}, {userName} • {dateString}
-        </div>
-        <div className="text-sm font-semibold text-slate-300">
-          {completedToday}/{totalToday} hoje ({completionRate}%)
-        </div>
-      </div>
+    <div className="mb-10">
+      <h1 className="text-3xl sm:text-4xl font-bold text-slate-50 mb-2">
+        {getGreeting()}, {userName}! 👋
+      </h1>
+      <p className="text-slate-400 mb-4">{dateString}</p>
       
-      {/* Progress bar */}
-      <div className="w-full h-1 bg-slate-800 mt-2">
-        <div
-          className="h-full bg-gradient-to-r from-primary to-primary-light transition-all duration-500"
-          style={{ width: `${completionRate}%` }}
-        />
+      <div className="mb-2">
+        <div className="flex justify-between items-center text-slate-300 text-sm mb-2">
+          <span>Progresso do Dia</span>
+          <span className="font-semibold">{completedToday}/{totalToday} Completos</span>
+        </div>
+        <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-primary to-primary-light transition-all duration-500"
+            style={{ width: `${completionRate}%` }}
+          />
+        </div>
       </div>
     </div>
   );
