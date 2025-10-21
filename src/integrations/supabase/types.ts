@@ -298,6 +298,15 @@ export type Database = {
           total_xp: number
         }[]
       }
+      get_user_todays_completions: {
+        Args: { p_user_id: string }
+        Returns: {
+          completed_at: string
+          date: string
+          habit_id: number
+          percentage: number
+        }[]
+      }
       initialize_user_badges: {
         Args: { p_user_id: string }
         Returns: undefined

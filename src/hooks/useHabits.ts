@@ -9,15 +9,18 @@ import type { Habit } from '@/types/habit';
 const QUERY_KEYS = {
   habits: 'habits',
   habit: (id: string) => ['habits', id],
-  userHabits: (userId: string, status: 'active' | 'archived' | 'pending' | 'all') => ['habits', userId, status],
+  userHabits: (userId: string, status: 'active' | 'archived' | 'pending' | 'all', today: string) => ['habits', userId, status, today],
 } as const;
 
 export function useHabits(status?: 'active' | 'archived' | 'pending') {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
+  // ⚡ Calcular today no cliente para queryKey (força refresh diário)
+  const today = new Date().toISOString().split('T')[0];
+
   const habits = useQuery({
-    queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all'),
+    queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all', today),
     queryFn: async () => {
       if (!user) return [];
       
@@ -33,26 +36,30 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
         filteredHabits = filteredHabits.filter(h => h.status === 'active');
       }
       
-      // Adicionar flag de "completado hoje" dinamicamente
-      const today = new Date().toISOString().split('T')[0];
+      // 🎯 Logging expandido para debug
       const queryTimestamp = Date.now();
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('🗓️ [useHabits] Query #' + queryTimestamp);
+      console.log('🌍 Timezone:', Intl.DateTimeFormat().resolvedOptions().timeZone);
+      console.log('📅 Client thinks today is:', today);
+      console.log('🔍 Querying for user_id:', user.id);
+      console.log('📊 Total habits loaded:', filteredHabits.length);
       
-      console.log('🗓️ [useHabits] Query', queryTimestamp, '- Buscando completions para data:', today);
-      console.log('🕐 [useHabits] User ID:', user.id);
-      console.log('🌍 [useHabits] Timezone:', Intl.DateTimeFormat().resolvedOptions().timeZone);
+      // ⚡ USAR RPC para buscar completions com data server-side
+      const { data: todayCompletions, error: rpcError } = await supabase
+        .rpc('get_user_todays_completions', { p_user_id: user.id });
       
-      // Forçar fresh query com order by para bypass de cache
-      const { data: todayCompletions } = await supabase
-        .from('habit_completions')
-        .select('habit_id, date, completed_at, percentage')
-        .eq('user_id', user.id)
-        .eq('date', today)
-        .gte('percentage', 100)
-        .order('completed_at', { ascending: false });
+      if (rpcError) {
+        console.error('❌ [useHabits] RPC error:', rpcError);
+        throw rpcError;
+      }
       
-      console.log('✅ [useHabits] Query', queryTimestamp, '- Completions:', todayCompletions?.length || 0, todayCompletions);
+      console.log('✅ Completions found (server-side date):', todayCompletions?.length || 0);
+      console.log('📋 Details:', todayCompletions);
       
       const completedIds = new Set(todayCompletions?.map(c => c.habit_id) || []);
+      console.log('🎯 Habits marked as completedToday:', Array.from(completedIds));
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       
       return filteredHabits.map(habit => ({
         ...habit,
@@ -83,8 +90,8 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
       return result.data;
     },
     onSuccess: () => {
-      // Invalidar todas as queries relacionadas
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status) });
+      // Invalidar todas as queries relacionadas (todas as variações de today)
+      queryClient.invalidateQueries({ queryKey: ['habits', user?.id] });
       queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'weekly'] });
       queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'streaks'] });
       
@@ -109,7 +116,7 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
       return result.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status) });
+      queryClient.invalidateQueries({ queryKey: ['habits', user?.id] });
       toast({
         title: 'Hábito atualizado!',
         description: 'As alterações foram salvas com sucesso.',
@@ -130,7 +137,7 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
       if (result.error) throw result.error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status) });
+      queryClient.invalidateQueries({ queryKey: ['habits', user?.id] });
       toast({
         title: 'Hábito deletado',
         description: 'O hábito foi removido com sucesso.',
@@ -173,15 +180,17 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
     onMutate: async ({ habitId }) => {
       console.log('🎯 [useHabits] onMutate - Iniciando optimistic update para habit:', habitId);
       
+      const currentToday = new Date().toISOString().split('T')[0];
+      
       // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all') });
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all', currentToday) });
       
       // Snapshot previous value
-      const previousHabits = queryClient.getQueryData(QUERY_KEYS.userHabits(user?.id || '', status || 'all'));
+      const previousHabits = queryClient.getQueryData(QUERY_KEYS.userHabits(user?.id || '', status || 'all', currentToday));
       
       // Optimistic update - marcar como completo e incrementar streak
       queryClient.setQueryData(
-        QUERY_KEYS.userHabits(user?.id || '', status || 'all'),
+        QUERY_KEYS.userHabits(user?.id || '', status || 'all', currentToday),
         (old: any) => {
           if (!old) return old;
           return old.map((h: any) => 
@@ -197,9 +206,10 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
       return { previousHabits };
     },
     onError: (error: Error, variables, context) => {
+      const currentToday = new Date().toISOString().split('T')[0];
       // Rollback on error
       if (context?.previousHabits) {
-        queryClient.setQueryData(QUERY_KEYS.userHabits(user?.id || '', status || 'all'), context.previousHabits);
+        queryClient.setQueryData(QUERY_KEYS.userHabits(user?.id || '', status || 'all', currentToday), context.previousHabits);
       }
       toast({
         title: 'Erro ao completar hábito',
@@ -227,10 +237,10 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
       console.log('⏳ [useHabits] Aguardando 500ms para DB commit...');
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // 3. INVALIDAR queries
+      // 3. INVALIDAR queries (todas as variações de today)
       console.log('🔄 [useHabits] Invalidando queries...');
       await queryClient.invalidateQueries({ 
-        queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all') 
+        queryKey: ['habits', user?.id] 
       });
       await queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'weekly'] });
       await queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'streaks'] });
@@ -238,9 +248,10 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
       await queryClient.invalidateQueries({ queryKey: ['profile', user?.id] });
       
       // 4. FORÇAR refetch com type: 'active'
+      const currentToday = new Date().toISOString().split('T')[0];
       console.log('🔃 [useHabits] Forçando refetch...');
       await queryClient.refetchQueries({ 
-        queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all'),
+        queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all', currentToday),
         type: 'active',
         exact: true 
       });
