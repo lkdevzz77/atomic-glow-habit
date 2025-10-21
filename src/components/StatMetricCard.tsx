@@ -28,7 +28,7 @@ const StatMetricCard: React.FC<StatMetricCardProps> = ({
   };
 
   return (
-    <div className="glass-violet border-2 border-slate-700/80 rounded-2xl p-6 group hover:border-violet-500/40 transition-all hover:-translate-y-1 duration-300">
+    <div className="glass card-rounded p-6 group hover:border-violet-500/40 transition-all hover:-translate-y-1 duration-300">
       {/* Header com ícone */}
       <div className="flex items-center justify-between mb-4">
         <div className={cn(
@@ -61,14 +61,17 @@ const StatMetricCard: React.FC<StatMetricCardProps> = ({
         <p className="text-xs text-slate-400">{subtitle}</p>
       </div>
 
-      {/* Citação (hover reveal) */}
+      {/* Citação - sempre visível */}
       {quote && (
-        <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="border-l-2 border-violet-500/50 pl-3 py-2 bg-violet-900/10 rounded-r-lg">
-            <p className="text-xs italic text-slate-300 leading-relaxed">
-              "{quote}"
-            </p>
-            <p className="text-xs text-violet-400 mt-1">— James Clear</p>
+        <div className="mt-4 pt-4 border-t border-slate-700/50">
+          <div className="flex items-start gap-2">
+            <span className="text-violet-400 text-lg">"</span>
+            <div className="flex-1">
+              <p className="text-xs italic text-slate-300 leading-relaxed">
+                {quote}
+              </p>
+              <p className="text-xs text-violet-400 mt-1">— James Clear</p>
+            </div>
           </div>
         </div>
       )}

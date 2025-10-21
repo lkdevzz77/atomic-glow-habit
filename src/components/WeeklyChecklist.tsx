@@ -50,11 +50,14 @@ const WeeklyChecklist = ({ habits }: WeeklyChecklistProps) => {
   const overallRate = totalPossible > 0 ? Math.round((totalCompleted / totalPossible) * 100) : 0;
 
   return (
-    <div className="glass-violet border-2 border-slate-700/80 rounded-2xl p-6 animate-fade-in">
+    <div className="glass card-rounded card-padding-lg animate-fade-in">
       {/* Header com estatísticas */}
       <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-700/50">
         <div>
-          <h3 className="text-xl font-bold text-slate-100">Progresso Detalhado da Semana</h3>
+          <h3 className="text-xl font-bold text-slate-100 flex items-center gap-2">
+            <span>📅</span>
+            Progresso Detalhado da Semana
+          </h3>
           <p className="text-sm text-slate-400 mt-1">
             Acompanhe cada dia do seu sistema de hábitos
           </p>
@@ -161,7 +164,7 @@ const WeeklyChecklist = ({ habits }: WeeklyChecklistProps) => {
       </div>
 
       {/* Summary */}
-      <div className="pt-4 border-t border-slate-600 bg-slate-700/50 rounded-lg p-4">
+      <div className="pt-4 border-t border-slate-700/50 bg-slate-800/40 rounded-lg p-4">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-semibold text-slate-300">Progresso Total da Semana:</span>
           <span className="text-sm font-semibold text-slate-300">

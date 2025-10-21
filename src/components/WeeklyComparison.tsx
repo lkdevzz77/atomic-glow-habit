@@ -80,11 +80,11 @@ const WeeklyComparison = () => {
   const getTrendColor = () => {
     switch (data.trend) {
       case 'up':
-        return 'text-emerald-400 border-emerald-500/30 bg-emerald-900/20';
+        return 'text-emerald-400 bg-emerald-900/20 border border-emerald-500/30';
       case 'down':
-        return 'text-red-400 border-red-500/30 bg-red-900/20';
+        return 'text-amber-400 bg-amber-900/20 border border-amber-500/30';
       default:
-        return 'text-slate-400 border-slate-500/30 bg-slate-900/20';
+        return 'text-slate-400 bg-slate-800/40 border border-slate-500/30';
     }
   };
   const getTrendMessage = () => {
@@ -97,60 +97,60 @@ const WeeklyComparison = () => {
     }
   };
   return (
-    <div className="glass-violet border-2 border-slate-700/80 rounded-2xl p-6 transition-colors duration-300">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold text-slate-100">Resumo da Semana</h3>
-        <div className={cn(
-          "flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all",
-          getTrendColor()
-        )}>
-          {getTrendIcon()}
-          <span className="font-bold text-lg">
-            {data.change > 0 ? '+' : ''}{data.change}%
-          </span>
-        </div>
-      </div>
+    <div className="glass card-rounded card-padding-lg animate-fade-in transition-colors duration-300">
+      <h3 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
+        <span>📈</span>
+        Resumo da Semana
+      </h3>
 
-      {/* Comparação Visual */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        {/* Semana Anterior */}
-        <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5 text-center">
-          <p className="text-xs text-slate-400 uppercase tracking-wider mb-2">
-            Semana Passada
-          </p>
-          <p className="text-4xl font-bold text-slate-300">
-            {data.previousWeek}
-          </p>
-          <p className="text-xs text-slate-500 mt-1">hábitos concluídos</p>
+      <div className="bg-slate-800/40 rounded-xl p-6 border border-slate-700/80 space-y-6">
+        {/* Badge de tendência */}
+        <div className="flex items-center justify-end mb-4">
+          <div className={cn(
+            "flex items-center gap-2 px-4 py-2 rounded-full transition-all",
+            getTrendColor()
+          )}>
+            {getTrendIcon()}
+            <span className="font-bold text-lg">
+              {data.change > 0 ? '+' : ''}{data.change}%
+            </span>
+          </div>
         </div>
 
-        {/* Semana Atual */}
-        <div className="bg-gradient-to-br from-violet-900/30 to-purple-900/30 border-2 border-violet-500/50 rounded-xl p-5 text-center relative overflow-hidden">
-          {/* Glow effect */}
-          <div className="absolute top-0 right-0 w-20 h-20 bg-violet-500/20 rounded-full blur-2xl"></div>
-          
-          <p className="text-xs text-violet-400 uppercase tracking-wider mb-2 relative z-10">
-            Esta Semana
-          </p>
-          <p className="text-4xl font-bold text-violet-300 relative z-10">
-            {data.currentWeek}
-          </p>
-          <p className="text-xs text-violet-500 mt-1 relative z-10">hábitos concluídos</p>
-        </div>
-      </div>
+        {/* Grid de comparação */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* Semana Anterior */}
+          <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-5 text-center">
+            <p className="text-xs text-slate-400 uppercase tracking-wider mb-2">
+              Semana Passada
+            </p>
+            <p className="text-4xl font-bold text-slate-300">
+              {data.previousWeek}
+            </p>
+            <p className="text-xs text-slate-500 mt-1">hábitos concluídos</p>
+          </div>
 
-      {/* Mensagem Motivacional */}
-      <div className={cn(
-        "rounded-xl p-4 border-2 flex items-center gap-3 transition-all",
-        getTrendColor()
-      )}>
-        <div className="text-3xl">
-          {data.trend === 'up' ? '🎉' : data.trend === 'down' ? '💪' : '👍'}
+          {/* Semana Atual */}
+          <div className="bg-gradient-to-br from-violet-900/20 to-purple-900/20 border border-violet-500/30 rounded-xl p-5 text-center">
+            <p className="text-xs text-violet-400 uppercase tracking-wider mb-2">
+              Esta Semana
+            </p>
+            <p className="text-4xl font-bold text-violet-300">
+              {data.currentWeek}
+            </p>
+            <p className="text-xs text-violet-400/80 mt-1">hábitos concluídos</p>
+          </div>
         </div>
-        <p className="flex-1 text-sm font-medium leading-relaxed">
-          {getTrendMessage()}
-        </p>
+
+        {/* Mensagem motivacional */}
+        <div className="pt-4 border-t border-slate-700/50">
+          <p className="text-sm text-slate-300 text-center leading-relaxed flex items-center justify-center gap-2">
+            <span className="text-xl">
+              {data.trend === 'up' ? '🎉' : data.trend === 'down' ? '💪' : '👍'}
+            </span>
+            {getTrendMessage()}
+          </p>
+        </div>
       </div>
     </div>
   );
