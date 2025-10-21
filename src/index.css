@@ -8,71 +8,67 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* atomicTracker Dark Theme - Roxo/Cinza */
-    --background: 222.2 47% 11%;
-    --foreground: 210 40% 98%;
-
-    --card: 215 28% 17%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 47% 11%;
-    --popover-foreground: 210 40% 98%;
-
-    /* Atomic Color System - Estados Atômicos */
-    --atomic-stable: 220 90% 25%;
-    --atomic-excited: 280 85% 60%;
-    --atomic-fusion: 160 75% 55%;
-    --atomic-radiant: 45 95% 65%;
+    /* Background System - Cinzas neutros quentes */
+    --background: 220 15% 8%;
+    --foreground: 220 10% 96%;
+    --card: 220 12% 12%;
+    --card-foreground: 220 8% 94%;
+    --popover: 220 12% 14%;
+    --popover-foreground: 220 8% 94%;
     
-    /* Roxo Primário - usando atomic-excited */
-    --primary: 280 85% 60%;
-    --primary-foreground: 210 40% 98%;
-
-    /* Roxo Escuro */
-    --primary-dark: 258 67% 44%;
+    /* Primary - Roxo muito dessaturado */
+    --primary: 260 25% 55%;
+    --primary-foreground: 220 10% 98%;
+    --primary-glow: 260 30% 60%;
     
-    /* Roxo Claro */
-    --primary-light: 258 78% 76%;
+    /* Secondary - Cinza médio */
+    --secondary: 220 10% 20%;
+    --secondary-foreground: 220 8% 94%;
     
-    /* Roxo Ultra Claro */
-    --primary-ultralight: 258 100% 96%;
-
-    --secondary: 215 28% 17%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217 33% 17%;
-    --muted-foreground: 214 32% 72%;
-
-    --accent: 160 75% 55%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-
-    --success: 158 64% 52%;
-    --warning: 38 92% 50%;
-
-    --border: 215 28% 30%;
-    --input: 215 28% 25%;
-    --ring: 258 90% 66%;
-
+    /* Muted - Elementos secundários */
+    --muted: 220 10% 20%;
+    --muted-foreground: 220 6% 65%;
+    
+    /* Accent - Azul acinzentado */
+    --accent: 220 40% 55%;
+    --accent-foreground: 220 10% 98%;
+    
+    /* Success - Verde acinzentado */
+    --success: 160 30% 50%;
+    --success-foreground: 220 10% 98%;
+    --success-glow: 160 40% 55%;
+    
+    /* Warning - Âmbar suave */
+    --warning: 38 50% 55%;
+    --warning-foreground: 220 10% 98%;
+    
+    /* Destructive - Vermelho suave */
+    --destructive: 0 50% 55%;
+    --destructive-foreground: 220 10% 98%;
+    
+    /* Borders e inputs */
+    --border: 220 10% 22%;
+    --input: 220 12% 15%;
+    --ring: 220 40% 55%;
     --radius: 0.75rem;
 
-    /* Atomic Gradientes */
-    --gradient-forming: linear-gradient(135deg, hsl(var(--atomic-stable)) 0%, hsl(var(--atomic-excited)) 100%);
-    --gradient-active: linear-gradient(135deg, hsl(var(--atomic-excited)) 0%, hsl(var(--atomic-fusion)) 100%);
-    --gradient-compounding: linear-gradient(135deg, hsl(var(--atomic-fusion)) 0%, hsl(var(--atomic-radiant)) 50%, hsl(var(--atomic-fusion)) 100%);
-    --gradient-identity: linear-gradient(135deg, hsl(var(--atomic-excited)) 0%, hsl(280 90% 70%) 50%, hsl(var(--atomic-fusion)) 100%);
+    /* Gradientes neutros */
+    --gradient-card: linear-gradient(135deg, hsl(220 12% 13%) 0%, hsl(220 12% 11%) 100%);
+    --gradient-emphasis: linear-gradient(135deg, hsl(220 12% 14%) 0%, hsl(260 15% 13%) 100%);
+    --gradient-celebration: linear-gradient(135deg, hsl(260 60% 55%) 0%, hsl(200 60% 55%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(220 15% 8%) 0%, hsl(220 15% 6%) 100%);
     
-    /* Gradientes legados */
-    --gradient-primary: linear-gradient(135deg, hsl(280 85% 60%) 0%, hsl(258 78% 76%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(258 67% 44%) 0%, hsl(280 85% 60%) 50%, hsl(258 78% 76%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(222.2 47% 11%) 0%, hsl(215 28% 17%) 100%);
+    /* Sombras neumórficas neutras */
+    --shadow-neuro-sm: inset 0 1px 0 0 rgba(255, 255, 255, 0.03), 0 4px 16px -4px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.04);
+    --shadow-neuro-md: inset 0 1px 0 0 rgba(255, 255, 255, 0.03), 0 8px 32px -8px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    --shadow-neuro-lg: inset 0 1px 0 0 rgba(255, 255, 255, 0.04), 0 16px 64px -16px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06);
+    --shadow-neuro-xl: inset 0 1px 0 0 rgba(255, 255, 255, 0.06), 0 24px 96px -24px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);
     
-    /* Sombras */
-    --shadow-glow: 0 0 40px hsl(280 85% 60% / 0.4);
-    --shadow-glow-sm: 0 0 20px hsl(280 85% 60% / 0.3);
-    --shadow-violet: 0 10px 30px -10px hsl(280 85% 60% / 0.3);
+    /* Sombras coloridas (uso estratégico) */
+    --shadow-success-glow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05), 0 12px 48px -12px rgba(89, 168, 148, 0.4), 0 0 0 1px rgba(89, 168, 148, 0.2), 0 0 60px -15px rgba(89, 168, 148, 0.3);
+    --shadow-primary-glow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05), 0 12px 48px -12px rgba(125, 117, 163, 0.4), 0 0 0 1px rgba(125, 117, 163, 0.2), 0 0 60px -15px rgba(125, 117, 163, 0.3);
+    --shadow-accent-glow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05), 0 12px 48px -12px rgba(91, 122, 158, 0.3), 0 0 0 1px rgba(91, 122, 158, 0.15), 0 0 60px -20px rgba(91, 122, 158, 0.2);
+    --shadow-emerald-glow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05), 0 12px 48px -12px rgba(16, 185, 129, 0.4), 0 0 0 1px rgba(16, 185, 129, 0.2), 0 0 60px -15px rgba(16, 185, 129, 0.3);
   }
 }
 
@@ -104,14 +100,14 @@ All colors MUST be HSL.
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     
-    /* Atmospheric Background */
+    /* Atmospheric Background - Neutro */
     background: 
-      url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E"),
-      radial-gradient(ellipse at 20% 30%, hsl(280 90% 25% / 0.15) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 70%, hsl(258 85% 30% / 0.12) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 50%, hsl(220 90% 20% / 0.1) 0%, transparent 70%),
-      hsl(222.2 47% 11%);
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='3.5' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E"),
+      radial-gradient(ellipse at 20% 30%, hsl(220 20% 12% / 0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 70%, hsl(260 15% 10% / 0.2) 0%, transparent 50%),
+      hsl(220 15% 8%);
     background-attachment: fixed;
+    background-size: 200px 200px, 100% 100%, 100% 100%, 100% 100%;
     position: relative;
   }
 
@@ -119,7 +115,7 @@ All colors MUST be HSL.
     content: '';
     position: fixed;
     inset: 0;
-    background: linear-gradient(180deg, transparent 0%, hsl(222.2 47% 8% / 0.4) 100%);
+    background: linear-gradient(180deg, transparent 0%, hsl(220 15% 6% / 0.5) 100%);
     pointer-events: none;
     z-index: 0;
   }
@@ -225,117 +221,122 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
-  /* 🎨 Neumorphism System */
+  /* 🎨 Neumorphism System - Neutro */
   .neuro-flat {
-    background: hsl(var(--card) / 0.4);
-    backdrop-filter: blur(20px);
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.03);
+    background: linear-gradient(135deg, 
+      hsl(220 12% 13% / 0.8) 0%, 
+      hsl(220 12% 11% / 0.6) 100%
+    );
+    backdrop-filter: blur(24px) saturate(120%);
+    box-shadow: var(--shadow-neuro-sm);
+    border: none;
+    transition: all 250ms cubic-bezier(0.32, 0.72, 0, 1);
   }
 
   .neuro-card {
-    background: linear-gradient(
-      135deg,
-      hsl(var(--card) / 0.6) 0%,
-      hsl(var(--card) / 0.4) 100%
+    background: linear-gradient(135deg,
+      hsl(220 12% 13% / 0.9) 0%,
+      hsl(220 12% 11% / 0.7) 100%
     );
-    backdrop-filter: blur(24px) saturate(150%);
-    box-shadow:
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
-      0 8px 32px -8px rgba(0, 0, 0, 0.3),
-      0 0 0 1px rgba(124, 58, 237, 0.08);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(32px) saturate(120%);
+    box-shadow: var(--shadow-neuro-md);
+    border: none;
+    transition: all 250ms cubic-bezier(0.32, 0.72, 0, 1);
   }
 
   .neuro-card:hover {
     box-shadow:
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
-      0 12px 48px -12px rgba(0, 0, 0, 0.4),
-      0 0 0 1px rgba(124, 58, 237, 0.15),
-      0 0 40px -10px rgba(124, 58, 237, 0.2);
-    transform: translateY(-2px);
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
+      0 12px 48px -12px rgba(0, 0, 0, 0.6),
+      0 0 0 1px rgba(255, 255, 255, 0.08),
+      0 0 60px -20px rgba(139, 146, 164, 0.2);
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+  }
+
+  .neuro-elevated {
+    background: hsl(220 12% 14% / 0.9);
+    backdrop-filter: blur(40px);
+    box-shadow: var(--shadow-neuro-lg);
+    border: none;
+    transition: all 250ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  .neuro-floating {
+    background: hsl(220 12% 16% / 0.95);
+    backdrop-filter: blur(48px);
+    box-shadow: var(--shadow-neuro-xl);
+    border: none;
+    transition: all 250ms cubic-bezier(0.32, 0.72, 0, 1);
   }
 
   .neuro-interactive {
-    background: linear-gradient(
-      135deg,
-      hsl(var(--card) / 0.7) 0%,
-      hsl(var(--card) / 0.5) 100%
+    background: linear-gradient(135deg,
+      hsl(220 12% 13% / 0.9) 0%,
+      hsl(220 12% 11% / 0.7) 100%
     );
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px) saturate(120%);
+    box-shadow: var(--shadow-neuro-sm);
+    border: none;
+    transition: all 250ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  .neuro-interactive:hover {
     box-shadow:
-      inset 0 2px 4px 0 rgba(0, 0, 0, 0.3),
-      inset 0 -2px 4px 0 rgba(255, 255, 255, 0.05),
-      0 4px 12px -4px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
+      0 6px 24px -6px rgba(0, 0, 0, 0.55),
+      0 0 0 1px rgba(255, 255, 255, 0.08),
+      0 0 40px -10px rgba(139, 146, 164, 0.15);
+    transform: scale(1.01);
+    filter: brightness(1.03);
   }
 
   .neuro-interactive:active {
     box-shadow:
-      inset 0 3px 8px 0 rgba(0, 0, 0, 0.4),
-      inset 0 -1px 2px 0 rgba(255, 255, 255, 0.03);
-    transform: scale(0.98);
+      inset 0 2px 8px 0 rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.03),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+    transform: scale(0.99);
+    transition-duration: 100ms;
+  }
+
+  .neuro-success {
+    background: linear-gradient(135deg, hsl(220 12% 13%), hsl(160 20% 12%));
+    box-shadow: var(--shadow-success-glow);
+  }
+
+  .neuro-primary {
+    background: linear-gradient(135deg, hsl(220 12% 13%), hsl(260 18% 12%));
+    box-shadow: var(--shadow-primary-glow);
   }
 
   .neuro-highlight {
-    background: linear-gradient(
-      135deg,
-      hsl(280 85% 60% / 0.3) 0%,
-      hsl(280 85% 50% / 0.2) 100%
-    );
-    backdrop-filter: blur(24px) saturate(180%);
-    box-shadow:
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
-      0 12px 48px -12px rgba(124, 58, 237, 0.6),
-      0 0 0 1px rgba(124, 58, 237, 0.3),
-      0 0 60px -15px rgba(124, 58, 237, 0.4);
+    background: var(--gradient-emphasis);
+    backdrop-filter: blur(32px) saturate(140%);
+    box-shadow: var(--shadow-accent-glow);
+    border: none;
   }
 
-  /* Shadow System */
-  :root {
-    --shadow-neuro-sm: 
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
-      0 4px 12px -4px rgba(0, 0, 0, 0.3);
-      
-    --shadow-neuro-md:
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
-      0 8px 32px -8px rgba(0, 0, 0, 0.3),
-      0 0 0 1px rgba(124, 58, 237, 0.08);
-      
-    --shadow-neuro-lg:
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
-      0 12px 48px -12px rgba(0, 0, 0, 0.4),
-      0 0 0 1px rgba(124, 58, 237, 0.15);
-      
-    --shadow-violet-glow:
-      0 12px 48px -12px rgba(124, 58, 237, 0.6),
-      0 0 0 1px rgba(124, 58, 237, 0.3),
-      0 0 60px -15px rgba(124, 58, 237, 0.4);
-      
-    --shadow-emerald-glow:
-      0 12px 48px -12px rgba(16, 185, 129, 0.6),
-      0 0 0 1px rgba(16, 185, 129, 0.3),
-      0 0 60px -15px rgba(16, 185, 129, 0.4);
-  }
 
-  /* ✨ Micro-interactions */
+  /* ✨ Micro-interactions - Suavizadas */
   * {
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 200ms;
+    transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+    transition-duration: 250ms;
   }
 
   .neuro-card,
   .neuro-interactive,
   button:not([disabled]),
   a {
-    transition-property: transform, box-shadow, background, opacity;
-    transition-duration: 300ms;
-    transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition-property: transform, box-shadow, background, opacity, filter;
+    transition-duration: 250ms;
+    transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
   }
 
   *:focus-visible {
-    outline: 2px solid hsl(var(--primary));
+    outline: 2px solid hsl(220 40% 55%);
     outline-offset: 2px;
-    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.2);
+    box-shadow: 0 0 0 4px rgba(91, 122, 158, 0.15);
   }
 
   /* Glow Effects */
@@ -570,55 +571,49 @@ All colors MUST be HSL.
     }
   }
 
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
   .skeleton-neuro {
-    @apply neuro-card;
-    animation: pulse-neuro 2s ease-in-out infinite;
+    background: linear-gradient(
+      90deg,
+      hsl(220 12% 12%) 0%,
+      hsl(220 12% 14%) 50%,
+      hsl(220 12% 12%) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s ease-in-out infinite;
   }
 
-  /* Custom Scrollbar - Neumorphic */
-  .scrollbar-violet::-webkit-scrollbar,
+  /* Custom Scrollbar - Neutro */
   .scrollbar-neuro::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
+    width: 10px;
   }
 
-  .scrollbar-violet::-webkit-scrollbar-track,
   .scrollbar-neuro::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .scrollbar-violet::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, hsl(280 85% 50%), hsl(280 85% 40%));
-    border-radius: 100px;
+    background: hsl(220 12% 10% / 0.5);
+    border-radius: 5px;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   }
 
   .scrollbar-neuro::-webkit-scrollbar-thumb {
-    background: linear-gradient(
-      135deg,
-      hsl(var(--card) / 0.6),
-      hsl(var(--card) / 0.4)
+    background: linear-gradient(135deg,
+      hsl(220 10% 25%),
+      hsl(220 10% 20%)
     );
-    border-radius: 100px;
-    border: 2px solid transparent;
-    background-clip: padding-box;
-    box-shadow:
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
-      0 2px 8px -2px rgba(0, 0, 0, 0.3);
-  }
-
-  .scrollbar-violet::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, hsl(280 85% 60%), hsl(280 85% 50%));
+    border-radius: 5px;
+    box-shadow: 
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
   .scrollbar-neuro::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(
-      135deg,
-      hsl(280 85% 60% / 0.4),
-      hsl(280 85% 50% / 0.3)
+    background: linear-gradient(135deg,
+      hsl(220 10% 30%),
+      hsl(220 10% 25%)
     );
-    box-shadow:
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.15),
-      0 4px 12px -4px rgba(124, 58, 237, 0.5);
   }
 }
 

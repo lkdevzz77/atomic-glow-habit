@@ -80,24 +80,29 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
       className={cn(
         "card-rounded card-padding",
         isCompleted 
-          ? "neuro-highlight" 
+          ? "neuro-success" 
           : "neuro-card"
       )}
-      style={isCompleted ? { boxShadow: 'var(--shadow-emerald-glow)' } : undefined}
     >
       <div className="flex items-start gap-3 mb-3 sm:mb-4">
-        <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl neuro-interactive bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center">
+        <div className={cn(
+          "flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl neuro-interactive flex items-center justify-center",
+          isCompleted ? "bg-emerald-500/10" : "bg-slate-800/50"
+        )}>
           <Icon
             name={habit.icon as any}
             size={20}
-            className="text-white"
+            className={isCompleted ? "text-emerald-400" : "text-slate-300"}
           />
         </div>
         
         <div className="flex-1 min-w-0">
-          <h3 className="text-base sm:text-lg font-bold heading-sub text-slate-50 mb-1 truncate">{habit.title}</h3>
-          <div className="space-y-1 sm:space-y-0 sm:flex sm:flex-wrap sm:gap-2 text-xs sm:text-sm text-slate-300/70">
-            <span className="block sm:inline">⏰ {habit.when_time}</span>
+          <h3 className="text-base sm:text-lg font-bold heading-sub text-slate-100 mb-1 truncate">{habit.title}</h3>
+          <div className="space-y-1 sm:space-y-0 sm:flex sm:flex-wrap sm:gap-2 text-xs sm:text-sm text-slate-400">
+            <span className="block sm:inline flex items-center gap-1">
+              <Clock size={12} className="inline text-slate-500" />
+              {habit.when_time}
+            </span>
             <span className="hidden sm:inline text-slate-600">·</span>
             <span className="block sm:inline">📍 {habit.where_location}</span>
             {habit.trigger_activity && (
@@ -113,14 +118,14 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
           onClick={handleComplete}
           disabled={isCompleted}
           className={cn(
-            "flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-200",
+            "flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-250",
             isCompleted
-              ? "neuro-highlight bg-violet-600"
-              : "neuro-interactive hover:scale-110",
+              ? "neuro-success bg-emerald-500/20"
+              : "neuro-interactive bg-slate-800/50 hover:scale-105",
             isCompleting && "animate-scale-in"
           )}
         >
-          {isCompleted && <Check className="w-5 h-5 sm:w-6 sm:h-6 text-white" />}
+          {isCompleted && <Check className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" strokeWidth={3} />}
         </button>
       </div>
 
@@ -132,12 +137,12 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
               <span className="text-emerald-400 font-semibold flex items-center gap-2">
                 ✨ Completado
               </span>
-              <span className="text-violet-400 font-bold text-xs">
+              <span className="text-slate-400 font-medium text-xs">
                 {getCompletionMessage()}
               </span>
             </div>
             {habit.last_completed && (
-              <div className="flex items-center gap-1 text-xs text-slate-400/60">
+              <div className="flex items-center gap-1 text-xs text-slate-500">
                 <Clock className="w-3 h-3" />
                 {new Date(habit.last_completed).toLocaleTimeString('pt-BR', { 
                   hour: '2-digit', 
@@ -147,19 +152,19 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
             )}
           </div>
         ) : (
-          <div className="flex items-center justify-between text-sm text-slate-300">
+          <div className="flex items-center justify-between text-sm text-slate-400">
             <span>Meta: {habit.goal_current}/{habit.goal_target} {habit.goal_unit}</span>
-            <span className="text-slate-400/60">{Math.round(progress)}%</span>
+            <span className="text-slate-500 font-mono">{Math.round(progress)}%</span>
           </div>
         )}
 
-        <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+        <div className="h-2 bg-slate-800/60 rounded-full overflow-hidden">
           <div
             className={cn(
               "h-full transition-all duration-500 ease-out",
               isCompleted 
-                ? "bg-gradient-to-r from-violet-600 to-purple-600" 
-                : "bg-slate-600"
+                ? "bg-gradient-to-r from-emerald-500/80 to-emerald-600/80" 
+                : "bg-slate-600/70"
             )}
             style={{ width: `${isCompleted ? 100 : progress}%` }}
           />
@@ -167,15 +172,25 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
       </div>
 
       {/* Streak */}
-      <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-700/80">
-        <span className="text-2xl">🔥</span>
-        <span className="text-slate-300">
-          Streak: <span className="font-bold text-violet-400">{habit.streak}</span> 
-          {isCompleted && habit.streak > 0 && (
-            <span className="ml-2 text-sm text-emerald-400">→ {habit.streak + 1} dias 🎊</span>
-          )}
-        </span>
-      </div>
+      {habit.streak > 0 && (
+        <div className={cn(
+          "flex items-center gap-2 mt-4 pt-4 border-t px-3 py-2 rounded-lg",
+          habit.streak >= 7 
+            ? "border-amber-500/20 bg-amber-500/5" 
+            : "border-slate-700/80 bg-slate-800/30"
+        )}>
+          <span className="text-xl">🔥</span>
+          <span className="text-slate-300 text-sm">
+            Streak: <span className={cn(
+              "font-bold font-mono",
+              habit.streak >= 7 ? "text-amber-400" : "text-slate-300"
+            )}>{habit.streak}</span> dias
+            {isCompleted && (
+              <span className="ml-2 text-xs text-emerald-400">→ {habit.streak + 1} 🎊</span>
+            )}
+          </span>
+        </div>
+      )}
     </div>
 
       {/* Recovery Modal */}
