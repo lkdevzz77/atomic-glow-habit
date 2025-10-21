@@ -37,15 +37,15 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="p-4 space-y-4">
+      <SidebarHeader className="p-5 space-y-4">
         <div className="flex items-center gap-2">
           <img
             src="/atom-logo.png"
             alt=""
-            className="w-8 h-8"
+            className="w-10 h-10"
             style={{ filter: 'drop-shadow(0 0 12px rgba(124, 58, 237, 0.6))' }}
           />
-          <span className="text-lg font-bold gradient-text">atomicTracker</span>
+          <span className="text-xl font-bold gradient-text">atomicTracker</span>
         </div>
 
         {/* SPRINT 2: Level Indicator no Sidebar */}
@@ -54,11 +54,11 @@ export function AppSidebar() {
             <div className="flex items-center gap-3">
               <LevelBadge level={level} size="sm" animated={level >= 7} />
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-violet-400 font-semibold">NÍVEL {level}</p>
-                <p className="text-xs text-slate-400 truncate">{levelInfo.title}</p>
+                <p className="text-sm text-violet-400 font-semibold">NÍVEL {level}</p>
+                <p className="text-sm text-slate-400 truncate">{levelInfo.title}</p>
               </div>
             </div>
-            <Progress value={progress} className="h-1 mt-2" />
+            <Progress value={progress} className="h-1.5 mt-2" />
           </div>
         </Link>
       </SidebarHeader>
@@ -75,8 +75,8 @@ export function AppSidebar() {
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={isActive}>
-                      <Link to={item.url}>
-                        <Icon size={18} />
+                      <Link to={item.url} className="text-base">
+                        <Icon size={20} />
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
@@ -98,8 +98,8 @@ export function AppSidebar() {
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={isActive}>
-                      <Link to={item.url}>
-                        <Icon size={18} />
+                      <Link to={item.url} className="text-base">
+                        <Icon size={20} />
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>

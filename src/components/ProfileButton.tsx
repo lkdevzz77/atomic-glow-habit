@@ -56,7 +56,7 @@ export const ProfileButton: React.FC<ProfileButtonProps> = ({
   };
 
   const renderAvatar = () => {
-    const size = compact ? 'w-10 h-10' : 'w-14 h-14';
+    const size = compact ? 'w-12 h-12' : 'w-16 h-16';
     const gradient = COLOR_MAP[user.avatar_color] || COLOR_MAP.violet;
 
     if (user.avatar_type === 'upload' && user.avatar_url) {
@@ -71,7 +71,7 @@ export const ProfileButton: React.FC<ProfileButtonProps> = ({
       const Icon = ICON_MAP[user.avatar_icon] || User;
       return (
         <div className={`${size} rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center ring-2 ring-primary/20`}>
-          <Icon className="text-white" size={compact ? 20 : 28} />
+          <Icon className="text-white" size={compact ? 24 : 32} />
         </div>
       );
     }
@@ -79,7 +79,7 @@ export const ProfileButton: React.FC<ProfileButtonProps> = ({
     // Iniciais (padrão)
     return (
       <div className={`${size} rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center ring-2 ring-primary/20`}>
-        <span className="text-white font-bold" style={{ fontSize: compact ? '0.875rem' : '1.125rem' }}>
+        <span className="text-white font-bold" style={{ fontSize: compact ? '1rem' : '1.25rem' }}>
           {getInitials(user.name)}
         </span>
       </div>
@@ -104,11 +104,11 @@ export const ProfileButton: React.FC<ProfileButtonProps> = ({
             </div>
 
             {/* SPRINT 2: Mini progress indicator */}
-            <div className="hidden sm:flex flex-col gap-1 min-w-[60px]">
-              <span className="text-xs font-semibold text-foreground">
+            <div className="hidden sm:flex flex-col gap-1 min-w-[70px]">
+              <span className="text-sm font-semibold text-foreground">
                 Nv {user.level}
               </span>
-              <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+              <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-gradient-to-r from-violet-500 to-purple-500 transition-all duration-300"
                   style={{ width: `${progressPercentage}%` }}
@@ -118,24 +118,24 @@ export const ProfileButton: React.FC<ProfileButtonProps> = ({
           </Button>
         </PopoverTrigger>
 
-        <PopoverContent className="w-64 p-0" align="end">
+        <PopoverContent className="w-72 p-0" align="end">
           <div className="card-padding-sm space-y-3">
             <div className="flex items-center gap-3">
               {renderAvatar()}
               <div>
-                <p className="font-bold text-foreground">{user.name}</p>
-                <p className="text-xs text-violet-400">Nível {user.level}</p>
+                <p className="font-bold text-foreground text-base">{user.name}</p>
+                <p className="text-sm text-violet-400">Nível {user.level}</p>
               </div>
             </div>
             
             <div className="space-y-2">
-              <div className="flex justify-between text-xs">
+              <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">XP Atual</span>
                 <span className="text-foreground font-semibold">
                   {xpInCurrentLevel} / {xpNeededForNext}
                 </span>
               </div>
-              <Progress value={progressPercentage} className="h-2" />
+              <Progress value={progressPercentage} className="h-2.5" />
             </div>
             
             <Separator />

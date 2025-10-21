@@ -59,8 +59,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
         <div className="flex-1 flex flex-col">
           <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="flex h-16 items-center gap-4 px-4 sm:px-6">
-              <SidebarTrigger />
+            <div className="flex h-20 items-center gap-4 px-4 sm:px-6">
+              <SidebarTrigger className="h-10 w-10" />
 
               <div className="flex-1" />
 
@@ -90,7 +90,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
           </header>
 
-          <main className="flex-1 p-4 sm:p-6">
+          <main className="flex-1 p-5 sm:p-8">
             {children}
           </main>
         </div>

@@ -41,19 +41,19 @@ const LevelBadge: React.FC<LevelBadgeProps> = ({
   };
 
   const sizeClasses = {
-    xs: 'w-6 h-6 text-xs',
-    sm: 'w-10 h-10 text-sm',
-    md: 'w-16 h-16 text-base',
-    lg: 'w-24 h-24 text-xl',
-    xl: 'w-32 h-32 text-2xl',
+    xs: 'w-8 h-8 text-sm',
+    sm: 'w-12 h-12 text-base',
+    md: 'w-20 h-20 text-lg',
+    lg: 'w-28 h-28 text-2xl',
+    xl: 'w-36 h-36 text-3xl',
   };
   
   const iconSizes = {
-    xs: 12,
-    sm: 16,
-    md: 20,
-    lg: 28,
-    xl: 40,
+    xs: 16,
+    sm: 20,
+    md: 24,
+    lg: 32,
+    xl: 48,
   };
 
   const gradient = getTierGradient(level);
