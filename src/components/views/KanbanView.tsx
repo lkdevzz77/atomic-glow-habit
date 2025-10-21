@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CheckCircle, Search, GripVertical, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '@/components/ui/button';
 import HabitCardCompact from '../HabitCardCompact';
 import confetti from 'canvas-confetti';
 interface Habit {
@@ -19,7 +20,7 @@ interface Habit {
 interface KanbanViewProps {
   habits: Habit[];
   onComplete: (habitId: number) => void;
-  onAddHabit?: () => void;
+  onAddHabit: () => void;
 }
 const KanbanView: React.FC<KanbanViewProps> = ({
   habits,

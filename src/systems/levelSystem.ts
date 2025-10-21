@@ -101,3 +101,19 @@ export function checkLevelUp(oldXP: number, newXP: number): LevelUpResult {
   
   return { didLevelUp: false };
 }
+
+export function getLevelTitle(level: number): string {
+  if (level >= 10) return "Mestre Atômico";
+  if (level >= 8) return "Artífice de Hábitos";
+  if (level >= 6) return "Construtor Dedicado";
+  if (level >= 4) return "Aprendiz Persistente";
+  if (level >= 2) return "Iniciante Comprometido";
+  return "Novato em Ascensão";
+}
+
+export function getXPForLevel(level: number): number {
+  const thresholds = [0, 100, 250, 500, 1000, 2000, 3500, 6000, 10000, 20000];
+  if (level <= 1) return 0;
+  if (level > 10) return thresholds[9];
+  return thresholds[level - 1];
+}

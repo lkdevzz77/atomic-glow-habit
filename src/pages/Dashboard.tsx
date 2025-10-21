@@ -37,22 +37,10 @@ const Dashboard = () => {
   });
 
   const handleCompleteHabit = async (habitId: number) => {
-    await completeHabit({ habitId, percentage: 100 });
-    
-    // Award XP
     const habit = habits?.find(h => h.id === habitId);
-    if (habit) {
-      const levelUpResult = await awardXP(XP_REWARDS.completeHabit, `Hábito: ${habit.title}`);
-      
-      if (levelUpResult.didLevelUp) {
-        setLevelUpData({
-          oldLevel: levelUpResult.oldLevel!,
-          newLevel: levelUpResult.newLevel!,
-          rewards: levelUpResult.rewards || [],
-        });
-        setShowLevelUp(true);
-      }
-    }
+    if (!habit) return;
+    
+    await completeHabit({ habitId, percentage: 100, habitTitle: habit.title });
     
     // Confetti animation
     confetti({

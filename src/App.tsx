@@ -12,6 +12,7 @@ import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
+import HabitsPage from "./pages/HabitsPage";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
@@ -59,6 +60,30 @@ const App = () => (
               {/* Rotas protegidas */}
               <Route 
                 path="/dashboard" 
+                element={
+                  <ProtectedRoute requireAuth requireOnboarding>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/habits" 
+                element={
+                  <ProtectedRoute requireAuth requireOnboarding>
+                    <HabitsPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/stats" 
+                element={
+                  <ProtectedRoute requireAuth requireOnboarding>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/badges" 
                 element={
                   <ProtectedRoute requireAuth requireOnboarding>
                     <Dashboard />

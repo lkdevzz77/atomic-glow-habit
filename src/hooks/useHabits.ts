@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { habitService } from '@/services/habitService';
+import { xpService } from '@/services/xpService';
 import { toast } from './use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import type { Habit } from '@/types/habit';
@@ -135,10 +136,12 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
   });
 
   const completeHabitMutation = useMutation({
-    mutationFn: async ({ habitId, percentage }: { habitId: number; percentage: number }) => {
+    mutationFn: async ({ habitId, percentage, habitTitle }: { habitId: number; percentage: number; habitTitle: string }) => {
       if (!user) throw new Error('User not authenticated');
       
       const today = new Date().toISOString().split('T')[0];
+      
+      // 1. Completar hábito
       const result = await habitService.completeHabit(
         habitId,
         user.id,
@@ -147,6 +150,15 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
       );
       
       if (result.error) throw result.error;
+
+      // 2. Conceder XP automaticamente
+      const xpResult = await xpService.awardForHabitCompletion(
+        user.id,
+        habitId,
+        habitTitle
+      );
+
+      return xpResult;
     },
     onMutate: async ({ habitId }) => {
       // Cancel ongoing queries
@@ -173,17 +185,26 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
         variant: 'destructive',
       });
     },
-    onSuccess: (data, { habitId, percentage }) => {
-      // Invalidar queries para forçar refetch do servidor
+    onSuccess: (xpResult, { habitId, percentage }) => {
+      // Invalidar queries
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all') });
       queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'weekly'] });
       queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'streaks'] });
       queryClient.invalidateQueries({ queryKey: ['weekly-data'] });
+      queryClient.invalidateQueries({ queryKey: ['profile', user?.id] });
       
-      toast({
-        title: '🎉 Hábito completado!',
-        description: 'Progresso registrado com sucesso!',
-      });
+      // Toast com XP
+      if (xpResult?.didLevelUp) {
+        toast({
+          title: `🎊 LEVEL UP! Nível ${xpResult.newLevel}`,
+          description: `+${xpResult.totalXP} XP: ${xpResult.reasons.join(' • ')}`,
+        });
+      } else {
+        toast({
+          title: `🎉 +${xpResult?.totalXP || 50} XP`,
+          description: xpResult?.reasons.join(' • ') || 'Hábito completado!',
+        });
+      }
     },
   });
 

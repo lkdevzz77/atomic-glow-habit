@@ -11,7 +11,8 @@ import { cn } from "@/lib/utils";
 
 interface NewHabitModalProps {
   open: boolean;
-  onClose: () => void;
+  onClose?: () => void;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const ICON_OPTIONS = [
@@ -37,7 +38,7 @@ const PERIOD_OPTIONS = [
 
 const UNIT_OPTIONS = ['minutos', 'páginas', 'vezes', 'km', 'copos', 'horas'];
 
-const NewHabitModal = ({ open, onClose }: NewHabitModalProps) => {
+const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
   const { createHabit, isCreating } = useHabits();
   const [currentStep, setCurrentStep] = useState(1);
   
@@ -109,7 +110,8 @@ const NewHabitModal = ({ open, onClose }: NewHabitModalProps) => {
 
       toast.success("Hábito criado com sucesso!");
       resetForm();
-      onClose();
+      if (onOpenChange) onOpenChange(false);
+      if (onClose) onClose();
     } catch (error) {
       console.error('Error creating habit:', error);
       toast.error("Erro ao criar hábito");
@@ -118,13 +120,22 @@ const NewHabitModal = ({ open, onClose }: NewHabitModalProps) => {
 
   const progress = (currentStep / 3) * 100;
 
+  const handleDialogChange = (open: boolean) => {
+    if (onOpenChange) onOpenChange(open);
+    if (!open && onClose) onClose();
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={handleDialogChange}>
       <DialogContent className="max-w-4xl w-full h-[90vh] overflow-hidden glass border-slate-700 p-0">
         {/* Header */}
         <div className="sticky top-0 bg-slate-900/95 backdrop-blur-xl border-b border-slate-700 p-6 z-10">
           <button
-            onClick={() => { resetForm(); onClose(); }}
+            onClick={() => { 
+              resetForm(); 
+              if (onOpenChange) onOpenChange(false);
+              if (onClose) onClose();
+            }}
             className="absolute top-6 right-6 text-slate-400 hover:text-violet-400 transition-colors"
           >
             <X className="w-6 h-6" />
