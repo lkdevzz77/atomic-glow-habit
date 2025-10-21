@@ -95,6 +95,7 @@ export type Database = {
           habit_stack: string | null
           icon: string
           id: number
+          identity_goal: string | null
           immediate_reward: string | null
           last_completed: string | null
           longest_streak: number
@@ -127,6 +128,7 @@ export type Database = {
           habit_stack?: string | null
           icon?: string
           id?: number
+          identity_goal?: string | null
           immediate_reward?: string | null
           last_completed?: string | null
           longest_streak?: number
@@ -159,6 +161,7 @@ export type Database = {
           habit_stack?: string | null
           icon?: string
           id?: number
+          identity_goal?: string | null
           immediate_reward?: string | null
           last_completed?: string | null
           longest_streak?: number

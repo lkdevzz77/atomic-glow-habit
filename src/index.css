@@ -18,8 +18,14 @@ All colors MUST be HSL.
     --popover: 222.2 47% 11%;
     --popover-foreground: 210 40% 98%;
 
-    /* Roxo Primário */
-    --primary: 258 90% 66%;
+    /* Atomic Color System - Estados Atômicos */
+    --atomic-stable: 220 90% 25%;
+    --atomic-excited: 280 85% 60%;
+    --atomic-fusion: 160 75% 55%;
+    --atomic-radiant: 45 95% 65%;
+    
+    /* Roxo Primário - usando atomic-excited */
+    --primary: 280 85% 60%;
     --primary-foreground: 210 40% 98%;
 
     /* Roxo Escuro */
@@ -37,7 +43,7 @@ All colors MUST be HSL.
     --muted: 217 33% 17%;
     --muted-foreground: 214 32% 72%;
 
-    --accent: 258 90% 66%;
+    --accent: 160 75% 55%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84% 60%;
@@ -52,15 +58,21 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
 
-    /* Gradientes */
-    --gradient-primary: linear-gradient(135deg, hsl(258 90% 66%) 0%, hsl(258 78% 76%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(258 67% 44%) 0%, hsl(258 90% 66%) 50%, hsl(258 78% 76%) 100%);
+    /* Atomic Gradientes */
+    --gradient-forming: linear-gradient(135deg, hsl(var(--atomic-stable)) 0%, hsl(var(--atomic-excited)) 100%);
+    --gradient-active: linear-gradient(135deg, hsl(var(--atomic-excited)) 0%, hsl(var(--atomic-fusion)) 100%);
+    --gradient-compounding: linear-gradient(135deg, hsl(var(--atomic-fusion)) 0%, hsl(var(--atomic-radiant)) 50%, hsl(var(--atomic-fusion)) 100%);
+    --gradient-identity: linear-gradient(135deg, hsl(var(--atomic-excited)) 0%, hsl(280 90% 70%) 50%, hsl(var(--atomic-fusion)) 100%);
+    
+    /* Gradientes legados */
+    --gradient-primary: linear-gradient(135deg, hsl(280 85% 60%) 0%, hsl(258 78% 76%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(258 67% 44%) 0%, hsl(280 85% 60%) 50%, hsl(258 78% 76%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(222.2 47% 11%) 0%, hsl(215 28% 17%) 100%);
     
     /* Sombras */
-    --shadow-glow: 0 0 40px hsl(258 90% 66% / 0.4);
-    --shadow-glow-sm: 0 0 20px hsl(258 90% 66% / 0.3);
-    --shadow-violet: 0 10px 30px -10px hsl(258 90% 66% / 0.3);
+    --shadow-glow: 0 0 40px hsl(280 85% 60% / 0.4);
+    --shadow-glow-sm: 0 0 20px hsl(280 85% 60% / 0.3);
+    --shadow-violet: 0 10px 30px -10px hsl(280 85% 60% / 0.3);
   }
 }
 

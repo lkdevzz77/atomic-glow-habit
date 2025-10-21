@@ -66,7 +66,7 @@ const LevelBadge: React.FC<LevelBadgeProps> = ({
             <p className="font-semibold">Nível {level} • {levelInfo.title}</p>
             {xp !== undefined && nextLevelXP !== undefined && (
               <p className="text-xs text-slate-400 mt-1">
-                {nextLevelXP - xp} XP para próximo nível
+                {nextLevelXP - xp} votos para próximo nível
               </p>
             )}
           </div>

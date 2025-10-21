@@ -2,27 +2,29 @@ import { supabase } from '@/lib/supabase';
 import { XP_REWARDS } from '@/systems/levelSystem';
 import { startOfWeek, endOfWeek, format } from 'date-fns';
 
-export interface XPAwardResult {
-  totalXP: number;
+export interface IdentityVoteResult {
+  totalVotes: number;
   reasons: string[];
-  newXP: number;
+  newVotes: number;
   oldLevel: number;
   newLevel: number;
   didLevelUp: boolean;
+  identityGoal?: string;
 }
 
-export const xpService = {
+export const identityVotesService = {
   /**
-   * Concede XP por completar um hábito e verifica todos os bônus aplicáveis
+   * Registra votos de identidade por completar um hábito
+   * Cada ação é um voto para quem você quer se tornar
    */
   async awardForHabitCompletion(
     userId: string,
     habitId: number,
     habitTitle: string
-  ): Promise<XPAwardResult> {
+  ): Promise<IdentityVoteResult> {
     const today = new Date().toISOString().split('T')[0];
     
-    console.log('🎯 [XP] Iniciando award para hábito', habitId, habitTitle);
+    console.log('🗳️ [Identity Votes] Registrando voto de identidade', habitId, habitTitle);
 
     try {
       // Tentar buscar XP com retry (até 3 tentativas)
@@ -31,7 +33,7 @@ export const xpService = {
       let xpError: any = null;
 
       while (retries < 3 && !xpData) {
-        console.log(`🔄 [XP] Tentativa ${retries + 1}/3 - Chamando RPC get_habit_completion_xp`);
+        console.log(`🔄 [Identity Votes] Tentativa ${retries + 1}/3 - Calculando votos`);
         
         const { data, error } = await supabase.rpc(
           'get_habit_completion_xp',
@@ -44,7 +46,7 @@ export const xpService = {
 
         if (!error && data?.[0]?.total_xp) {
           xpData = data;
-          console.log(`✅ [XP] RPC sucesso na tentativa ${retries + 1}:`, data);
+          console.log(`✅ [Identity Votes] RPC sucesso na tentativa ${retries + 1}:`, data);
           break;
         }
 
@@ -52,20 +54,29 @@ export const xpService = {
         retries++;
         
         if (retries < 3) {
-          const delay = 200 * retries; // 200ms, 400ms, 600ms
-          console.log(`⏳ [XP] Aguardando ${delay}ms antes da próxima tentativa...`);
+          const delay = 200 * retries;
+          console.log(`⏳ [Identity Votes] Aguardando ${delay}ms antes da próxima tentativa...`);
           await new Promise(r => setTimeout(r, delay));
         }
       }
 
+      // Buscar identity_goal do hábito
+      const { data: habitData } = await supabase
+        .from('habits')
+        .select('identity_goal')
+        .eq('id', habitId)
+        .single();
+
+      const identityGoal = habitData?.identity_goal || 'pessoa disciplinada e consistente';
+
       // Se falhou após 3 tentativas, usar fallback
       if (!xpData) {
-        console.warn('⚠️ [XP] RPC falhou após 3 tentativas, usando fallback');
-        xpData = [{ total_xp: XP_REWARDS.completeHabit, reasons: ['Hábito completado (fallback)'] }];
+        console.warn('⚠️ [Identity Votes] RPC falhou após 3 tentativas, usando fallback');
+        xpData = [{ total_xp: XP_REWARDS.completeHabit, reasons: ['Voto de identidade registrado'] }];
       }
 
-      const totalXP = xpData[0]?.total_xp || XP_REWARDS.completeHabit;
-      const reasons = xpData[0]?.reasons || ['Hábito completado'];
+      const totalVotes = xpData[0]?.total_xp || XP_REWARDS.completeHabit;
+      const reasons = xpData[0]?.reasons || ['Voto de identidade registrado'];
 
       // Buscar perfil atual
       const { data: profile, error: profileError } = await supabase
@@ -78,9 +89,9 @@ export const xpService = {
 
       const oldXP = profile?.xp || 0;
       const oldLevel = profile?.level || 1;
-      const newXP = oldXP + totalXP;
+      const newXP = oldXP + totalVotes;
 
-      // Atualizar XP (o trigger atualizará o level automaticamente)
+      // Atualizar votos de identidade
       const { data: updatedProfile, error: updateError } = await supabase
         .from('profiles')
         .update({ xp: newXP })
@@ -93,19 +104,23 @@ export const xpService = {
       const newLevel = updatedProfile?.level || oldLevel;
       const didLevelUp = newLevel > oldLevel;
 
-      console.log('✅ [XP] Award concluído:', { totalXP, newLevel, didLevelUp });
+      console.log('✅ [Identity Votes] Voto registrado:', { totalVotes, newLevel, didLevelUp, identityGoal });
 
       return {
-        totalXP,
+        totalVotes,
         reasons,
-        newXP,
+        newVotes: newXP,
         oldLevel,
         newLevel,
         didLevelUp,
+        identityGoal,
       };
     } catch (error) {
-      console.error('❌ [XP] ERRO CRÍTICO ao conceder XP:', error);
+      console.error('❌ [Identity Votes] ERRO ao registrar voto:', error);
       throw error;
     }
   },
 };
+
+// Backward compatibility
+export const xpService = identityVotesService;

@@ -218,8 +218,8 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
         });
       } else {
         toast({
-          title: "🎉 Hábito completado!",
-          description: xpResult?.totalXP ? `+${xpResult.totalXP} XP` : undefined,
+          title: "Mais um voto de identidade",
+          description: xpResult?.identityGoal ? `Você está se tornando ${xpResult.identityGoal}` : `+${xpResult.totalVotes} votos`,
         });
       }
       

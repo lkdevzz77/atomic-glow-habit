@@ -99,9 +99,9 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
                 minute: '2-digit' 
               })}
             </span>
-            <span className="text-violet-400 font-bold flex items-center gap-1">
-              +10 pts 🎉
-            </span>
+              <span className="text-accent font-bold flex items-center gap-1">
+                +1 voto de identidade
+              </span>
           </div>
         ) : (
           <div className="flex items-center justify-between text-sm text-slate-300">
