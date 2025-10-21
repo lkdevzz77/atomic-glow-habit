@@ -94,7 +94,7 @@ const HabitCalendar: React.FC<HabitCalendarProps> = ({ habits, completions, onDa
   };
 
   return (
-    <div className="glass rounded-2xl p-6 sm:p-8 border border-slate-700">
+    <div className="neuro-card rounded-2xl p-6 sm:p-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
@@ -157,10 +157,9 @@ const HabitCalendar: React.FC<HabitCalendarProps> = ({ habits, completions, onDa
                     className={cn(
                       'relative min-h-[48px] sm:min-h-[56px] rounded-xl flex items-center justify-center text-base sm:text-lg font-semibold transition-all duration-200',
                       'hover:scale-105 hover:shadow-xl',
+                      dayCell.isFuture ? 'neuro-flat cursor-not-allowed' : dayCell.hasData ? 'neuro-card cursor-pointer' : 'neuro-flat',
                       getCellColor(dayCell.percentage, dayCell.isFuture),
                       dayCell.isToday && 'ring-2 ring-violet-500 shadow-lg shadow-violet-500/50',
-                      dayCell.isFuture && 'cursor-not-allowed',
-                      !dayCell.isFuture && 'cursor-pointer',
                       format(dayCell.date, 'M') !== format(currentMonth, 'M') && 'opacity-40'
                     )}
                   >

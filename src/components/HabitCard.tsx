@@ -78,14 +78,15 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
     <>
       <div
       className={cn(
-        "glass card-rounded card-padding transition-all duration-300 hover-scale-sm",
+        "card-rounded card-padding",
         isCompleted 
-          ? "border-2 border-violet-500/70 bg-gradient-to-br from-violet-900/30 to-slate-800/90 shadow-xl shadow-violet-500/30" 
-          : "border-2 border-slate-700/80 hover:border-violet-500/40 hover:shadow-lg hover:shadow-violet-500/15"
+          ? "neuro-highlight" 
+          : "neuro-card"
       )}
+      style={isCompleted ? { boxShadow: 'var(--shadow-emerald-glow)' } : undefined}
     >
       <div className="flex items-start gap-3 mb-3 sm:mb-4">
-        <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center shadow-lg">
+        <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl neuro-interactive bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center">
           <Icon
             name={habit.icon as any}
             size={20}
@@ -112,10 +113,10 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
           onClick={handleComplete}
           disabled={isCompleted}
           className={cn(
-            "flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 flex items-center justify-center transition-all duration-200",
+            "flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-200",
             isCompleted
-              ? "bg-violet-600 border-violet-500 shadow-lg shadow-violet-500/50"
-              : "border-slate-600 hover:border-violet-500 hover:scale-110",
+              ? "neuro-highlight bg-violet-600"
+              : "neuro-interactive hover:scale-110",
             isCompleting && "animate-scale-in"
           )}
         >

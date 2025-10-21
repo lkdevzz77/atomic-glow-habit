@@ -67,7 +67,7 @@ export const NotionCalendar: React.FC<NotionCalendarProps> = ({
   const isFuture = (date: Date) => date > new Date();
 
   return (
-    <Card className="card-padding">
+    <div className="card-padding neuro-card rounded-2xl">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-section-title capitalize">
@@ -122,13 +122,14 @@ export const NotionCalendar: React.FC<NotionCalendarProps> = ({
               key={day.toString()}
               onClick={() => onDayClick?.(day)}
               className={cn(
-                'relative min-h-28 sm:min-h-32 p-3 sm:p-4 rounded-xl border transition-all duration-200',
-                'hover:border-primary/50 hover:shadow-lg hover:scale-[1.02]',
+                'relative min-h-28 sm:min-h-32 p-3 sm:p-4 rounded-xl transition-all duration-200',
                 !isCurrentMonth && 'opacity-40',
-                todayDay && 'ring-2 ring-violet-500 shadow-lg shadow-violet-500/50',
-                percentage === 100 && !futureDay && 'bg-gradient-to-br from-emerald-500/10 to-green-600/10 border-emerald-500/30',
+                futureDay ? 'neuro-flat cursor-not-allowed' : 'neuro-card cursor-pointer',
+                todayDay && !futureDay && 'ring-2 ring-violet-400/40 ring-offset-2 ring-offset-background/50',
+                percentage === 100 && !futureDay && 'neuro-highlight',
                 'flex flex-col gap-2'
               )}
+              style={percentage === 100 && !futureDay ? { boxShadow: 'var(--shadow-emerald-glow)' } : undefined}
             >
               {/* Day Number */}
               <div className="flex items-center justify-between">
@@ -210,6 +211,6 @@ export const NotionCalendar: React.FC<NotionCalendarProps> = ({
           <span>Todos completados</span>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
