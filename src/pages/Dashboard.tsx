@@ -22,6 +22,8 @@ import { Button } from "@/components/ui/button";
 import { BarChart, Trophy, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { AnimatedPage } from "@/components/AnimatedPage";
+import { PageLoader } from "@/components/PageLoader";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -49,17 +51,9 @@ const Dashboard = () => {
 
   if (habitsLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <img 
-            src="/atom-logo.png" 
-            alt="Loading" 
-            className="w-16 h-16 mx-auto mb-4 animate-pulse"
-            style={{ filter: 'drop-shadow(0 0 30px rgba(124, 58, 237, 0.8))' }}
-          />
-          <p className="text-muted-foreground">Reorganizando átomos...</p>
-        </div>
-      </div>
+      <AppLayout>
+        <PageLoader />
+      </AppLayout>
     );
   }
 
@@ -76,7 +70,8 @@ const Dashboard = () => {
 
   return (
     <AppLayout>
-      <div className="max-w-7xl mx-auto space-y-8">
+      <AnimatedPage>
+        <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
         {/* Header */}
         <div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
@@ -87,9 +82,9 @@ const Dashboard = () => {
           </p>
         </div>
 
-        {/* Main Content */}
-        <Tabs defaultValue="kanban" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:w-auto">
+          {/* Main Content */}
+          <Tabs defaultValue="kanban" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:w-auto"  >
             <TabsTrigger value="kanban">Hábitos</TabsTrigger>
             <TabsTrigger value="calendar">Calendário</TabsTrigger>
             <TabsTrigger value="stats">Estatísticas</TabsTrigger>
@@ -188,33 +183,34 @@ const Dashboard = () => {
           <TabsContent value="badges" className="space-y-6 mt-6">
             <BadgeScroll />
             <UpcomingBadges />
-          </TabsContent>
-        </Tabs>
+            </TabsContent>
+          </Tabs>
 
-        {/* Floating Action Button */}
-        <Button
-          onClick={() => setIsNewHabitModalOpen(true)}
-          size="lg"
-          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-2xl z-40"
-        >
-          <Plus size={24} />
-        </Button>
-      </div>
+          {/* Floating Action Button */}
+          <Button
+            onClick={() => setIsNewHabitModalOpen(true)}
+            size="lg"
+            className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-2xl z-40"
+          >
+            <Plus size={24} />
+          </Button>
+        </div>
 
-      {/* Modals */}
-      <NewHabitModal
-        open={isNewHabitModalOpen}
-        onOpenChange={setIsNewHabitModalOpen}
-      />
-
-      {isDayDetailModalOpen && selectedDate && (
-        <DayDetailModal
-          date={selectedDate}
-          habits={habits || []}
-          completions={allCompletions}
-          onClose={() => setIsDayDetailModalOpen(false)}
+        {/* Modals */}
+        <NewHabitModal
+          open={isNewHabitModalOpen}
+          onOpenChange={setIsNewHabitModalOpen}
         />
-      )}
+
+        {isDayDetailModalOpen && selectedDate && (
+          <DayDetailModal
+            date={selectedDate}
+            habits={habits || []}
+            completions={allCompletions}
+            onClose={() => setIsDayDetailModalOpen(false)}
+          />
+        )}
+      </AnimatedPage>
     </AppLayout>
   );
 };

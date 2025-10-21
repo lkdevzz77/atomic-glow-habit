@@ -14,6 +14,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const { data: habits } = useHabits();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    const saved = localStorage.getItem('sidebar-open');
+    return saved ? JSON.parse(saved) : true;
+  });
+
+  React.useEffect(() => {
+    localStorage.setItem('sidebar-open', JSON.stringify(sidebarOpen));
+  }, [sidebarOpen]);
 
   const { data: profile, refetch: refetchProfile } = useQuery({
     queryKey: ['profile', user?.id],
@@ -53,20 +61,20 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <SidebarProvider>
+    <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
 
         <div className="flex-1 flex flex-col">
-          <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="flex h-20 items-center gap-4 px-4 sm:px-6">
-              <SidebarTrigger className="h-10 w-10" />
+          <header className="sticky top-0 z-40 border-b border-slate-800/50 bg-slate-900/80 backdrop-blur-xl">
+            <div className="flex h-16 md:h-20 items-center gap-3 px-4 sm:px-6">
+              <SidebarTrigger className="h-10 w-10 text-slate-300 hover:text-slate-100" />
 
               <div className="flex-1" />
 
-              {/* SPRINT 2: Daily Progress com max-width */}
+              {/* Daily Progress - Hidden on mobile */}
               {habits && habits.length > 0 && (
-                <div className="hidden lg:block max-w-[300px]">
+                <div className="hidden md:block max-w-[280px] lg:max-w-[300px]">
                   <DailyProgress
                     completed={habits.filter(h => h.completedToday).length}
                     total={habits.length}
@@ -79,18 +87,20 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 </div>
               )}
 
-              <ProfileButton
-                compact
-                user={userWithAvatar}
-                onClick={() => setDrawerOpen(true)}
-                xpForNextLevel={xpForNextLevel}
-                xpInCurrentLevel={xpInCurrentLevel}
-                xpNeededForNext={xpNeededForNext}
-              />
+              <div className="scale-90 md:scale-100">
+                <ProfileButton
+                  compact
+                  user={userWithAvatar}
+                  onClick={() => setDrawerOpen(true)}
+                  xpForNextLevel={xpForNextLevel}
+                  xpInCurrentLevel={xpInCurrentLevel}
+                  xpNeededForNext={xpNeededForNext}
+                />
+              </div>
             </div>
           </header>
 
-          <main className="flex-1 p-5 sm:p-8">
+          <main className="flex-1 p-4 sm:p-6 md:p-8">
             {children}
           </main>
         </div>

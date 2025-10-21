@@ -17,6 +17,9 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import NewHabitModal from '@/components/NewHabitModal';
 import * as LucideIcons from 'lucide-react';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { AnimatedPage } from '@/components/AnimatedPage';
+import { PageLoader } from '@/components/PageLoader';
 
 const getIconComponent = (iconName: string) => {
   const Icon = (LucideIcons as any)[iconName];
@@ -25,7 +28,7 @@ const getIconComponent = (iconName: string) => {
 
 export default function HabitsPage() {
   const navigate = useNavigate();
-  const { data: habits, deleteHabit } = useHabits();
+  const { data: habits, deleteHabit, isLoading } = useHabits();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'archived'>('all');
   const [sortBy, setSortBy] = useState<'recent' | 'streak' | 'name' | 'completion'>('recent');
@@ -63,26 +66,36 @@ export default function HabitsPage() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <PageLoader />
+      </AppLayout>
+    );
+  }
+
   return (
     <AppLayout>
-      <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Meus Hábitos</h1>
-            <p className="text-muted-foreground">
-              Gerencie todos os seus hábitos em um só lugar
-            </p>
+      <AnimatedPage>
+        <div className="max-w-6xl mx-auto space-y-4 md:space-y-6">
+          <Breadcrumbs />
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold">Meus Hábitos</h1>
+              <p className="text-muted-foreground mt-1">
+                Gerencie todos os seus hábitos em um só lugar
+              </p>
+            </div>
+            <Button onClick={() => setIsNewHabitModalOpen(true)} size="lg" className="w-full sm:w-auto">
+              <Plus className="mr-2" size={20} />
+              Novo Hábito
+            </Button>
           </div>
-          <Button onClick={() => setIsNewHabitModalOpen(true)} size="lg">
-            <Plus className="mr-2" size={20} />
-            Novo Hábito
-          </Button>
-        </div>
 
-        {/* Filtros */}
-        <Card className="p-4">
-          <div className="flex flex-col sm:flex-row gap-4">
+          {/* Filtros */}
+          <Card className="p-4">
+            <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
               <Input
@@ -114,123 +127,124 @@ export default function HabitsPage() {
                 <SelectItem value="name">Nome (A-Z)</SelectItem>
                 <SelectItem value="completion">Taxa de Sucesso</SelectItem>
               </SelectContent>
-            </Select>
-          </div>
-        </Card>
+              </Select>
+            </div>
+          </Card>
 
-        {/* Lista de Hábitos */}
-        <div className="space-y-4">
-          {filteredHabits && filteredHabits.length > 0 ? (
-            filteredHabits.map((habit) => {
+          {/* Lista de Hábitos */}
+          <div className="space-y-4">
+            {filteredHabits && filteredHabits.length > 0 ? (
+              filteredHabits.map((habit) => {
               const Icon = getIconComponent(habit.icon);
               const completionRate = habit.total_completions
                 ? Math.round((habit.total_completions / 30) * 100)
                 : 0;
 
-              return (
-                <Card key={habit.id} className="p-6">
-                  <div className="space-y-4">
-                    {/* Header */}
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-violet-500/20 flex items-center justify-center">
-                          <Icon size={24} className="text-primary" />
+                return (
+                  <Card key={habit.id} className="p-4 sm:p-6">
+                    <div className="space-y-4">
+                      {/* Header */}
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-violet-500/20 flex items-center justify-center">
+                            <Icon size={24} className="text-primary" />
+                          </div>
+                          <div>
+                            <h3 className="text-base sm:text-lg font-semibold">{habit.title}</h3>
+                            <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                              <span>⏰ {habit.when_time}</span>
+                              <span className="hidden sm:inline">•</span>
+                              <span>📍 {habit.where_location}</span>
+                            </div>
+                          </div>
                         </div>
+
+                        <div className="flex items-center gap-1 sm:gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => navigate(`/habits/${habit.id}/edit`)}
+                          >
+                            <Edit size={16} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(habit.id)}
+                          >
+                            <Trash2 size={16} className="text-destructive" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Stats */}
+                      <div className="flex flex-wrap items-center gap-3 sm:gap-6">
+                        <div className="flex items-center gap-2">
+                          <Flame size={16} className="text-orange-500" />
+                          <div>
+                            <div className="text-base sm:text-lg font-bold">{habit.streak || 0} dias</div>
+                            <div className="text-xs text-muted-foreground">Streak</div>
+                          </div>
+                        </div>
+
+                        <div className="h-10 w-px bg-border hidden sm:block" />
+
                         <div>
-                          <h3 className="text-lg font-semibold">{habit.title}</h3>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <span>⏰ {habit.when_time}</span>
-                            <span>•</span>
-                            <span>📍 {habit.where_location}</span>
+                          <div className="text-base sm:text-lg font-bold">{habit.total_completions || 0}</div>
+                          <div className="text-xs text-muted-foreground">Total</div>
+                        </div>
+
+                        <div className="h-10 w-px bg-border hidden sm:block" />
+
+                        <div className="flex-1 min-w-[120px]">
+                          <div className="flex items-center justify-between text-xs mb-1">
+                            <span className="text-muted-foreground">Sucesso</span>
+                            <span className="font-semibold">{completionRate}%</span>
                           </div>
+                          <Progress value={completionRate} className="h-2" />
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => navigate(`/habits/${habit.id}/edit`)}
-                        >
-                          <Edit size={18} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDelete(habit.id)}
-                        >
-                          <Trash2 size={18} className="text-destructive" />
-                        </Button>
-                      </div>
+                      {/* Detalhes das 4 Leis (colapsável) */}
+                      {(habit.trigger_activity || habit.temptation_bundle || habit.environment_prep) && (
+                        <div className="pt-4 border-t space-y-2 text-xs sm:text-sm">
+                          {habit.trigger_activity && (
+                            <div>
+                              <span className="font-medium text-primary">Lei 1 - Óbvio:</span>{' '}
+                              <span className="text-muted-foreground">{habit.trigger_activity}</span>
+                            </div>
+                          )}
+                          {habit.temptation_bundle && (
+                            <div>
+                              <span className="font-medium text-primary">Lei 2 - Atraente:</span>{' '}
+                              <span className="text-muted-foreground">{habit.temptation_bundle}</span>
+                            </div>
+                          )}
+                          {habit.environment_prep && (
+                            <div>
+                              <span className="font-medium text-primary">Lei 3 - Fácil:</span>{' '}
+                              <span className="text-muted-foreground">{habit.environment_prep}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
+                  </Card>
+                );
+              })
+            ) : (
+              <Card className="p-12 text-center">
+                <p className="text-muted-foreground">Nenhum hábito encontrado</p>
+              </Card>
+            )}
+          </div>
 
-                    {/* Stats */}
-                    <div className="flex items-center gap-6">
-                      <div className="flex items-center gap-2">
-                        <Flame size={18} className="text-orange-500" />
-                        <div>
-                          <div className="text-lg font-bold">{habit.streak || 0} dias</div>
-                          <div className="text-xs text-muted-foreground">Streak Atual</div>
-                        </div>
-                      </div>
-
-                      <div className="h-10 w-px bg-border" />
-
-                      <div>
-                        <div className="text-lg font-bold">{habit.total_completions || 0}</div>
-                        <div className="text-xs text-muted-foreground">Total</div>
-                      </div>
-
-                      <div className="h-10 w-px bg-border" />
-
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between text-xs mb-1">
-                          <span className="text-muted-foreground">Taxa de Sucesso</span>
-                          <span className="font-semibold">{completionRate}%</span>
-                        </div>
-                        <Progress value={completionRate} className="h-2" />
-                      </div>
-                    </div>
-
-                    {/* Detalhes das 4 Leis (colapsável) */}
-                    {(habit.trigger_activity || habit.temptation_bundle || habit.environment_prep) && (
-                      <div className="pt-4 border-t space-y-2 text-sm">
-                        {habit.trigger_activity && (
-                          <div>
-                            <span className="font-medium text-primary">Lei 1 - Óbvio:</span>{' '}
-                            <span className="text-muted-foreground">{habit.trigger_activity}</span>
-                          </div>
-                        )}
-                        {habit.temptation_bundle && (
-                          <div>
-                            <span className="font-medium text-primary">Lei 2 - Atraente:</span>{' '}
-                            <span className="text-muted-foreground">{habit.temptation_bundle}</span>
-                          </div>
-                        )}
-                        {habit.environment_prep && (
-                          <div>
-                            <span className="font-medium text-primary">Lei 3 - Fácil:</span>{' '}
-                            <span className="text-muted-foreground">{habit.environment_prep}</span>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </Card>
-              );
-            })
-          ) : (
-            <Card className="p-12 text-center">
-              <p className="text-muted-foreground">Nenhum hábito encontrado</p>
-            </Card>
-          )}
+          <NewHabitModal
+            open={isNewHabitModalOpen}
+            onOpenChange={setIsNewHabitModalOpen}
+          />
         </div>
-      </div>
-
-      <NewHabitModal
-        open={isNewHabitModalOpen}
-        onOpenChange={setIsNewHabitModalOpen}
-      />
+      </AnimatedPage>
     </AppLayout>
   );
 }

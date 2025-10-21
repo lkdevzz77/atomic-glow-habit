@@ -39,6 +39,9 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Settings, Bell, Lock, Info, AlertTriangle } from 'lucide-react';
+import { AppLayout } from '@/layouts/AppLayout';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { AnimatedPage } from '@/components/AnimatedPage';
 
 export default function SettingsPage() {
   const { user, signOut } = useAuth();
@@ -90,11 +93,15 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="container max-w-4xl py-8 space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-200">Configurações</h1>
-        <p className="text-slate-400">Gerencie suas preferências e configurações da conta</p>
-      </div>
+    <AppLayout>
+      <AnimatedPage>
+        <div className="max-w-4xl mx-auto space-y-6 md:space-y-8">
+          <Breadcrumbs />
+          
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-slate-200">Configurações</h1>
+            <p className="text-slate-400 mt-1">Gerencie suas preferências e configurações da conta</p>
+          </div>
 
       <Tabs defaultValue="general" className="space-y-4">
         <TabsList>
@@ -314,9 +321,9 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
         </TabsContent>
-      </Tabs>
+        </Tabs>
 
-      {/* Modal de Alteração de Email */}
+        {/* Modal de Alteração de Email */}
       <AlertDialog open={emailChangeOpen} onOpenChange={setEmailChangeOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -347,7 +354,9 @@ export default function SettingsPage() {
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
-      </AlertDialog>
-    </div>
+        </AlertDialog>
+      </div>
+      </AnimatedPage>
+    </AppLayout>
   );
 }

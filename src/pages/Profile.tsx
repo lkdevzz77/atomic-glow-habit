@@ -28,6 +28,9 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/LoadingStates';
 import { User, Edit3, Calendar } from 'lucide-react';
+import { AppLayout } from '@/layouts/AppLayout';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { AnimatedPage } from '@/components/AnimatedPage';
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
@@ -89,23 +92,27 @@ export default function Profile() {
   if (!user) return null;
 
   return (
-    <div className="container max-w-4xl py-8 space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-200">Perfil</h1>
-          <p className="text-slate-400">Gerencie suas informações pessoais e objetivos</p>
-        </div>
-        <Button
-          onClick={() => setIsEditing(!isEditing)}
-          variant="outline"
-          className="gap-2"
-        >
-          <Edit3 size={16} />
-          {isEditing ? 'Cancelar' : 'Editar Perfil'}
-        </Button>
-      </div>
+    <AppLayout>
+      <AnimatedPage>
+        <div className="max-w-4xl mx-auto space-y-6 md:space-y-8">
+          <Breadcrumbs />
+          
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-200">Perfil</h1>
+              <p className="text-slate-400 mt-1">Gerencie suas informações pessoais e objetivos</p>
+            </div>
+            <Button
+              onClick={() => setIsEditing(!isEditing)}
+              variant="outline"
+              className="gap-2"
+            >
+              <Edit3 size={16} />
+              {isEditing ? 'Cancelar' : 'Editar Perfil'}
+            </Button>
+          </div>
 
-      <div className="grid gap-6">
+          <div className="grid gap-4 md:gap-6">
         {/* Card Principal */}
         <Card>
           <CardHeader className="pb-4">
@@ -256,8 +263,10 @@ export default function Profile() {
               </div>
             </div>
           </CardContent>
-        </Card>
+          </Card>
+        </div>
       </div>
-    </div>
+      </AnimatedPage>
+    </AppLayout>
   );
 }
