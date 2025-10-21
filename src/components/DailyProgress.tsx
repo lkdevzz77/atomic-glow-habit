@@ -29,7 +29,7 @@ export const DailyProgress: React.FC<DailyProgressProps> = ({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent/50 transition-colors">
+        <button className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent/50 transition-colors touch-target-comfortable">
           <div className="flex flex-col gap-1">
             <div className="text-xs text-muted-foreground">Hoje</div>
             <div className="text-sm font-semibold">

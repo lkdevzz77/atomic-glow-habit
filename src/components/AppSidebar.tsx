@@ -14,6 +14,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useLevel } from '@/hooks/useLevel';
 import { BarChart, Target, TrendingUp, Home, Award, User, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { triggerHaptic } from '@/utils/haptics';
 
 const mainItems = [
   { title: 'Dashboard', url: '/dashboard', icon: Home },
@@ -69,7 +70,7 @@ export function AppSidebar() {
                       asChild 
                       isActive={active}
                       className={cn(
-                        "relative min-h-[44px] transition-all duration-200",
+                        "relative transition-all duration-200 touch-target-comfortable",
                         active && [
                           "bg-slate-800/70 text-slate-100",
                           "before:absolute before:left-0 before:top-0 before:bottom-0",
@@ -78,7 +79,11 @@ export function AppSidebar() {
                         !active && "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200"
                       )}
                     >
-                      <Link to={item.url} className="flex items-center gap-3">
+                      <Link 
+                        to={item.url} 
+                        className="flex items-center gap-3"
+                        onClick={() => triggerHaptic('light')}
+                      >
                         <item.icon size={18} />
                         <span>{item.title}</span>
                       </Link>
@@ -104,7 +109,7 @@ export function AppSidebar() {
                       asChild 
                       isActive={active}
                       className={cn(
-                        "relative min-h-[44px] transition-all duration-200",
+                        "relative transition-all duration-200 touch-target-comfortable",
                         active && [
                           "bg-slate-800/70 text-slate-100",
                           "before:absolute before:left-0 before:top-0 before:bottom-0",
@@ -113,7 +118,11 @@ export function AppSidebar() {
                         !active && "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200"
                       )}
                     >
-                      <Link to={item.url} className="flex items-center gap-3">
+                      <Link 
+                        to={item.url} 
+                        className="flex items-center gap-3"
+                        onClick={() => triggerHaptic('light')}
+                      >
                         <item.icon size={18} />
                         <span>{item.title}</span>
                       </Link>

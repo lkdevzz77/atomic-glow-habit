@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Plus, Search, Flame, TrendingUp, Archive, Edit, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/layouts/AppLayout';
+import { FloatingActionButton } from '@/components/FloatingActionButton';
 import { useHabits } from '@/hooks/useHabits';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useIsMobile } from '@/hooks/use-mobile';
 import {
   Select,
   SelectContent,
@@ -33,6 +35,7 @@ export default function HabitsPage() {
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'archived'>('all');
   const [sortBy, setSortBy] = useState<'recent' | 'streak' | 'name' | 'completion'>('recent');
   const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   // Filtrar hábitos
   const filteredHabits = habits
@@ -87,11 +90,19 @@ export default function HabitsPage() {
                 Gerencie todos os seus hábitos em um só lugar
               </p>
             </div>
-            <Button onClick={() => setIsNewHabitModalOpen(true)} size="lg" className="w-full sm:w-auto">
+            {/* Desktop button - hidden on mobile (FAB used instead) */}
+            <Button 
+              onClick={() => setIsNewHabitModalOpen(true)} 
+              size="lg" 
+              className="w-full sm:w-auto hidden md:flex"
+            >
               <Plus className="mr-2" size={20} />
               Novo Hábito
             </Button>
           </div>
+
+          {/* FAB - Mobile only */}
+          <FloatingActionButton onClick={() => setIsNewHabitModalOpen(true)} />
 
           {/* Filtros */}
           <Card className="p-4">

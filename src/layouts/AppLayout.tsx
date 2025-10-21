@@ -4,11 +4,13 @@ import { AppSidebar } from '@/components/AppSidebar';
 import { ProfileButton } from '@/components/ProfileButton';
 import { ProfileDrawer } from '@/components/ProfileDrawer';
 import { DailyProgress } from '@/components/DailyProgress';
+import { BottomNavigation } from '@/components/BottomNavigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHabits } from '@/hooks/useHabits';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { getXPForLevel } from '@/systems/levelSystem';
+import { triggerHaptic } from '@/utils/haptics';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -65,10 +67,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="flex min-h-screen w-full">
         <AppSidebar />
 
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col pb-16 md:pb-0">
           <header className="sticky top-0 z-40 border-b border-slate-800/50 bg-slate-900/80 backdrop-blur-xl">
             <div className="flex h-16 md:h-20 items-center gap-3 px-4 sm:px-6">
-              <SidebarTrigger className="h-10 w-10 text-slate-300 hover:text-slate-100" />
+              <SidebarTrigger 
+                className="h-10 w-10 text-slate-300 hover:text-slate-100 touch-target-comfortable" 
+                onClick={() => triggerHaptic('light')}
+              />
 
               <div className="flex-1" />
 
@@ -104,6 +109,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             {children}
           </main>
         </div>
+
+        {/* Bottom Navigation - Mobile only */}
+        <BottomNavigation />
 
         <ProfileDrawer
           open={drawerOpen}

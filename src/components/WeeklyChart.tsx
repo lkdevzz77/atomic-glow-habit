@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { useWeeklyData, DayData } from '@/hooks/useWeeklyData';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const WeeklyChart = () => {
   const { data, isLoading } = useWeeklyData();
+  const isMobile = useIsMobile();
 
   if (isLoading) {
     return (
@@ -64,15 +67,21 @@ const WeeklyChart = () => {
         Progresso Semanal
       </h2>
 
-      {/* Gráfico */}
+      {/* Gráfico - Altura responsiva */}
       <div className="bg-slate-800/40 rounded-xl p-4 sm:p-6 mb-4 border border-slate-700/80">
-        <ResponsiveContainer width="100%" height={240}>
+        <ResponsiveContainer width="100%" height={isMobile ? 180 : 240}>
           <BarChart data={weekData}>
-            {/* Eixo X - Dias da semana */}
+            {/* Eixo X - Dias da semana - Rotated labels on mobile */}
             <XAxis 
               dataKey="day" 
               stroke="#cbd5e1" 
-              tick={{ fill: '#cbd5e1', fontSize: 12 }}
+              tick={{ 
+                fill: '#cbd5e1', 
+                fontSize: isMobile ? 10 : 12 
+              }}
+              angle={isMobile ? -45 : 0}
+              textAnchor={isMobile ? 'end' : 'middle'}
+              height={isMobile ? 60 : 30}
               axisLine={{ stroke: '#475569' }}
             />
             

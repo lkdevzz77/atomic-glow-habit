@@ -6,11 +6,13 @@ import LevelBadge from '@/components/LevelBadge';
 import { cn } from '@/lib/utils';
 import { Check, Lock, Sparkles, Star, Trophy } from 'lucide-react';
 import { ICON_SIZES } from '@/config/iconSizes';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function LevelJourneyPage() {
   const { level, xp, currentLevelXP, nextLevelXP, progress, isLoading } = useLevel();
   const currentLevelInfo = getLevelInfo(level);
   const allLevels = getAllLevels();
+  const isMobile = useIsMobile();
 
   if (isLoading) {
     return (
@@ -91,23 +93,25 @@ export default function LevelJourneyPage() {
               <div
                 key={lvl}
                 className={cn(
-                  'relative pl-12 pb-6 border-l-2',
+                  'relative pb-6 border-l-2',
+                  isMobile ? 'pl-8' : 'pl-12',
                   isCompleted && 'border-emerald-500',
                   isCurrent && 'border-violet-500',
                   isLocked && 'border-border opacity-50'
                 )}
               >
-                {/* Badge do nível na linha */}
+                {/* Badge do nível na linha - Compact on mobile */}
                 <div className="absolute left-0 top-0 -translate-x-1/2">
                   <div className={cn(
-                    'w-10 h-10 rounded-full flex items-center justify-center border-2',
+                    'rounded-full flex items-center justify-center border-2',
+                    isMobile ? 'w-8 h-8' : 'w-10 h-10',
                     isCompleted && 'bg-emerald-500 border-emerald-400',
                     isCurrent && 'bg-gradient-to-br from-violet-500 to-purple-600 border-violet-400 animate-pulse',
                     isLocked && 'bg-card border-border'
                   )}>
-                    {isCompleted && <Check className="text-white" size={ICON_SIZES.md} />}
-                    {isCurrent && <Icon size={ICON_SIZES.md} className="text-white" />}
-                    {isLocked && <Lock className="text-muted-foreground" size={ICON_SIZES.md} />}
+                    {isCompleted && <Check className="text-white" size={isMobile ? 16 : ICON_SIZES.md} />}
+                    {isCurrent && <Icon size={isMobile ? 16 : ICON_SIZES.md} className="text-white" />}
+                    {isLocked && <Lock className="text-muted-foreground" size={isMobile ? 16 : ICON_SIZES.md} />}
                   </div>
                 </div>
 

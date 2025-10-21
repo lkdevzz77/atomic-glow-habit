@@ -1,8 +1,10 @@
-import React from 'react';
-import { CheckCircle, Square, Flame, Clock, MapPin } from 'lucide-react';
+import React, { useState } from 'react';
+import { CheckCircle, Square, Flame, Clock, MapPin, Trash2 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { triggerHaptic } from '@/utils/haptics';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface Habit {
   id: number;
@@ -20,10 +22,21 @@ interface Habit {
 interface HabitCardCompactProps {
   habit: Habit;
   onComplete?: () => void;
+  onDelete?: () => void;
 }
 
-const HabitCardCompact: React.FC<HabitCardCompactProps> = ({ habit, onComplete }) => {
+const HabitCardCompact: React.FC<HabitCardCompactProps> = ({ habit, onComplete, onDelete }) => {
   const completedToday = (habit as any).completedToday || false;
+  const isMobile = useIsMobile();
+  const [showActions, setShowActions] = useState(false);
+  
+  // Swipe gesture state
+  const x = useMotionValue(0);
+  const background = useTransform(
+    x,
+    [-100, 0, 100],
+    ['rgba(239, 68, 68, 0.2)', 'transparent', 'rgba(16, 185, 129, 0.2)']
+  );
   
   // Get Lucide icon component directly from icon name
   const getIcon = () => {
@@ -33,20 +46,44 @@ const HabitCardCompact: React.FC<HabitCardCompactProps> = ({ habit, onComplete }
   
   const Icon = getIcon();
 
+  const handleDragEnd = (_: any, info: PanInfo) => {
+    if (!isMobile || completedToday) return;
+
+    // Swipe right to complete (>100px)
+    if (info.offset.x > 100 && onComplete) {
+      triggerHaptic('success');
+      onComplete();
+    }
+    // Swipe left to delete (<-100px)
+    else if (info.offset.x < -100 && onDelete) {
+      triggerHaptic('warning');
+      onDelete();
+    }
+    
+    // Reset position
+    x.set(0);
+  };
+
   return (
     <motion.div
       layout
+      drag={isMobile && !completedToday ? "x" : false}
+      dragConstraints={{ left: -150, right: 150 }}
+      dragElastic={0.2}
+      onDragEnd={handleDragEnd}
+      style={{ x, background }}
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95, x: 100 }}
       transition={{ duration: 0.3 }}
-      whileHover={!completedToday ? { scale: 1.02, y: -2 } : {}}
+      whileHover={!completedToday && !isMobile ? { scale: 1.02, y: -2 } : {}}
       whileTap={!completedToday ? { scale: 0.98 } : {}}
       className={cn(
         "group relative flex items-center gap-4 px-5 py-4",
         "bg-gradient-to-r from-slate-800 to-slate-800/50",
         "border-l-2 rounded-xl",
         "transition-all duration-200",
+        "touch-target-comfortable", // Mobile touch target
         completedToday && "opacity-60 border-l-emerald-500",
         !completedToday && "border-l-violet-500 hover:border-l-violet-400 hover:shadow-lg hover:shadow-violet-500/15"
       )}
@@ -90,13 +127,22 @@ const HabitCardCompact: React.FC<HabitCardCompactProps> = ({ habit, onComplete }
         </div>
       </div>
 
-      {/* Complete button */}
+      {/* Complete button - Touch optimized for mobile */}
       {!completedToday && onComplete && (
         <button
-          onClick={onComplete}
-          className="relative w-10 h-10 rounded-full border-2 border-violet-500 hover:bg-violet-500/20 transition-all group-hover:scale-110 flex-shrink-0"
+          onClick={() => {
+            triggerHaptic('medium');
+            onComplete();
+          }}
+          className={cn(
+            "relative rounded-full border-2 border-violet-500 hover:bg-violet-500/20 transition-all group-hover:scale-110 flex-shrink-0",
+            isMobile ? "w-12 h-12 touch-target-comfortable" : "w-10 h-10" // Larger on mobile
+          )}
         >
-          <CheckCircle className="w-5 h-5 text-violet-400 mx-auto" />
+          <CheckCircle className={cn(
+            "text-violet-400 mx-auto",
+            isMobile ? "w-6 h-6" : "w-5 h-5"
+          )} />
         </button>
       )}
       

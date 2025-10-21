@@ -94,7 +94,7 @@ export const ProfileButton: React.FC<ProfileButtonProps> = ({
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
-            className="relative h-auto p-2 gap-2 hover:bg-accent/50"
+            className="relative h-auto p-2 gap-2 hover:bg-accent/50 touch-target-comfortable"
           >
             <div className="relative">
               {renderAvatar()}
