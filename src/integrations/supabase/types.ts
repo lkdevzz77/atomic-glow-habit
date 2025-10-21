@@ -85,14 +85,17 @@ export type Database = {
       }
       habits: {
         Row: {
+          accountability_partner: string | null
           created_at: string
           current_phase: number
           environment_prep: string | null
           goal_current: number
           goal_target: number
           goal_unit: string
+          habit_stack: string | null
           icon: string
           id: number
+          immediate_reward: string | null
           last_completed: string | null
           longest_streak: number
           reward_milestone: Json | null
@@ -106,6 +109,7 @@ export type Database = {
           tracking_preferences: Json | null
           trigger_activity: string | null
           two_minute_rule: Json | null
+          two_minute_version: string | null
           updated_at: string
           user_id: string
           vibration_enabled: boolean | null
@@ -113,14 +117,17 @@ export type Database = {
           where_location: string
         }
         Insert: {
+          accountability_partner?: string | null
           created_at?: string
           current_phase?: number
           environment_prep?: string | null
           goal_current?: number
           goal_target: number
           goal_unit?: string
+          habit_stack?: string | null
           icon?: string
           id?: number
+          immediate_reward?: string | null
           last_completed?: string | null
           longest_streak?: number
           reward_milestone?: Json | null
@@ -134,6 +141,7 @@ export type Database = {
           tracking_preferences?: Json | null
           trigger_activity?: string | null
           two_minute_rule?: Json | null
+          two_minute_version?: string | null
           updated_at?: string
           user_id: string
           vibration_enabled?: boolean | null
@@ -141,14 +149,17 @@ export type Database = {
           where_location: string
         }
         Update: {
+          accountability_partner?: string | null
           created_at?: string
           current_phase?: number
           environment_prep?: string | null
           goal_current?: number
           goal_target?: number
           goal_unit?: string
+          habit_stack?: string | null
           icon?: string
           id?: number
+          immediate_reward?: string | null
           last_completed?: string | null
           longest_streak?: number
           reward_milestone?: Json | null
@@ -162,6 +173,7 @@ export type Database = {
           tracking_preferences?: Json | null
           trigger_activity?: string | null
           two_minute_rule?: Json | null
+          two_minute_version?: string | null
           updated_at?: string
           user_id?: string
           vibration_enabled?: boolean | null
@@ -180,6 +192,10 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_color: string | null
+          avatar_icon: string | null
+          avatar_type: string | null
+          avatar_url: string | null
           created_at: string
           desired_identity: string | null
           id: string
@@ -192,6 +208,10 @@ export type Database = {
           xp: number | null
         }
         Insert: {
+          avatar_color?: string | null
+          avatar_icon?: string | null
+          avatar_type?: string | null
+          avatar_url?: string | null
           created_at?: string
           desired_identity?: string | null
           id: string
@@ -204,6 +224,10 @@ export type Database = {
           xp?: number | null
         }
         Update: {
+          avatar_color?: string | null
+          avatar_icon?: string | null
+          avatar_type?: string | null
+          avatar_url?: string | null
           created_at?: string
           desired_identity?: string | null
           id?: string
@@ -264,6 +288,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_habit_completion_xp: {
+        Args: { p_date: string; p_habit_id: number; p_user_id: string }
+        Returns: {
+          reasons: string[]
+          total_xp: number
+        }[]
+      }
       initialize_user_badges: {
         Args: { p_user_id: string }
         Returns: undefined
