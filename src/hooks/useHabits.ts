@@ -45,13 +45,35 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
       console.log('🔍 Querying for user_id:', user.id);
       console.log('📊 Total habits loaded:', filteredHabits.length);
       
-      // ⚡ USAR RPC para buscar completions com data server-side
-      const { data: todayCompletions, error: rpcError } = await supabase
-        .rpc('get_user_todays_completions', { p_user_id: user.id });
+      // ⚡ USAR RPC para buscar completions com data server-side (com fallback)
+      let todayCompletions = null;
       
-      if (rpcError) {
-        console.error('❌ [useHabits] RPC error:', rpcError);
-        throw rpcError;
+      try {
+        const { data: rpcData, error: rpcError } = await supabase
+          .rpc('get_user_todays_completions', { p_user_id: user.id });
+        
+        if (rpcError) {
+          console.warn('⚠️ [useHabits] RPC failed, using fallback query:', rpcError.message);
+          
+          // FALLBACK: usar query antiga se RPC falhar
+          const { data: fallbackData } = await supabase
+            .from('habit_completions')
+            .select('habit_id, date, completed_at, percentage')
+            .eq('user_id', user.id)
+            .eq('date', today)
+            .gte('percentage', 100)
+            .order('completed_at', { ascending: false });
+          
+          todayCompletions = fallbackData;
+          console.log('✅ Using fallback query (client-side date)');
+        } else {
+          todayCompletions = rpcData;
+          console.log('✅ Using RPC (server-side date)');
+        }
+      } catch (error) {
+        console.error('❌ [useHabits] Error fetching completions:', error);
+        // Em caso de erro, retornar array vazio para não bloquear
+        todayCompletions = [];
       }
       
       console.log('✅ Completions found (server-side date):', todayCompletions?.length || 0);
