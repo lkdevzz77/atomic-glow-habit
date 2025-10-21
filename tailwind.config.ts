@@ -126,6 +126,10 @@ export default {
           from: { opacity: "0", transform: "translateY(20px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
+        "hover-scale": {
+          "0%": { transform: "scale(1)" },
+          "100%": { transform: "scale(1.02)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -136,6 +140,7 @@ export default {
         "float": "float 3s ease-in-out infinite",
         "spin-gradient": "spin-gradient 4s linear infinite",
         "slide-up": "slide-up 0.3s ease-out",
+        "hover-scale": "hover-scale 0.2s ease-out",
       },
     },
   },

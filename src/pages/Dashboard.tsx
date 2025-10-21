@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import confetti from "canvas-confetti";
+import { triggerHabitConfetti } from "@/utils/confettiAnimation";
 import { AppLayout } from "@/layouts/AppLayout";
 import { useHabits } from "@/hooks/useHabits";
 import { useStats } from "@/hooks/useStats";
@@ -34,11 +34,7 @@ const Dashboard = () => {
     await completeHabit({ habitId, percentage: 100, habitTitle: habit.title });
     
     // Confetti animation
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
+    triggerHabitConfetti();
   };
 
   if (!user) {
@@ -88,7 +84,7 @@ const Dashboard = () => {
 
         {/* Main Content */}
         <Tabs defaultValue="kanban" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:w-auto">
             <TabsTrigger value="kanban">Hábitos</TabsTrigger>
             <TabsTrigger value="calendar">Calendário</TabsTrigger>
             <TabsTrigger value="stats">Estatísticas</TabsTrigger>
@@ -137,7 +133,7 @@ const Dashboard = () => {
         <Button
           onClick={() => setIsNewHabitModalOpen(true)}
           size="lg"
-          className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-2xl z-40"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-2xl z-40"
         >
           <Plus size={24} />
         </Button>

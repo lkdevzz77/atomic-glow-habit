@@ -45,10 +45,10 @@ const HabitCardCompact: React.FC<HabitCardCompactProps> = ({ habit, onComplete }
       className={cn(
         "group relative flex items-center gap-4 px-5 py-4",
         "bg-gradient-to-r from-slate-800 to-slate-800/50",
-        "border-l-4 rounded-xl",
+        "border-l-2 rounded-xl",
         "transition-all duration-200",
         completedToday && "opacity-60 border-l-emerald-500",
-        !completedToday && "border-l-violet-500 hover:border-l-violet-400 hover:shadow-lg hover:shadow-violet-500/20"
+        !completedToday && "border-l-violet-500 hover:border-l-violet-400 hover:shadow-lg hover:shadow-violet-500/15"
       )}
     >
       {/* Icon with glow effect */}

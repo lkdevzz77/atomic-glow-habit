@@ -57,7 +57,7 @@ const WeeklyChart = () => {
   };
 
   return (
-    <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 animate-fade-in">
+    <div className="glass card-rounded card-padding-lg animate-fade-in transition-colors duration-300">
       {/* Header */}
       <h2 className="text-xl sm:text-2xl font-bold heading-section text-slate-50 mb-4 sm:mb-6 flex items-center gap-2">
         <span>📊</span>
@@ -65,7 +65,7 @@ const WeeklyChart = () => {
       </h2>
 
       {/* Gráfico */}
-      <div className="bg-slate-800/50 rounded-xl p-4 sm:p-6 mb-4 border border-slate-700">
+      <div className="bg-slate-800/40 rounded-xl p-4 sm:p-6 mb-4 border border-slate-700/80">
         <ResponsiveContainer width="100%" height={240}>
           <BarChart data={weekData}>
             {/* Eixo X - Dias da semana */}
@@ -112,7 +112,7 @@ const WeeklyChart = () => {
                   }
                   style={{
                     filter: entry.percentage > 0 
-                      ? 'drop-shadow(0 0 8px rgba(124, 58, 237, 0.5))' 
+                      ? 'drop-shadow(0 0 8px rgba(124, 58, 237, 0.3))' 
                       : 'none'
                   }}
                 />
@@ -140,10 +140,10 @@ const WeeklyChart = () => {
       </div>
 
       {/* Métricas embaixo do gráfico */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mt-4">
         
         {/* Taxa média */}
-        <div className="bg-slate-800/80 rounded-xl p-3 sm:p-4 border border-slate-700 hover:border-violet-500/50 transition-all">
+        <div className="bg-slate-800/40 rounded-xl p-3 sm:p-4 border border-slate-700/80 hover:border-violet-500/50 transition-all duration-200">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs sm:text-sm text-slate-400">Taxa Média</span>
             <span className="text-2xl">📈</span>
@@ -163,7 +163,7 @@ const WeeklyChart = () => {
         </div>
 
         {/* Melhor dia */}
-        <div className="bg-slate-800/80 rounded-xl p-3 sm:p-4 border border-slate-700 hover:border-emerald-500/50 transition-all">
+        <div className="bg-slate-800/40 rounded-xl p-3 sm:p-4 border border-slate-700/80 hover:border-emerald-500/50 transition-all duration-200">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs sm:text-sm text-slate-400">Melhor Dia</span>
             <span className="text-2xl">🔥</span>
@@ -177,7 +177,7 @@ const WeeklyChart = () => {
         </div>
 
         {/* Dia mais desafiador */}
-        <div className="bg-slate-800/80 rounded-xl p-3 sm:p-4 border border-slate-700 hover:border-amber-500/50 transition-all">
+        <div className="bg-slate-800/40 rounded-xl p-3 sm:p-4 border border-slate-700/80 hover:border-amber-500/50 transition-all duration-200">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs sm:text-sm text-slate-400">Precisa Atenção</span>
             <span className="text-2xl">💪</span>

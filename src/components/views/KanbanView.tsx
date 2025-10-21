@@ -3,7 +3,7 @@ import { CheckCircle, Search, GripVertical, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import HabitCardCompact from '../HabitCardCompact';
-import confetti from 'canvas-confetti';
+import { triggerMiniConfetti } from '@/utils/confettiAnimation';
 interface Habit {
   id: number;
   title: string;
@@ -33,16 +33,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({
     setCompletingId(habitId);
 
     // Mini confetti animation
-    confetti({
-      particleCount: 30,
-      angle: 90,
-      spread: 45,
-      origin: {
-        x: 0.5,
-        y: 0.5
-      },
-      colors: ['#8b5cf6', '#a78bfa', '#c4b5fd']
-    });
+    triggerMiniConfetti();
 
     // Slight delay for visual feedback
     setTimeout(() => {
@@ -95,13 +86,13 @@ const KanbanView: React.FC<KanbanViewProps> = ({
         </div>}
 
       {/* Kanban Board */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Pending Column */}
-        <motion.div layout className="bg-slate-800/30 border border-slate-700 rounded-2xl p-5 min-h-[400px]">
+        <motion.div layout className="bg-slate-800/40 border border-slate-700/80 card-rounded card-padding min-h-[400px] transition-colors duration-300">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-amber-500 animate-pulse" />
-              <h2 className="text-lg font-bold text-slate-50">Pendentes</h2>
+              <h2 className="text-lg font-bold heading-sub text-slate-50">Pendentes</h2>
             </div>
             <div className="flex items-center gap-2">
               <span className="px-3 py-1 bg-slate-700 rounded-full text-xs font-semibold text-slate-300">
@@ -160,11 +151,11 @@ const KanbanView: React.FC<KanbanViewProps> = ({
         </motion.div>
 
         {/* Completed Column */}
-        <motion.div layout className="bg-slate-800/30 border border-slate-700 rounded-2xl p-5 min-h-[400px]">
+        <motion.div layout className="bg-slate-800/40 border border-slate-700/80 card-rounded card-padding min-h-[400px] transition-colors duration-300">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-emerald-500" />
-              <h2 className="text-lg font-bold text-slate-50">Completados</h2>
+              <h2 className="text-lg font-bold heading-sub text-slate-50">Completados</h2>
             </div>
             <span className="px-3 py-1 bg-emerald-900/30 border border-emerald-700/50 rounded-full text-xs font-semibold text-emerald-400">
               {completedHabits.length}
