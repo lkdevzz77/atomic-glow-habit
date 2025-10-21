@@ -15,6 +15,7 @@ import LevelUpModal from "@/components/LevelUpModal";
 import confetti from "canvas-confetti";
 import WeeklyChart from "@/components/WeeklyChart";
 import WeeklyChecklist from "@/components/WeeklyChecklist";
+import WeeklyComparison from "@/components/WeeklyComparison";
 import BadgeScroll from "@/components/BadgeScroll";
 import { XP_REWARDS } from "@/systems/levelSystem";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -202,20 +203,10 @@ const Dashboard = () => {
                   </div>
 
                   {/* Weekly Chart */}
-                  {weeklyStats.isLoading ? (
-                    <div className="glass rounded-2xl sm:rounded-3xl p-8 text-center border border-slate-700/50">
-                      <div className="animate-pulse">
-                        <div className="h-8 bg-slate-700 rounded w-48 mx-auto mb-4"></div>
-                        <div className="h-64 bg-slate-700 rounded"></div>
-                      </div>
-                    </div>
-                  ) : weeklyStats.data ? (
-                    <WeeklyChart weekData={weeklyStats.data.days} />
-                  ) : (
-                    <div className="glass rounded-2xl p-6 text-center text-slate-400 border border-slate-700/50">
-                      Carregando estatísticas...
-                    </div>
-                  )}
+                  <WeeklyChart />
+
+                  {/* Weekly Comparison */}
+                  <WeeklyComparison />
 
                   {/* Weekly Checklist */}
                   <WeeklyChecklist habits={habits} />

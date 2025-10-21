@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CheckCircle, Search, GripVertical, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import HabitCardCompact from '../HabitCardCompact';
+import confetti from 'canvas-confetti';
 
 interface Habit {
   id: number;
@@ -25,6 +26,26 @@ interface KanbanViewProps {
 
 const KanbanView: React.FC<KanbanViewProps> = ({ habits, onComplete, onAddHabit }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [completingId, setCompletingId] = useState<number | null>(null);
+
+  const handleComplete = (habitId: number) => {
+    setCompletingId(habitId);
+    
+    // Mini confetti animation
+    confetti({
+      particleCount: 30,
+      angle: 90,
+      spread: 45,
+      origin: { x: 0.5, y: 0.5 },
+      colors: ['#8b5cf6', '#a78bfa', '#c4b5fd']
+    });
+    
+    // Slight delay for visual feedback
+    setTimeout(() => {
+      onComplete(habitId);
+      setCompletingId(null);
+    }, 300);
+  };
   
   // Filtrar hábitos baseado em completedToday
   const filteredHabits = habits.filter(h => 
@@ -117,7 +138,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ habits, onComplete, onAddHabit 
                   >
                     <HabitCardCompact
                       habit={habit}
-                      onComplete={() => onComplete(habit.id)}
+                      onComplete={() => handleComplete(habit.id)}
                     />
                   </motion.div>
                 ))}

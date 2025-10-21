@@ -148,22 +148,41 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
       
       if (result.error) throw result.error;
     },
+    onMutate: async ({ habitId }) => {
+      // Cancel ongoing queries
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all') });
+      
+      // Snapshot previous value
+      const previousHabits = queryClient.getQueryData(QUERY_KEYS.userHabits(user?.id || '', status || 'all'));
+      
+      // Optimistically update
+      queryClient.setQueryData(QUERY_KEYS.userHabits(user?.id || '', status || 'all'), (old: any) => 
+        old?.map((h: any) => h.id === habitId ? { ...h, completedToday: true } : h)
+      );
+      
+      return { previousHabits };
+    },
+    onError: (error: Error, variables, context) => {
+      // Rollback on error
+      if (context?.previousHabits) {
+        queryClient.setQueryData(QUERY_KEYS.userHabits(user?.id || '', status || 'all'), context.previousHabits);
+      }
+      toast({
+        title: 'Erro ao completar hábito',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
     onSuccess: (data, { habitId, percentage }) => {
       // Invalidar queries para forçar refetch do servidor
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all') });
       queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'weekly'] });
       queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'streaks'] });
+      queryClient.invalidateQueries({ queryKey: ['weekly-data'] });
       
       toast({
         title: '🎉 Hábito completado!',
         description: 'Progresso registrado com sucesso!',
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: 'Erro ao completar hábito',
-        description: error.message,
-        variant: 'destructive',
       });
     },
   });

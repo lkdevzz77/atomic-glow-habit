@@ -1,20 +1,27 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { useWeeklyData, DayData } from '@/hooks/useWeeklyData';
 
-interface DayData {
-  day: string;
-  date: string;
-  completed: number;
-  total: number;
-  percentage: number;
-  isToday: boolean;
-}
+const WeeklyChart = () => {
+  const { data, isLoading } = useWeeklyData();
 
-interface WeeklyChartProps {
-  weekData: DayData[];
-}
+  if (isLoading) {
+    return (
+      <div className="glass rounded-2xl p-6 animate-pulse">
+        <div className="h-6 bg-slate-700 rounded w-48 mb-6"></div>
+        <div className="h-64 bg-slate-800 rounded mb-6"></div>
+        <div className="grid grid-cols-3 gap-4">
+          {[1,2,3].map(i => (
+            <div key={i} className="h-24 bg-slate-700 rounded"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
-const WeeklyChart = ({ weekData }: WeeklyChartProps) => {
+  if (!data) return null;
+
+  const weekData = data.days;
   // Calcular métricas
   const totalCompleted = weekData.reduce((sum, day) => sum + day.completed, 0);
   const totalPossible = weekData.reduce((sum, day) => sum + day.total, 0);

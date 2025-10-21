@@ -15,17 +15,17 @@ interface NewHabitModalProps {
 }
 
 const ICON_OPTIONS = [
-  { icon: BookOpen, emoji: '📚' },
-  { icon: Dumbbell, emoji: '💪' },
-  { icon: Brain, emoji: '🧠' },
-  { icon: Heart, emoji: '❤️' },
-  { icon: Droplet, emoji: '💧' },
-  { icon: Utensils, emoji: '🍽️' },
-  { icon: Moon, emoji: '🌙' },
-  { icon: Sun, emoji: '☀️' },
-  { icon: Target, emoji: '🎯' },
-  { icon: Zap, emoji: '⚡' },
-  { icon: Award, emoji: '🏆' },
+  { icon: BookOpen, name: 'BookOpen', display: 'Leitura' },
+  { icon: Dumbbell, name: 'Dumbbell', display: 'Exercício' },
+  { icon: Brain, name: 'Brain', display: 'Meditação' },
+  { icon: Heart, name: 'Heart', display: 'Saúde' },
+  { icon: Droplet, name: 'Droplet', display: 'Hidratação' },
+  { icon: Utensils, name: 'Utensils', display: 'Alimentação' },
+  { icon: Moon, name: 'Moon', display: 'Sono' },
+  { icon: Sun, name: 'Sun', display: 'Energia' },
+  { icon: Target, name: 'Target', display: 'Objetivo' },
+  { icon: Zap, name: 'Zap', display: 'Produtividade' },
+  { icon: Award, name: 'Award', display: 'Conquista' },
 ];
 
 const PERIOD_OPTIONS = [
@@ -43,7 +43,7 @@ const NewHabitModal = ({ open, onClose }: NewHabitModalProps) => {
   
   // Form data
   const [title, setTitle] = useState("");
-  const [selectedIcon, setSelectedIcon] = useState(ICON_OPTIONS[0].emoji);
+  const [selectedIcon, setSelectedIcon] = useState(ICON_OPTIONS[0].name);
   const [goal, setGoal] = useState(5);
   const [unit, setUnit] = useState("minutos");
   const [selectedPeriod, setSelectedPeriod] = useState("");
@@ -55,7 +55,7 @@ const NewHabitModal = ({ open, onClose }: NewHabitModalProps) => {
 
   const resetForm = () => {
     setTitle("");
-    setSelectedIcon(ICON_OPTIONS[0].emoji);
+    setSelectedIcon(ICON_OPTIONS[0].name);
     setGoal(5);
     setUnit("minutos");
     setSelectedPeriod("");
@@ -168,18 +168,19 @@ const NewHabitModal = ({ open, onClose }: NewHabitModalProps) => {
                       Escolha um ícone:
                     </label>
                     <div className="grid grid-cols-6 gap-3">
-                      {ICON_OPTIONS.map(({ icon: Icon, emoji }) => (
+                      {ICON_OPTIONS.map(({ icon: Icon, name, display }) => (
                         <button
-                          key={emoji}
-                          onClick={() => setSelectedIcon(emoji)}
+                          key={name}
+                          onClick={() => setSelectedIcon(name)}
                           className={cn(
                             "p-4 rounded-xl border-2 transition-all hover:scale-110",
-                            selectedIcon === emoji
+                            selectedIcon === name
                               ? "border-violet-500 bg-violet-900/30 scale-110 shadow-lg shadow-violet-500/50"
                               : "border-slate-700 bg-slate-800/30 hover:border-slate-600"
                           )}
+                          title={display}
                         >
-                          <Icon size={32} className="mx-auto text-slate-300" />
+                          <Icon size={32} className="mx-auto text-violet-400" />
                         </button>
                       ))}
                     </div>
@@ -328,8 +329,11 @@ const NewHabitModal = ({ open, onClose }: NewHabitModalProps) => {
                 <h3 className="text-sm font-semibold text-slate-400 uppercase">Preview ao Vivo</h3>
                 <div className="glass rounded-2xl p-6 border border-slate-700 space-y-4">
                   <div className="flex justify-center">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-4xl shadow-lg shadow-violet-500/50">
-                      {selectedIcon}
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/50">
+                      {(() => {
+                        const IconComponent = ICON_OPTIONS.find(opt => opt.name === selectedIcon)?.icon;
+                        return IconComponent ? <IconComponent className="w-10 h-10 text-white" /> : null;
+                      })()}
                     </div>
                   </div>
                   
