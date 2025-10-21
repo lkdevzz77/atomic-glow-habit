@@ -1,8 +1,12 @@
 import React from 'react';
-import { User, Sparkles, Star, Zap, Flame, Crown, Award, Trophy, Medal, Atom, Rocket, Brain, Heart, Target, Mountain, Compass, Leaf } from 'lucide-react';
+import { User, Sparkles, Star, Zap, Flame, Crown, Award, Trophy, Medal, Atom, Rocket, Brain, Heart, Target, Mountain, Compass, Leaf, Settings } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Progress } from './ui/progress';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Separator } from './ui/separator';
 import LevelBadge from './LevelBadge';
+import { ICON_SIZES } from '@/config/iconSizes';
 
 const ICON_MAP: Record<string, React.ElementType> = {
   User, Sparkles, Star, Zap, Flame, Crown, Award, Trophy, Medal, Atom, Rocket, Brain, Heart, Target, Mountain, Compass, Leaf
@@ -86,18 +90,81 @@ export const ProfileButton: React.FC<ProfileButtonProps> = ({
 
   if (compact) {
     return (
-      <Button
-        variant="ghost"
-        onClick={onClick}
-        className="relative h-auto p-2 hover:bg-accent/50"
-      >
-        <div className="relative">
-          {renderAvatar()}
-          <div className="absolute -bottom-1 -right-1">
-            <LevelBadge level={user.level} size="sm" />
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="ghost"
+            className="relative h-auto p-2 gap-2 hover:bg-accent/50"
+          >
+            <div className="relative">
+              {renderAvatar()}
+              <div className="absolute -bottom-1 -right-1">
+                <LevelBadge level={user.level} size="xs" showTooltip={false} />
+              </div>
+            </div>
+
+            {/* SPRINT 2: Mini progress indicator */}
+            <div className="hidden sm:flex flex-col gap-1 min-w-[60px]">
+              <span className="text-xs font-semibold text-foreground">
+                Nv {user.level}
+              </span>
+              <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-violet-500 to-purple-500 transition-all duration-300"
+                  style={{ width: `${progressPercentage}%` }}
+                />
+              </div>
+            </div>
+          </Button>
+        </PopoverTrigger>
+
+        <PopoverContent className="w-64 p-0" align="end">
+          <div className="card-padding-sm space-y-3">
+            <div className="flex items-center gap-3">
+              {renderAvatar()}
+              <div>
+                <p className="font-bold text-foreground">{user.name}</p>
+                <p className="text-xs text-violet-400">Nível {user.level}</p>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">XP Atual</span>
+                <span className="text-foreground font-semibold">
+                  {xpInCurrentLevel} / {xpNeededForNext}
+                </span>
+              </div>
+              <Progress value={progressPercentage} className="h-2" />
+            </div>
+            
+            <Separator />
+            
+            <div className="space-y-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full justify-start" 
+                onClick={onClick}
+              >
+                <User size={ICON_SIZES.sm} className="mr-2" />
+                Ver Perfil Completo
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full justify-start" 
+                asChild
+              >
+                <Link to="/settings">
+                  <Settings size={ICON_SIZES.sm} className="mr-2" />
+                  Configurações
+                </Link>
+              </Button>
+            </div>
           </div>
-        </div>
-      </Button>
+        </PopoverContent>
+      </Popover>
     );
   }
 

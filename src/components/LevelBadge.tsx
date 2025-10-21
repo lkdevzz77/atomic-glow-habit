@@ -10,8 +10,10 @@ import {
 
 interface LevelBadgeProps {
   level: number;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   showTooltip?: boolean;
+  showProgress?: boolean;
+  animated?: boolean;
   xp?: number;
   nextLevelXP?: number;
 }
@@ -20,36 +22,91 @@ const LevelBadge: React.FC<LevelBadgeProps> = ({
   level, 
   size = 'md', 
   showTooltip = true,
+  showProgress = false,
+  animated = false,
   xp,
   nextLevelXP 
 }) => {
   const levelInfo = getLevelInfo(level);
   const Icon = levelInfo.icon;
   
+  // Cores progressivas por tier
+  const getTierGradient = (lvl: number) => {
+    if (lvl >= 10) return 'from-violet-500 via-purple-500 to-pink-500';
+    if (lvl >= 8) return 'from-yellow-500 to-amber-500';
+    if (lvl >= 6) return 'from-purple-500 to-violet-600';
+    if (lvl >= 4) return 'from-cyan-500 to-blue-600';
+    if (lvl >= 2) return 'from-lime-500 to-emerald-600';
+    return 'from-emerald-500 to-teal-600';
+  };
+
   const sizeClasses = {
-    sm: 'w-8 h-8 text-sm',
-    md: 'w-12 h-12 text-base',
-    lg: 'w-16 h-16 text-lg',
+    xs: 'w-6 h-6 text-xs',
+    sm: 'w-10 h-10 text-sm',
+    md: 'w-16 h-16 text-base',
+    lg: 'w-24 h-24 text-xl',
+    xl: 'w-32 h-32 text-2xl',
   };
   
   const iconSizes = {
+    xs: 12,
     sm: 16,
     md: 20,
-    lg: 24,
+    lg: 28,
+    xl: 40,
   };
 
+  const gradient = getTierGradient(level);
+  const progress = xp && nextLevelXP ? ((xp % nextLevelXP) / nextLevelXP) * 100 : 0;
+
   const badge = (
-    <div
-      className={cn(
-        'rounded-full flex items-center justify-center',
-        'bg-gradient-to-br from-violet-500 to-purple-600',
-        'border-2 border-violet-400',
-        'shadow-lg shadow-violet-500/30',
-        'transition-transform hover:scale-110',
-        sizeClasses[size]
+    <div className="relative inline-block">
+      <div
+        className={cn(
+          'rounded-full flex items-center justify-center relative overflow-hidden',
+          `bg-gradient-to-br ${gradient}`,
+          'border-2 border-white/30',
+          'shadow-lg',
+          'transition-all duration-300',
+          !showTooltip && 'hover:scale-110',
+          animated && level >= 7 && 'animate-pulse-violet',
+          sizeClasses[size]
+        )}
+      >
+        {/* Animação de brilho para níveis altos */}
+        {animated && level >= 7 && (
+          <div className="absolute inset-0 animate-spin-slow opacity-30">
+            <div className="h-full w-full bg-gradient-to-r from-transparent via-white to-transparent" />
+          </div>
+        )}
+
+        <Icon size={iconSizes[size]} className="text-white relative z-10" />
+      </div>
+
+      {/* Progress ring ao redor */}
+      {showProgress && xp !== undefined && nextLevelXP !== undefined && (
+        <svg className="absolute inset-0 -rotate-90 w-full h-full">
+          <circle
+            cx="50%"
+            cy="50%"
+            r="45%"
+            stroke="currentColor"
+            strokeWidth="3"
+            fill="none"
+            className="text-white/20"
+          />
+          <circle
+            cx="50%"
+            cy="50%"
+            r="45%"
+            stroke="currentColor"
+            strokeWidth="3"
+            fill="none"
+            strokeDasharray={`${progress * 2.83} 283`}
+            className="text-violet-400 transition-all duration-500"
+          />
+        </svg>
       )}
-    >
-      <Icon size={iconSizes[size]} className="text-white" />
     </div>
   );
 

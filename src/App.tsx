@@ -15,6 +15,8 @@ import Dashboard from "./pages/Dashboard";
 import HabitsPage from "./pages/HabitsPage";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import BadgesPage from "./pages/BadgesPage";
+import LevelJourneyPage from "./pages/LevelJourneyPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -86,7 +88,15 @@ const App = () => (
                 path="/badges" 
                 element={
                   <ProtectedRoute requireAuth requireOnboarding>
-                    <Dashboard />
+                    <BadgesPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/level-journey" 
+                element={
+                  <ProtectedRoute requireAuth requireOnboarding>
+                    <LevelJourneyPage />
                   </ProtectedRoute>
                 } 
               />

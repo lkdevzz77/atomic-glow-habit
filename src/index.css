@@ -90,7 +90,49 @@ All colors MUST be HSL.
     @apply font-bold;
   }
 
-  /* Typography classes */
+  /* SPRINT 1: Sistema de Tipografia Padronizado */
+  
+  /* Títulos de Página */
+  .text-page-title {
+    @apply text-3xl sm:text-4xl font-bold text-foreground;
+  }
+
+  /* Títulos de Seção */
+  .text-section-title {
+    @apply text-xl sm:text-2xl font-bold text-foreground;
+  }
+
+  /* Títulos de Card */
+  .text-card-title {
+    @apply text-lg sm:text-xl font-semibold text-foreground;
+  }
+
+  /* Subtítulos */
+  .text-subtitle {
+    @apply text-sm sm:text-base text-muted-foreground;
+  }
+
+  /* Corpo de texto */
+  .text-body {
+    @apply text-sm sm:text-base text-foreground/90;
+  }
+
+  /* Labels e metadados */
+  .text-label {
+    @apply text-xs uppercase tracking-wider text-muted-foreground font-semibold;
+  }
+
+  /* Valores numéricos (stats) */
+  .text-stat-value {
+    @apply text-2xl sm:text-4xl font-bold text-foreground;
+  }
+
+  /* Valores pequenos */
+  .text-stat-small {
+    @apply text-lg sm:text-xl font-semibold text-foreground;
+  }
+
+  /* Typography classes - Legacy (manter compatibilidade) */
   .heading-hero {
     font-family: 'Outfit', sans-serif;
     font-weight: 800;
@@ -174,13 +216,21 @@ All colors MUST be HSL.
     }
   }
 
-  /* Card Spacing System */
+  /* SPRINT 1: Card Spacing System (Atualizado) */
+  .card-padding-sm {
+    @apply p-4 sm:p-5;
+  }
+
   .card-padding {
     @apply p-5 sm:p-6;
   }
   
   .card-padding-lg {
     @apply p-6 sm:p-8;
+  }
+
+  .card-gap {
+    @apply space-y-4 sm:space-y-6;
   }
   
   /* Border Radius Consistent */

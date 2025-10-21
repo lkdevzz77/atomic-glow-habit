@@ -117,3 +117,7 @@ export function getXPForLevel(level: number): number {
   if (level > 10) return thresholds[9];
   return thresholds[level - 1];
 }
+
+export function getAllLevels(): number[] {
+  return LEVELS.map(l => l.level);
+}

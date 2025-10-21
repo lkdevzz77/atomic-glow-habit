@@ -59,22 +59,24 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
         <div className="flex-1 flex flex-col">
           <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="flex h-16 items-center gap-4 px-6">
+            <div className="flex h-16 items-center gap-4 px-4 sm:px-6">
               <SidebarTrigger />
 
               <div className="flex-1" />
 
-              {/* Daily Progress */}
+              {/* SPRINT 2: Daily Progress com max-width */}
               {habits && habits.length > 0 && (
-                <DailyProgress
-                  completed={habits.filter(h => h.completedToday).length}
-                  total={habits.length}
-                  habits={habits.map(h => ({
-                    id: h.id,
-                    title: h.title,
-                    completed: h.completedToday || false
-                  }))}
-                />
+                <div className="hidden lg:block max-w-[300px]">
+                  <DailyProgress
+                    completed={habits.filter(h => h.completedToday).length}
+                    total={habits.length}
+                    habits={habits.map(h => ({
+                      id: h.id,
+                      title: h.title,
+                      completed: h.completedToday || false
+                    }))}
+                  />
+                </div>
               )}
 
               <ProfileButton
@@ -88,7 +90,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
           </header>
 
-          <main className="flex-1 p-6">
+          <main className="flex-1 p-4 sm:p-6">
             {children}
           </main>
         </div>

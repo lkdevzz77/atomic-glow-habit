@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { User, Sparkles, Star, Zap, Flame, Crown, Award, Trophy, Medal, Atom, Rocket, Brain, Heart, Target, Mountain, Compass, Leaf, Upload, Palette } from 'lucide-react';
+import { User, Sparkles, Star, Zap, Flame, Crown, Award, Trophy, Medal, Atom, Rocket, Brain, Heart, Target, Mountain, Compass, Leaf, Upload, Palette, BookOpen, Dumbbell, Coffee, Music } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 
+// SPRINT 2: Mais ícones adicionados
 const AVATAR_ICONS = [
   { icon: User, name: 'User' },
   { icon: Sparkles, name: 'Sparkles' },
@@ -23,8 +24,13 @@ const AVATAR_ICONS = [
   { icon: Mountain, name: 'Mountain' },
   { icon: Compass, name: 'Compass' },
   { icon: Leaf, name: 'Leaf' },
+  { icon: BookOpen, name: 'BookOpen' },
+  { icon: Dumbbell, name: 'Dumbbell' },
+  { icon: Coffee, name: 'Coffee' },
+  { icon: Music, name: 'Music' },
 ];
 
+// SPRINT 2: Mais cores com gradientes duplos
 const AVATAR_COLORS = [
   { name: 'violet', label: 'Violeta', bg: 'bg-gradient-to-br from-violet-600 to-purple-600' },
   { name: 'blue', label: 'Azul', bg: 'bg-gradient-to-br from-blue-600 to-cyan-600' },
@@ -32,6 +38,10 @@ const AVATAR_COLORS = [
   { name: 'amber', label: 'Âmbar', bg: 'bg-gradient-to-br from-amber-600 to-orange-600' },
   { name: 'rose', label: 'Rosa', bg: 'bg-gradient-to-br from-rose-600 to-pink-600' },
   { name: 'indigo', label: 'Índigo', bg: 'bg-gradient-to-br from-indigo-600 to-violet-600' },
+  { name: 'fuchsia', label: 'Fúcsia', bg: 'bg-gradient-to-br from-fuchsia-600 to-pink-600' },
+  { name: 'sky', label: 'Céu', bg: 'bg-gradient-to-br from-sky-500 to-blue-600' },
+  { name: 'lime', label: 'Lima', bg: 'bg-gradient-to-br from-lime-500 to-emerald-600' },
+  { name: 'orange', label: 'Laranja', bg: 'bg-gradient-to-br from-orange-500 to-red-600' },
 ];
 
 interface AvatarPickerProps {
