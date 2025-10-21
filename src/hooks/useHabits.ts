@@ -35,18 +35,22 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
       
       // Adicionar flag de "completado hoje" dinamicamente
       const today = new Date().toISOString().split('T')[0];
+      const queryTimestamp = Date.now();
       
-      console.log('🗓️ [useHabits] Buscando completions para data:', today);
-      console.log('🕐 [useHabits] Timezone local:', Intl.DateTimeFormat().resolvedOptions().timeZone);
+      console.log('🗓️ [useHabits] Query', queryTimestamp, '- Buscando completions para data:', today);
+      console.log('🕐 [useHabits] User ID:', user.id);
+      console.log('🌍 [useHabits] Timezone:', Intl.DateTimeFormat().resolvedOptions().timeZone);
       
+      // Forçar fresh query com order by para bypass de cache
       const { data: todayCompletions } = await supabase
         .from('habit_completions')
-        .select('habit_id, date, completed_at')
+        .select('habit_id, date, completed_at, percentage')
         .eq('user_id', user.id)
         .eq('date', today)
-        .gte('percentage', 100);
+        .gte('percentage', 100)
+        .order('completed_at', { ascending: false });
       
-      console.log('✅ [useHabits] Completions encontrados:', todayCompletions);
+      console.log('✅ [useHabits] Query', queryTimestamp, '- Completions:', todayCompletions?.length || 0, todayCompletions);
       
       const completedIds = new Set(todayCompletions?.map(c => c.habit_id) || []);
       
@@ -167,16 +171,28 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
       return xpResult;
     },
     onMutate: async ({ habitId }) => {
-      // Cancel ongoing queries
+      console.log('🎯 [useHabits] onMutate - Iniciando optimistic update para habit:', habitId);
+      
+      // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all') });
       
       // Snapshot previous value
       const previousHabits = queryClient.getQueryData(QUERY_KEYS.userHabits(user?.id || '', status || 'all'));
       
-      // Optimistically update
-      queryClient.setQueryData(QUERY_KEYS.userHabits(user?.id || '', status || 'all'), (old: any) => 
-        old?.map((h: any) => h.id === habitId ? { ...h, completedToday: true } : h)
+      // Optimistic update - marcar como completo e incrementar streak
+      queryClient.setQueryData(
+        QUERY_KEYS.userHabits(user?.id || '', status || 'all'),
+        (old: any) => {
+          if (!old) return old;
+          return old.map((h: any) => 
+            h.id === habitId 
+              ? { ...h, completedToday: true, streak: (h.streak || 0) + 1 }
+              : h
+          );
+        }
       );
+      
+      console.log('✅ [useHabits] Optimistic update aplicado');
       
       return { previousHabits };
     },
@@ -191,37 +207,45 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
         variant: 'destructive',
       });
     },
-    onSuccess: async (xpResult, { habitId, percentage }) => {
-      // Toast ANTES de invalidar
+    onSuccess: async (xpResult, { habitId }) => {
+      console.log('🎊 [useHabits] onSuccess - XP Result:', xpResult);
+      
+      // 1. Mostrar toast PRIMEIRO
       if (xpResult?.didLevelUp) {
         toast({
-          title: `🎊 LEVEL UP! Nível ${xpResult.newLevel}`,
-          description: `+${xpResult.totalXP} XP: ${xpResult.reasons.join(' • ')}`,
+          title: "🎊 LEVEL UP!",
+          description: `Você alcançou o nível ${xpResult.newLevel}!`,
         });
       } else {
         toast({
-          title: `🎉 +${xpResult?.totalXP || 50} XP`,
-          description: xpResult?.reasons.join(' • ') || 'Hábito completado!',
+          title: "🎉 Hábito completado!",
+          description: xpResult?.totalXP ? `+${xpResult.totalXP} XP` : undefined,
         });
       }
       
-      // AGUARDAR um pouco para garantir que DB finalizou
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // 2. AGUARDAR transação do banco + XP service completar
+      console.log('⏳ [useHabits] Aguardando 500ms para DB commit...');
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      // DEPOIS invalidar queries
-      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all') });
+      // 3. INVALIDAR queries
+      console.log('🔄 [useHabits] Invalidando queries...');
+      await queryClient.invalidateQueries({ 
+        queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all') 
+      });
       await queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'weekly'] });
       await queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'streaks'] });
       await queryClient.invalidateQueries({ queryKey: ['weekly-data'] });
       await queryClient.invalidateQueries({ queryKey: ['profile', user?.id] });
       
-      // Forçar refetch imediato após invalidação
+      // 4. FORÇAR refetch com type: 'active'
+      console.log('🔃 [useHabits] Forçando refetch...');
       await queryClient.refetchQueries({ 
         queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all'),
+        type: 'active',
         exact: true 
       });
       
-      console.log('🔄 [useHabits] Queries invalidadas e refetchadas após completion');
+      console.log('✅ [useHabits] Queries atualizadas com sucesso');
     },
   });
 

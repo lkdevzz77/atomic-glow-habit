@@ -218,6 +218,28 @@ export const habitService = {
         totalCompletions: updated.total_completions
       });
 
+      // VALIDAR que completion foi registrado corretamente
+      console.log('🔍 [habitService] Validando completion...');
+      const { data: verification, error: verifyError } = await supabase
+        .from('habit_completions')
+        .select('id, percentage')
+        .eq('habit_id', habitId)
+        .eq('user_id', userId)
+        .eq('date', date)
+        .maybeSingle();
+
+      if (verifyError) {
+        console.error('❌ [habitService] Erro ao validar completion:', verifyError);
+        throw verifyError;
+      }
+
+      if (!verification || verification.percentage < 100) {
+        console.error('❌ [habitService] Completion não foi registrado corretamente:', verification);
+        throw new Error('Completion não foi registrado corretamente no banco');
+      }
+
+      console.log('✅ [habitService] Completion validado:', verification);
+
       return { error: null };
     } catch (error) {
       console.error('❌ Erro ao completar hábito:', error);
