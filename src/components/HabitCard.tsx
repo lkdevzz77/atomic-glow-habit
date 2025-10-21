@@ -27,7 +27,8 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
     
     completeHabit({
       habitId: habit.id,
-      percentage: 100
+      percentage: 100,
+      habitTitle: habit.title
     });
 
     // Trigger confetti animation
