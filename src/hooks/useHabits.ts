@@ -185,15 +185,8 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
         variant: 'destructive',
       });
     },
-    onSuccess: (xpResult, { habitId, percentage }) => {
-      // Invalidar queries
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all') });
-      queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'weekly'] });
-      queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'streaks'] });
-      queryClient.invalidateQueries({ queryKey: ['weekly-data'] });
-      queryClient.invalidateQueries({ queryKey: ['profile', user?.id] });
-      
-      // Toast com XP
+    onSuccess: async (xpResult, { habitId, percentage }) => {
+      // Toast ANTES de invalidar
       if (xpResult?.didLevelUp) {
         toast({
           title: `🎊 LEVEL UP! Nível ${xpResult.newLevel}`,
@@ -205,6 +198,16 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
           description: xpResult?.reasons.join(' • ') || 'Hábito completado!',
         });
       }
+      
+      // AGUARDAR um pouco para garantir que DB finalizou
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // DEPOIS invalidar queries
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all') });
+      queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'weekly'] });
+      queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'streaks'] });
+      queryClient.invalidateQueries({ queryKey: ['weekly-data'] });
+      queryClient.invalidateQueries({ queryKey: ['profile', user?.id] });
     },
   });
 

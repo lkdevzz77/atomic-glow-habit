@@ -206,9 +206,21 @@ export const habitService = {
 
       if (updateError) throw updateError;
 
+      // VALIDAÇÃO: Verificar se realmente foi atualizado
+      const { data: updated } = await this.getHabit(habitId);
+      if (!updated || updated.total_completions !== (habit.total_completions || 0) + 1) {
+        throw new Error('Falha ao atualizar estatísticas do hábito');
+      }
+      
+      console.log('✅ Hábito completado com sucesso:', {
+        habitId,
+        newStreak,
+        totalCompletions: updated.total_completions
+      });
+
       return { error: null };
     } catch (error) {
-      console.error('Error completing habit:', error);
+      console.error('❌ Erro ao completar hábito:', error);
       return { error };
     }
   },

@@ -21,6 +21,8 @@ export const xpService = {
     habitTitle: string
   ): Promise<XPAwardResult> {
     const today = new Date().toISOString().split('T')[0];
+    
+    console.log('🎯 [XP] Iniciando award para hábito', habitId, habitTitle);
 
     try {
       // Chamar função do banco que calcula XP
@@ -64,6 +66,8 @@ export const xpService = {
       const newLevel = updatedProfile?.level || oldLevel;
       const didLevelUp = newLevel > oldLevel;
 
+      console.log('✅ [XP] Award concluído:', { totalXP, newLevel, didLevelUp });
+
       return {
         totalXP,
         reasons,
@@ -73,9 +77,10 @@ export const xpService = {
         didLevelUp,
       };
     } catch (error) {
-      console.error('❌ Erro ao conceder XP:', error);
+      console.error('❌ [XP] ERRO ao conceder XP:', error);
       
-      // Fallback: conceder XP base mesmo em caso de erro
+      // IMPORTANTE: Re-throw o erro para que seja capturado pelo mutation
+      throw error;
       const { data: profile } = await supabase
         .from('profiles')
         .select('xp, level')
@@ -87,19 +92,6 @@ export const xpService = {
       const fallbackXP = XP_REWARDS.completeHabit;
       const newXP = oldXP + fallbackXP;
 
-      await supabase
-        .from('profiles')
-        .update({ xp: newXP })
-        .eq('id', userId);
-
-      return {
-        totalXP: fallbackXP,
-        reasons: ['Hábito completado'],
-        newXP,
-        oldLevel,
-        newLevel: oldLevel,
-        didLevelUp: false,
-      };
     }
   },
 };
