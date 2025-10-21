@@ -8,18 +8,19 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
+  SidebarFooter,
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Link, useLocation } from 'react-router-dom';
 import { useLevel } from '@/hooks/useLevel';
-import { BarChart, Target, TrendingUp, Home, Award, User, Settings } from 'lucide-react';
+import { Target, TrendingUp, Home, Award, User, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { triggerHaptic } from '@/utils/haptics';
+import LevelBadge from '@/components/LevelBadge';
 
 const mainItems = [
   { title: 'Dashboard', url: '/dashboard', icon: Home },
   { title: 'Meus Hábitos', url: '/habits', icon: Target },
-  { title: 'Estatísticas', url: '/dashboard', icon: BarChart },
 ];
 
 const secondaryItems = [
@@ -31,7 +32,7 @@ const secondaryItems = [
 
 export function AppSidebar() {
   const location = useLocation();
-  const { levelInfo, progress } = useLevel();
+  const { levelInfo, progress, xp, currentLevelXP, nextLevelXP } = useLevel();
   const { open } = useSidebar();
 
   const isActive = (path: string) => location.pathname === path;
@@ -43,13 +44,14 @@ export function AppSidebar() {
     >
       <SidebarHeader className="p-4 border-b border-slate-800/50">
         <div className="flex items-center gap-3">
-          <img src="/atom-logo.png" alt="Logo" className="w-8 h-8" />
+          <img 
+            src="/atom-logo.png" 
+            alt="Logo" 
+            className="w-8 h-8 brightness-90 hue-rotate-[280deg] saturate-150" 
+          />
           {open && (
             <div className="flex flex-col">
               <span className="font-semibold text-sm text-slate-200">atomicTracker</span>
-              <span className="text-xs text-slate-400">
-                Nível {levelInfo?.level || 1} • {Math.round((progress || 0) * 100)}%
-              </span>
             </div>
           )}
         </div>
@@ -134,6 +136,40 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      <SidebarFooter className="p-4 border-t border-slate-800/50">
+        {open ? (
+          <div className="flex items-center gap-3">
+            <LevelBadge 
+              level={levelInfo?.level || 1}
+              size="sm"
+              showProgress={true}
+              showTooltip={false}
+              xp={currentLevelXP}
+              nextLevelXP={nextLevelXP}
+            />
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-slate-200">
+                Nível {levelInfo?.level || 1}
+              </span>
+              <span className="text-xs text-slate-400">
+                {Math.round((progress || 0) * 100)}% para próximo nível
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="flex justify-center">
+            <LevelBadge 
+              level={levelInfo?.level || 1}
+              size="sm"
+              showProgress={true}
+              showTooltip={true}
+              xp={currentLevelXP}
+              nextLevelXP={nextLevelXP}
+            />
+          </div>
+        )}
+      </SidebarFooter>
     </Sidebar>
   );
 }
