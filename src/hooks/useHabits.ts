@@ -63,7 +63,7 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
           console.warn('⚠️ [useHabits] RPC failed, using fallback query:', rpcError.message);
           
           // FALLBACK: usar query antiga se RPC falhar
-          const { data: fallbackData } = await supabase
+          const { data: fallbackData, error: fallbackError } = await supabase
             .from('habit_completions')
             .select('habit_id, date, completed_at, percentage')
             .eq('user_id', user.id)
@@ -71,10 +71,15 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
             .gte('percentage', 100)
             .order('completed_at', { ascending: false });
           
-          todayCompletions = fallbackData;
-          console.log('✅ Using fallback query (client-side date)');
+          if (fallbackError) {
+            console.error('❌ [useHabits] Fallback query also failed:', fallbackError);
+            todayCompletions = [];
+          } else {
+            todayCompletions = fallbackData || [];
+            console.log('✅ Using fallback query (client-side date)');
+          }
         } else {
-          todayCompletions = rpcData;
+          todayCompletions = rpcData || [];
           console.log('✅ Using RPC (server-side date)');
         }
       } catch (error) {
