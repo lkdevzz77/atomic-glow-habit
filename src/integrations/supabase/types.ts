@@ -291,12 +291,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_habit_streak: {
+        Args: { p_habit_id: number }
+        Returns: {
+          current_streak: number
+          longest_streak: number
+        }[]
+      }
       get_habit_completion_xp: {
         Args: { p_date: string; p_habit_id: number; p_user_id: string }
         Returns: {
           reasons: string[]
           total_xp: number
         }[]
+      }
+      get_server_date: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       get_user_todays_completions: {
         Args: { p_user_id: string }

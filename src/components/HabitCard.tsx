@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Icon } from "@/config/icon-map";
 import { SkeletonCard } from "./LoadingStates";
 import confetti from "canvas-confetti";
+import { supabase } from "@/integrations/supabase/client";
 
 interface HabitCardProps {
   habit: Habit;
@@ -19,11 +20,28 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
     return <SkeletonCard />;
   }
 
-  const isCompleted = habit.status === "completed";
+  const isCompleted = habit.completedToday || false; // ⚡ FASE 1: Usar completedToday
   const progress = habit.goal_target > 0 ? (habit.goal_current / habit.goal_target) * 100 : 0;
 
-  const handleComplete = () => {
-    if (isCompleted) return;
+  const handleComplete = async () => {
+    if (isCompleted) {
+      return;
+    }
+    
+    // ⚡ FASE 4: Validação dupla antes de completar
+    const today = new Date().toISOString().split('T')[0];
+    const { data: existing } = await supabase
+      .from('habit_completions')
+      .select('id')
+      .eq('habit_id', habit.id)
+      .eq('date', today)
+      .gte('percentage', 100)
+      .maybeSingle();
+    
+    if (existing) {
+      console.warn('⚠️ Hábito já completado detectado na validação');
+      return;
+    }
     
     completeHabit({
       habitId: habit.id,

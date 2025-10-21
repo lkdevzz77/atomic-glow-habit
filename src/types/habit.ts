@@ -33,6 +33,7 @@ export interface Habit {
   user_id: string;
   title: string;
   icon: string;
+  completedToday?: boolean; // ⚡ FASE 1: Flag para completion diário
   
   // Lei #1: Torne Óbvio
   when_time: string;

@@ -176,21 +176,17 @@ export const habitService = {
       const { data: habit } = await this.getHabit(habitId);
       if (!habit) throw new Error('Habit not found');
 
-      // Calcular novo streak
-      const yesterday = new Date(date);
-      yesterday.setDate(yesterday.getDate() - 1);
-      const yesterdayStr = yesterday.toISOString().split('T')[0];
+      // ⚡ FASE 3: Usar RPC centralizada para cálculo de streak
+      const { data: streakData, error: streakError } = await supabase
+        .rpc('calculate_habit_streak', { p_habit_id: habitId });
 
-      const { data: yesterdayCompletion } = await supabase
-        .from('habit_completions')
-        .select('*')
-        .eq('habit_id', habitId)
-        .eq('date', yesterdayStr)
-        .gte('percentage', 100)
-        .maybeSingle();
+      if (streakError) {
+        console.error('❌ Erro ao calcular streak:', streakError);
+        throw streakError;
+      }
 
-      const newStreak = yesterdayCompletion ? (habit.streak || 0) + 1 : 1;
-      const newLongestStreak = Math.max(newStreak, habit.longest_streak || 0);
+      const newStreak = streakData?.[0]?.current_streak || 1;
+      const newLongestStreak = streakData?.[0]?.longest_streak || 1;
 
       // 3. Atualizar tabela habits (SEM mudar status - permanece 'active')
       const { error: updateError } = await supabase

@@ -19,8 +19,15 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
   // ⚡ Calcular today no cliente para queryKey (força refresh diário)
   const today = new Date().toISOString().split('T')[0];
 
+  // ⚡ FASE 5: Cache strategy agressiva
   const habits = useQuery({
     queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all', today),
+    enabled: !!user,
+    staleTime: 1000 * 60 * 5, // 5 minutos
+    gcTime: 1000 * 60 * 30, // 30 minutos
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
+    refetchInterval: false,
     queryFn: async () => {
       if (!user) return [];
       
@@ -83,14 +90,13 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
       console.log('🎯 Habits marked as completedToday:', Array.from(completedIds));
       console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       
-      return filteredHabits.map(habit => ({
+      const habitsWithCompletionStatus = filteredHabits.map(habit => ({
         ...habit,
         completedToday: completedIds.has(habit.id)
       }));
+      
+      return habitsWithCompletionStatus;
     },
-    enabled: !!user,
-    staleTime: 1000 * 60 * 5, // 5 minutos - dados ficam "fresh" por mais tempo
-    refetchInterval: false, // Desabilitado - usar invalidação manual apenas
   });
 
   const createHabitMutation = useMutation({
@@ -239,10 +245,8 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
         variant: 'destructive',
       });
     },
-    onSuccess: async (xpResult, { habitId }) => {
-      console.log('🎊 [useHabits] onSuccess - XP Result:', xpResult);
-      
-      // 1. Mostrar toast PRIMEIRO
+    onSuccess: async (xpResult, { habitId, habitTitle }) => {
+      // 1. Toast
       if (xpResult?.didLevelUp) {
         toast({
           title: "🎊 LEVEL UP!",
@@ -250,35 +254,29 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
         });
       } else {
         toast({
-          title: "Mais um voto de identidade",
-          description: xpResult?.identityGoal ? `Você está se tornando ${xpResult.identityGoal}` : `+${xpResult.totalVotes} votos`,
+          title: `${habitTitle} completado! 🎉`,
+          description: `+${xpResult.newVotes} voto${xpResult.newVotes > 1 ? 's' : ''} de identidade`,
         });
       }
       
-      // 2. AGUARDAR transação do banco + XP service completar
-      console.log('⏳ [useHabits] Aguardando 500ms para DB commit...');
+      // ⚡ FASE 5: Invalidação agressiva
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // 3. INVALIDAR queries (todas as variações de today)
-      console.log('🔄 [useHabits] Invalidando queries...');
-      await queryClient.invalidateQueries({ 
-        queryKey: ['habits', user?.id] 
-      });
-      await queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'weekly'] });
-      await queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'streaks'] });
-      await queryClient.invalidateQueries({ queryKey: ['weekly-data'] });
-      await queryClient.invalidateQueries({ queryKey: ['profile', user?.id] });
+      await Promise.all([
+        queryClient.invalidateQueries({ 
+          predicate: (query) => query.queryKey[0] === 'habits'
+        }),
+        queryClient.invalidateQueries({ queryKey: ['stats'] }),
+        queryClient.invalidateQueries({ queryKey: ['weekly-data'] }),
+        queryClient.invalidateQueries({ queryKey: ['profile'] }),
+      ]);
       
-      // 4. FORÇAR refetch com type: 'active'
+      // Forçar refetch
       const currentToday = new Date().toISOString().split('T')[0];
-      console.log('🔃 [useHabits] Forçando refetch...');
       await queryClient.refetchQueries({ 
         queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all', currentToday),
-        type: 'active',
-        exact: true 
+        type: 'active'
       });
-      
-      console.log('✅ [useHabits] Queries atualizadas com sucesso');
     },
   });
 
