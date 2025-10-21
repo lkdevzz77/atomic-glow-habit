@@ -56,7 +56,7 @@ const Dashboard = () => {
             className="w-16 h-16 mx-auto mb-4 animate-pulse"
             style={{ filter: 'drop-shadow(0 0 30px rgba(124, 58, 237, 0.8))' }}
           />
-          <p className="text-muted-foreground">Carregando seus hábitos...</p>
+          <p className="text-muted-foreground">Reorganizando átomos...</p>
         </div>
       </div>
     );
@@ -78,16 +78,11 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-violet-400 bg-clip-text text-transparent">
-            Olá, {userName}! 👋
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            {userName}
           </h1>
           <p className="text-muted-foreground mt-1">
-            {new Date().toLocaleDateString('pt-BR', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}
+            Cada ação é um voto para quem você está se tornando
           </p>
         </div>
 

@@ -7,14 +7,14 @@ const CoachAI = () => {
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
 
   const aiTips = [
-    `Você está mantendo boa consistência, ${user?.name}! Continue aproveitando esse momento.`,
-    "Que tal empilhar um novo hábito de 2 minutos após um hábito existente?",
-    "Seus melhores dias são quando você completa hábitos pela manhã. Use isso a seu favor!",
-    "Lei #4 em ação: cada check é um voto para sua identidade desejada.",
-    "Lembre-se: não quebre a corrente. Mas se quebrar, não quebre duas vezes.",
-    "Está difícil começar? Aplique a regra: faça apenas por 2 minutos.",
-    "Hábitos atômicos: pequenas mudanças, resultados extraordinários.",
-    "1% melhor todo dia é o caminho para a transformação.",
+    `${user?.name}, cada ação que você toma é um voto para o tipo de pessoa que deseja se tornar.`,
+    "A consistência está se tornando parte de quem você é.",
+    "Melhorias de 1% ao dia: pequenas mudanças, efeitos extraordinários.",
+    "Você não sobe ao nível de suas metas. Você cai ao nível de seus sistemas.",
+    "Quebrar a corrente uma vez é humano. Duas vezes é escolha.",
+    "Seus hábitos moldam sua identidade. Sua identidade molda seus hábitos.",
+    "Toda ação é um voto. Cada dia é uma eleição.",
+    "O processo é mais importante que o resultado. Foque no sistema.",
   ];
 
   useEffect(() => {
@@ -47,8 +47,8 @@ const CoachAI = () => {
             />
           </div>
           <div>
-            <h3 className="text-sm sm:text-base lg:text-lg font-bold heading-sub text-violet-400">💡 Seu Coach IA</h3>
-            <p className="text-xs text-violet-400/70">Análise em tempo real</p>
+            <h3 className="text-sm sm:text-base lg:text-lg font-bold heading-sub text-violet-400">Insights Atômicos</h3>
+            <p className="text-xs text-violet-400/70">Baseado em seus padrões</p>
           </div>
         </div>
 
@@ -59,7 +59,7 @@ const CoachAI = () => {
         </p>
 
         <button className="text-violet-400 text-xs sm:text-sm hover:text-violet-300 transition-colors mt-3 sm:mt-4">
-          Ver mais dicas →
+          Explorar mais →
         </button>
       </div>
 

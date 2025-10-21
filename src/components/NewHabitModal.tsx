@@ -71,7 +71,7 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
   const handleNext = () => {
     if (currentStep === 1) {
       if (!title.trim()) {
-        toast.error("Por favor, dê um nome ao seu hábito");
+        toast.error("Dê um nome ao seu hábito");
         return;
       }
       if (goal <= 0) {
@@ -108,13 +108,13 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
         goal_unit: unit,
       });
 
-      toast.success("Hábito criado com sucesso!");
+      toast.success("Semente plantada com sucesso");
       resetForm();
       if (onOpenChange) onOpenChange(false);
       if (onClose) onClose();
     } catch (error) {
       console.error('Error creating habit:', error);
-      toast.error("Erro ao criar hábito");
+      toast.error("A reação não ocorreu como esperado");
     }
   };
 
@@ -141,7 +141,7 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
             <X className="w-6 h-6" />
           </button>
 
-          <h2 className="text-2xl font-bold text-slate-100 mb-4">Criar Novo Hábito</h2>
+          <h2 className="text-2xl font-bold text-slate-100 mb-4">Plantar Nova Semente</h2>
           
           {/* Progress */}
           <div className="space-y-2">
@@ -411,7 +411,7 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
                 disabled={isCreating}
                 className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white px-8"
               >
-                {isCreating ? "Criando..." : "Criar Hábito ✨"}
+                {isCreating ? "Plantando..." : "Plantar Semente ⚛️"}
               </Button>
             )}
           </div>

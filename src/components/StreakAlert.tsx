@@ -40,12 +40,12 @@ const StreakAlert = ({ habits }: StreakAlertProps) => {
           
           <div className="flex-1 min-w-0">
             <h3 className="text-base sm:text-lg font-bold text-orange-400 mb-1">
-              ⚠️ Seu Streak está em risco!
+              Sua sequência está em risco
             </h3>
             <p className="text-sm text-slate-300 mb-3">
               {atRiskHabits.length === 1 
-                ? `O hábito "${atRiskHabits[0].title}" tem um streak de ${atRiskHabits[0].streak} dias que pode ser perdido hoje!`
-                : `Você tem ${atRiskHabits.length} hábitos com streaks que podem ser perdidos hoje!`
+                ? `${atRiskHabits[0].streak} votos consecutivos para "${atRiskHabits[0].title}". Não quebre a corrente hoje.`
+                : `${atRiskHabits.length} sequências ativas precisam de você hoje.`
               }
             </p>
             
