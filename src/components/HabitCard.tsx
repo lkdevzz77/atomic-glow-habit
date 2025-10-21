@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Check, Clock } from "lucide-react";
 import { Habit } from "@/types/habit";
 import { useHabits } from "@/hooks/useHabits";
@@ -7,6 +7,8 @@ import { Icon } from "@/config/icon-map";
 import { SkeletonCard } from "./LoadingStates";
 import { triggerHabitConfetti } from "@/utils/confettiAnimation";
 import { supabase } from "@/integrations/supabase/client";
+import RecoveryModal from "./RecoveryModal";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface HabitCardProps {
   habit: Habit;
@@ -14,11 +16,25 @@ interface HabitCardProps {
 }
 
 const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
-  const { completeHabit, isCompleting } = useHabits();
+  const { user } = useAuth();
+  const { completeHabit, isCompleting, data: habits } = useHabits();
+  const [showRecoveryModal, setShowRecoveryModal] = useState(false);
+  const [previousStreak, setPreviousStreak] = useState(habit.streak);
+
+  // Detect broken streak
+  useEffect(() => {
+    if (habit.streak === 0 && previousStreak > 3) {
+      setShowRecoveryModal(true);
+    }
+    setPreviousStreak(habit.streak);
+  }, [habit.streak, previousStreak]);
 
   if (isLoading) {
     return <SkeletonCard />;
   }
+
+  const userProfile = user?.user_metadata;
+  const identityGoal = userProfile?.desired_identity || "quem você quer ser";
 
   const isCompleted = habit.completedToday || false; // ⚡ FASE 1: Usar completedToday
   const progress = habit.goal_target > 0 ? (habit.goal_current / habit.goal_target) * 100 : 0;
@@ -53,8 +69,14 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
     triggerHabitConfetti();
   };
 
+  // Identity-based micro-copy
+  const getCompletionMessage = () => {
+    return `+1 voto para ${identityGoal}`;
+  };
+
   return (
-    <div
+    <>
+      <div
       className={cn(
         "glass card-rounded card-padding transition-all duration-300 hover-scale-sm",
         isCompleted 
@@ -109,8 +131,8 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
               <span className="text-emerald-400 font-semibold flex items-center gap-2">
                 ✨ Completado
               </span>
-              <span className="text-accent font-bold flex items-center gap-1">
-                +1 voto
+              <span className="text-violet-400 font-bold text-xs">
+                {getCompletionMessage()}
               </span>
             </div>
             {habit.last_completed && (
@@ -154,6 +176,14 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
         </span>
       </div>
     </div>
+
+      {/* Recovery Modal */}
+      <RecoveryModal
+        habit={habit}
+        open={showRecoveryModal}
+        onClose={() => setShowRecoveryModal(false)}
+      />
+    </>
   );
 };
 

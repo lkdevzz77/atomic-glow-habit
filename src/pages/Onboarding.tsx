@@ -21,14 +21,22 @@ import Step11Summary from "@/components/onboarding/Step11Summary";
 
 const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [onboardingMode, setOnboardingMode] = useState<'quick' | 'full' | null>(null);
   const { onboardingData, updateOnboardingData } = useApp();
   const { updateOnboardingStatus } = useAuth();
   const navigate = useNavigate();
 
-  const totalSteps = 11;
+  // Quick mode: 3 steps | Full mode: 11 steps
+  const totalSteps = onboardingMode === 'quick' ? 3 : 11;
 
-  const steps = [
-    <Step1Welcome key={0} />,
+  const quickSteps = [
+    <Step1Welcome key={0} onModeSelect={setOnboardingMode} />,
+    <Step4ChooseHabit key={1} />,
+    <Step11Summary key={2} />
+  ];
+
+  const fullSteps = [
+    <Step1Welcome key={0} onModeSelect={setOnboardingMode} />,
     <Step2Identity key={1} />,
     <Step3Vision key={2} />,
     <Step4ChooseHabit key={3} />,
@@ -41,10 +49,30 @@ const Onboarding = () => {
     <Step11Summary key={10} />
   ];
 
+  const steps = onboardingMode === 'quick' ? quickSteps : onboardingMode === 'full' ? fullSteps : [<Step1Welcome key={0} onModeSelect={setOnboardingMode} />];
+
   const canGoNext = () => {
+    // Step 0 requires mode selection
+    if (currentStep === 0) {
+      return onboardingMode !== null;
+    }
+
+    // Quick mode validation
+    if (onboardingMode === 'quick') {
+      switch (currentStep) {
+        case 1: // Step4ChooseHabit
+          return onboardingData.habitType || onboardingData.habitCustom;
+        case 2: // Step11Summary
+          return true;
+        default:
+          return true;
+      }
+    }
+
+    // Full mode validation
     switch (currentStep) {
       case 0:
-        return true; // Nome já foi coletado no signup
+        return onboardingMode !== null;
       case 1:
         return onboardingData.desiredIdentity && onboardingData.desiredIdentity.trim().length > 10;
       case 2:

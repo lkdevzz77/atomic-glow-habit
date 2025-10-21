@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { CheckCircle, Search, GripVertical, Plus } from 'lucide-react';
+import { CheckCircle, Search, GripVertical, Plus, Target, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import HabitCardCompact from '../HabitCardCompact';
+import EmptyStateCard from '@/components/EmptyStateCard';
 import { triggerMiniConfetti } from '@/utils/confettiAnimation';
 interface Habit {
   id: number;
@@ -47,6 +48,21 @@ const KanbanView: React.FC<KanbanViewProps> = ({
   const pendingHabits = filteredHabits.filter(h => !h.completedToday);
   const completedHabits = filteredHabits.filter(h => h.completedToday);
   const completionPercentage = habits.length > 0 ? Math.round(completedHabits.length / habits.length * 100) : 0;
+  
+  // Empty state when no habits exist
+  if (habits.length === 0) {
+    return (
+      <EmptyStateCard
+        icon={Target}
+        title="Nenhum hábito ainda"
+        description="Comece sua jornada atômica criando seu primeiro hábito. Pequenos passos levam a grandes transformações."
+        actionLabel="Criar Primeiro Hábito"
+        onAction={onAddHabit}
+        tip="Dica: Comece com algo absurdamente fácil. É melhor fazer 1 flexão por dia do que planejar uma rotina de treino perfeita que você nunca começa."
+      />
+    );
+  }
+  
   return <div className="space-y-6">
       {/* Progress Summary */}
       <div className="bg-gradient-to-r from-violet-900/20 to-purple-900/20 border border-violet-700/30 rounded-2xl p-6">
