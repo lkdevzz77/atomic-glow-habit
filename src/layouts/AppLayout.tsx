@@ -3,13 +3,16 @@ import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
 import { ProfileButton } from '@/components/ProfileButton';
 import { ProfileDrawer } from '@/components/ProfileDrawer';
+import { DailyProgress } from '@/components/DailyProgress';
 import { useAuth } from '@/contexts/AuthContext';
+import { useHabits } from '@/hooks/useHabits';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { getXPForLevel } from '@/systems/levelSystem';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
+  const { data: habits } = useHabits();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const { data: profile, refetch: refetchProfile } = useQuery({
@@ -60,6 +63,19 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <SidebarTrigger />
 
               <div className="flex-1" />
+
+              {/* Daily Progress */}
+              {habits && habits.length > 0 && (
+                <DailyProgress
+                  completed={habits.filter(h => h.completedToday).length}
+                  total={habits.length}
+                  habits={habits.map(h => ({
+                    id: h.id,
+                    title: h.title,
+                    completed: h.completedToday || false
+                  }))}
+                />
+              )}
 
               <ProfileButton
                 compact

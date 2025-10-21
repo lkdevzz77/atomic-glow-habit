@@ -103,9 +103,19 @@ const KanbanView: React.FC<KanbanViewProps> = ({
               <div className="w-3 h-3 rounded-full bg-amber-500 animate-pulse" />
               <h2 className="text-lg font-bold text-slate-50">Pendentes</h2>
             </div>
-            <span className="px-3 py-1 bg-slate-700 rounded-full text-xs font-semibold text-slate-300">
-              {pendingHabits.length}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-1 bg-slate-700 rounded-full text-xs font-semibold text-slate-300">
+                {pendingHabits.length}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onAddHabit}
+                className="h-8 w-8 p-0 text-violet-400 hover:text-violet-300 hover:bg-violet-500/10"
+              >
+                <Plus size={16} />
+              </Button>
+            </div>
           </div>
           
           <AnimatePresence mode="popLayout">
