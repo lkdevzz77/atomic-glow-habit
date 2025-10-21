@@ -183,31 +183,37 @@ export type Database = {
           created_at: string
           desired_identity: string | null
           id: string
+          level: number | null
           longest_streak: number
           name: string
           points: number
           specific_change: string | null
           updated_at: string
+          xp: number | null
         }
         Insert: {
           created_at?: string
           desired_identity?: string | null
           id: string
+          level?: number | null
           longest_streak?: number
           name: string
           points?: number
           specific_change?: string | null
           updated_at?: string
+          xp?: number | null
         }
         Update: {
           created_at?: string
           desired_identity?: string | null
           id?: string
+          level?: number | null
           longest_streak?: number
           name?: string
           points?: number
           specific_change?: string | null
           updated_at?: string
+          xp?: number | null
         }
         Relationships: []
       }

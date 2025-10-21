@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useHabits } from "@/hooks/useHabits";
 import { useStats } from "@/hooks/useStats";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLevel } from "@/hooks/useLevel";
 import { Plus } from "lucide-react";
 import NewHabitModal from "@/components/NewHabitModal";
 import { UserMenu } from "@/components/UserMenu";
@@ -11,10 +12,16 @@ import SimpleBanner from "@/components/SimpleBanner";
 import FocusView from "@/components/views/FocusView";
 import ListView from "@/components/views/ListView";
 import KanbanView from "@/components/views/KanbanView";
+import HabitCalendar from "@/components/HabitCalendar";
+import DayDetailModal from "@/components/DayDetailModal";
+import LevelBadge from "@/components/LevelBadge";
+import LevelUpModal from "@/components/LevelUpModal";
 import confetti from "canvas-confetti";
 import WeeklyChart from "@/components/WeeklyChart";
 import WeeklyChecklist from "@/components/WeeklyChecklist";
 import BadgeScroll from "@/components/BadgeScroll";
+import { XP_REWARDS } from "@/systems/levelSystem";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type ViewType = 'focus' | 'list' | 'kanban';
 
@@ -22,10 +29,19 @@ const Dashboard = () => {
   const { user } = useAuth();
   const { data: habits, isLoading: habitsLoading, completeHabit } = useHabits();
   const { weeklyStats } = useStats();
+  const { level, levelInfo, xp, currentLevelXP, nextLevelXP, progress, awardXP } = useLevel();
   const navigate = useNavigate();
   const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
   const [view, setView] = useState<ViewType>(() => {
     return (localStorage.getItem('dashboard-view') as ViewType) || 'focus';
+  });
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDayData, setSelectedDayData] = useState<any>(null);
+  const [showLevelUp, setShowLevelUp] = useState(false);
+  const [levelUpData, setLevelUpData] = useState<{ oldLevel: number; newLevel: number; rewards: string[] }>({
+    oldLevel: 1,
+    newLevel: 1,
+    rewards: [],
   });
 
   // Save view preference
@@ -40,12 +56,32 @@ const Dashboard = () => {
   const handleCompleteHabit = async (habitId: number) => {
     await completeHabit({ habitId, percentage: 100 });
     
+    // Award XP
+    const habit = habits.find(h => h.id === habitId);
+    if (habit) {
+      const levelUpResult = await awardXP(XP_REWARDS.completeHabit, `Hábito: ${habit.title}`);
+      
+      if (levelUpResult.didLevelUp) {
+        setLevelUpData({
+          oldLevel: levelUpResult.oldLevel!,
+          newLevel: levelUpResult.newLevel!,
+          rewards: levelUpResult.rewards || [],
+        });
+        setShowLevelUp(true);
+      }
+    }
+    
     // Confetti animation
     confetti({
       particleCount: 100,
       spread: 70,
       origin: { y: 0.6 }
     });
+  };
+
+  const handleDayClick = (date: Date, dayData: any) => {
+    setSelectedDate(date);
+    setSelectedDayData(dayData);
   };
 
   if (!user) {
@@ -117,6 +153,18 @@ const Dashboard = () => {
             
             <div className="flex items-center gap-4">
               <ViewToggle currentView={view} onViewChange={handleViewChange} />
+              <div className="flex items-center gap-3">
+                <div className="text-right hidden sm:block">
+                  <p className="text-sm font-semibold text-slate-200">Nível {level}</p>
+                  <p className="text-xs text-slate-400">{currentLevelXP} / {nextLevelXP} XP</p>
+                </div>
+                <LevelBadge 
+                  level={level} 
+                  size="md"
+                  xp={currentLevelXP}
+                  nextLevelXP={nextLevelXP}
+                />
+              </div>
               <UserMenu points={maxStreak * 100} />
             </div>
           </div>
@@ -139,12 +187,29 @@ const Dashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Main Focus Column */}
               <div className="lg:col-span-2">
-                <FocusView
-                  habits={habits}
-                  onComplete={handleCompleteHabit}
-                  onAddHabit={() => setIsNewHabitModalOpen(true)}
-                  onViewAll={() => setView('list')}
-                />
+                <Tabs defaultValue="today" className="w-full">
+                  <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-6">
+                    <TabsTrigger value="today">Hoje</TabsTrigger>
+                    <TabsTrigger value="calendar">Calendário</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="today">
+                    <FocusView
+                      habits={habits}
+                      onComplete={handleCompleteHabit}
+                      onAddHabit={() => setIsNewHabitModalOpen(true)}
+                      onViewAll={() => setView('list')}
+                    />
+                  </TabsContent>
+                  
+                  <TabsContent value="calendar">
+                    <HabitCalendar
+                      habits={habits.map(h => ({ id: h.id, title: h.title, icon: h.icon }))}
+                      completions={[]}
+                      onDayClick={handleDayClick}
+                    />
+                  </TabsContent>
+                </Tabs>
               </div>
 
               {/* Sidebar Stats */}
@@ -159,7 +224,10 @@ const Dashboard = () => {
                       🔥 Streak Atual: <span className="font-bold">{maxStreak} dias</span>
                     </div>
                     <div className="bg-slate-800 px-4 py-3 rounded-xl text-slate-200">
-                      🏆 Badges: <span className="font-bold">0/6</span>
+                      ⚡ XP Total: <span className="font-bold">{xp}</span>
+                    </div>
+                    <div className="bg-slate-800 px-4 py-3 rounded-xl text-slate-200">
+                      🏆 {levelInfo.title}: <span className="font-bold">Nível {level}</span>
                     </div>
                   </div>
                 </div>
@@ -250,6 +318,37 @@ const Dashboard = () => {
         open={isNewHabitModalOpen} 
         onClose={() => setIsNewHabitModalOpen(false)} 
       />
+
+      {/* Level Up Modal */}
+      {showLevelUp && (
+        <LevelUpModal
+          isOpen={showLevelUp}
+          oldLevel={levelUpData.oldLevel}
+          newLevel={levelUpData.newLevel}
+          rewards={levelUpData.rewards}
+          onClose={() => setShowLevelUp(false)}
+        />
+      )}
+
+      {/* Day Detail Modal */}
+      {selectedDate && selectedDayData && (
+        <DayDetailModal
+          date={selectedDate}
+          habits={habits.map(h => ({ 
+            id: h.id, 
+            title: h.title, 
+            icon: h.icon,
+            goal_target: h.goal_target,
+            goal_unit: h.goal_unit
+          }))}
+          completions={selectedDayData.completions || []}
+          onClose={() => {
+            setSelectedDate(null);
+            setSelectedDayData(null);
+          }}
+          onToggleCompletion={handleCompleteHabit}
+        />
+      )}
     </div>
   );
 };
