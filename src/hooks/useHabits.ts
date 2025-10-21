@@ -35,12 +35,18 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
       
       // Adicionar flag de "completado hoje" dinamicamente
       const today = new Date().toISOString().split('T')[0];
+      
+      console.log('🗓️ [useHabits] Buscando completions para data:', today);
+      console.log('🕐 [useHabits] Timezone local:', Intl.DateTimeFormat().resolvedOptions().timeZone);
+      
       const { data: todayCompletions } = await supabase
         .from('habit_completions')
-        .select('habit_id')
+        .select('habit_id, date, completed_at')
         .eq('user_id', user.id)
         .eq('date', today)
         .gte('percentage', 100);
+      
+      console.log('✅ [useHabits] Completions encontrados:', todayCompletions);
       
       const completedIds = new Set(todayCompletions?.map(c => c.habit_id) || []);
       
@@ -50,8 +56,8 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
       }));
     },
     enabled: !!user,
-    staleTime: 1000 * 10, // 10 seconds
-    refetchInterval: 1000 * 30, // Refetch every 30 seconds
+    staleTime: 1000 * 60 * 5, // 5 minutos - dados ficam "fresh" por mais tempo
+    refetchInterval: false, // Desabilitado - usar invalidação manual apenas
   });
 
   const createHabitMutation = useMutation({
@@ -203,11 +209,19 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
       await new Promise(resolve => setTimeout(resolve, 100));
       
       // DEPOIS invalidar queries
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all') });
-      queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'weekly'] });
-      queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'streaks'] });
-      queryClient.invalidateQueries({ queryKey: ['weekly-data'] });
-      queryClient.invalidateQueries({ queryKey: ['profile', user?.id] });
+      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all') });
+      await queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'weekly'] });
+      await queryClient.invalidateQueries({ queryKey: ['stats', user?.id, 'streaks'] });
+      await queryClient.invalidateQueries({ queryKey: ['weekly-data'] });
+      await queryClient.invalidateQueries({ queryKey: ['profile', user?.id] });
+      
+      // Forçar refetch imediato após invalidação
+      await queryClient.refetchQueries({ 
+        queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all'),
+        exact: true 
+      });
+      
+      console.log('🔄 [useHabits] Queries invalidadas e refetchadas após completion');
     },
   });
 
