@@ -96,8 +96,63 @@ const WeeklyComparison = () => {
       return 'Performance estável. Continue assim! 👍';
     }
   };
-  return <div className="mt-8">
-      
-    </div>;
+  return (
+    <div className="glass-violet border-2 border-slate-700/80 rounded-2xl p-6 transition-colors duration-300">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-xl font-bold text-slate-100">Resumo da Semana</h3>
+        <div className={cn(
+          "flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all",
+          getTrendColor()
+        )}>
+          {getTrendIcon()}
+          <span className="font-bold text-lg">
+            {data.change > 0 ? '+' : ''}{data.change}%
+          </span>
+        </div>
+      </div>
+
+      {/* Comparação Visual */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        {/* Semana Anterior */}
+        <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5 text-center">
+          <p className="text-xs text-slate-400 uppercase tracking-wider mb-2">
+            Semana Passada
+          </p>
+          <p className="text-4xl font-bold text-slate-300">
+            {data.previousWeek}
+          </p>
+          <p className="text-xs text-slate-500 mt-1">hábitos concluídos</p>
+        </div>
+
+        {/* Semana Atual */}
+        <div className="bg-gradient-to-br from-violet-900/30 to-purple-900/30 border-2 border-violet-500/50 rounded-xl p-5 text-center relative overflow-hidden">
+          {/* Glow effect */}
+          <div className="absolute top-0 right-0 w-20 h-20 bg-violet-500/20 rounded-full blur-2xl"></div>
+          
+          <p className="text-xs text-violet-400 uppercase tracking-wider mb-2 relative z-10">
+            Esta Semana
+          </p>
+          <p className="text-4xl font-bold text-violet-300 relative z-10">
+            {data.currentWeek}
+          </p>
+          <p className="text-xs text-violet-500 mt-1 relative z-10">hábitos concluídos</p>
+        </div>
+      </div>
+
+      {/* Mensagem Motivacional */}
+      <div className={cn(
+        "rounded-xl p-4 border-2 flex items-center gap-3 transition-all",
+        getTrendColor()
+      )}>
+        <div className="text-3xl">
+          {data.trend === 'up' ? '🎉' : data.trend === 'down' ? '💪' : '👍'}
+        </div>
+        <p className="flex-1 text-sm font-medium leading-relaxed">
+          {getTrendMessage()}
+        </p>
+      </div>
+    </div>
+  );
 };
 export default WeeklyComparison;
