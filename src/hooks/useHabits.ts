@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { habitService } from '@/services/habitService';
 import { toast } from './use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import type { Habit } from '@/types/habit';
 
 const QUERY_KEYS = {
@@ -22,13 +23,33 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
       const { data, error } = await habitService.getHabits(user.id);
       if (error) throw error;
       
-      // Se não especificar status, retorna todos os hábitos (pending e active)
-      if (!status) return data || [];
+      // Filtrar por status GERAL (active/archived/paused)
+      let filteredHabits = data || [];
+      if (status) {
+        filteredHabits = filteredHabits.filter(h => h.status === status);
+      } else {
+        // Se não especificar, mostrar apenas ativos
+        filteredHabits = filteredHabits.filter(h => h.status === 'active');
+      }
       
-      return data?.filter(habit => habit.status === status) || [];
+      // Adicionar flag de "completado hoje" dinamicamente
+      const today = new Date().toISOString().split('T')[0];
+      const { data: todayCompletions } = await supabase
+        .from('habit_completions')
+        .select('habit_id')
+        .eq('user_id', user.id)
+        .eq('date', today)
+        .gte('percentage', 100);
+      
+      const completedIds = new Set(todayCompletions?.map(c => c.habit_id) || []);
+      
+      return filteredHabits.map(habit => ({
+        ...habit,
+        completedToday: completedIds.has(habit.id)
+      }));
     },
     enabled: !!user,
-    staleTime: 1000 * 30, // 30 seconds
+    staleTime: 1000 * 10, // 10 seconds
     refetchInterval: 1000 * 30, // Refetch every 30 seconds
   });
 

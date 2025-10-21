@@ -86,7 +86,7 @@ export const habitService = {
         streak: 0,
         longest_streak: 0,
         total_completions: 0,
-        status: 'pending',
+        status: 'active', // Sempre começa como 'active'
       };
 
       console.log('📤 Dados sendo enviados:', newHabit);
@@ -192,11 +192,10 @@ export const habitService = {
       const newStreak = yesterdayCompletion ? (habit.streak || 0) + 1 : 1;
       const newLongestStreak = Math.max(newStreak, habit.longest_streak || 0);
 
-      // 3. Atualizar tabela habits com status "completed" e streak
+      // 3. Atualizar tabela habits (SEM mudar status - permanece 'active')
       const { error: updateError } = await supabase
         .from('habits')
         .update({
-          status: 'completed',
           last_completed: new Date().toISOString(),
           streak: newStreak,
           longest_streak: newLongestStreak,

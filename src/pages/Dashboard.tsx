@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useHabits } from "@/hooks/useHabits";
 import { useStats } from "@/hooks/useStats";
@@ -7,10 +7,6 @@ import { useLevel } from "@/hooks/useLevel";
 import { Plus } from "lucide-react";
 import NewHabitModal from "@/components/NewHabitModal";
 import { UserMenu } from "@/components/UserMenu";
-import ViewToggle from "@/components/ViewToggle";
-import SimpleBanner from "@/components/SimpleBanner";
-import FocusView from "@/components/views/FocusView";
-import ListView from "@/components/views/ListView";
 import KanbanView from "@/components/views/KanbanView";
 import HabitCalendar from "@/components/HabitCalendar";
 import DayDetailModal from "@/components/DayDetailModal";
@@ -23,8 +19,6 @@ import BadgeScroll from "@/components/BadgeScroll";
 import { XP_REWARDS } from "@/systems/levelSystem";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-type ViewType = 'focus' | 'list' | 'kanban';
-
 const Dashboard = () => {
   const { user } = useAuth();
   const { data: habits, isLoading: habitsLoading, completeHabit } = useHabits();
@@ -32,9 +26,6 @@ const Dashboard = () => {
   const { level, levelInfo, xp, currentLevelXP, nextLevelXP, progress, awardXP } = useLevel();
   const navigate = useNavigate();
   const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
-  const [view, setView] = useState<ViewType>(() => {
-    return (localStorage.getItem('dashboard-view') as ViewType) || 'focus';
-  });
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedDayData, setSelectedDayData] = useState<any>(null);
   const [showLevelUp, setShowLevelUp] = useState(false);
@@ -44,20 +35,11 @@ const Dashboard = () => {
     rewards: [],
   });
 
-  // Save view preference
-  useEffect(() => {
-    localStorage.setItem('dashboard-view', view);
-  }, [view]);
-
-  const handleViewChange = (newView: ViewType) => {
-    setView(newView);
-  };
-
   const handleCompleteHabit = async (habitId: number) => {
     await completeHabit({ habitId, percentage: 100 });
     
     // Award XP
-    const habit = habits.find(h => h.id === habitId);
+    const habit = habits?.find(h => h.id === habitId);
     if (habit) {
       const levelUpResult = await awardXP(XP_REWARDS.completeHabit, `Hábito: ${habit.title}`);
       
@@ -108,10 +90,10 @@ const Dashboard = () => {
     );
   }
 
-  const completedToday = habits.filter(h => h.status === "completed").length;
-  const totalToday = habits.length;
+  const completedToday = habits?.filter(h => h.completedToday).length || 0;
+  const totalToday = habits?.length || 0;
   const completionRate = totalToday > 0 ? Math.round((completedToday / totalToday) * 100) : 0;
-  const maxStreak = Math.max(...habits.map(h => h.longest_streak || 0), 0);
+  const maxStreak = Math.max(...(habits?.map(h => h.longest_streak || 0) || []), 0);
   
   // Get user name from metadata
   const userName = user.user_metadata?.name || 'Usuário';
@@ -152,7 +134,6 @@ const Dashboard = () => {
             </div>
             
             <div className="flex items-center gap-4">
-              <ViewToggle currentView={view} onViewChange={handleViewChange} />
               <div className="flex items-center gap-3">
                 <div className="text-right hidden sm:block">
                   <p className="text-sm font-semibold text-slate-200">Nível {level}</p>
@@ -173,135 +154,88 @@ const Dashboard = () => {
 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-8 sm:py-12">
         {/* Banner */}
-        <SimpleBanner
-          userName={userName}
-          dateString={getDateString()}
-          completedToday={completedToday}
-          totalToday={totalToday}
-          completionRate={completionRate}
-        />
-
-        {/* View Content */}
-        <div className="animate-fade-in">
-          {view === 'focus' && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Main Focus Column */}
-              <div className="lg:col-span-2">
-                <Tabs defaultValue="today" className="w-full">
-                  <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-6">
-                    <TabsTrigger value="today">Hoje</TabsTrigger>
-                    <TabsTrigger value="calendar">Calendário</TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="today">
-                    <FocusView
-                      habits={habits}
-                      onComplete={handleCompleteHabit}
-                      onAddHabit={() => setIsNewHabitModalOpen(true)}
-                      onViewAll={() => setView('list')}
-                    />
-                  </TabsContent>
-                  
-                  <TabsContent value="calendar">
-                    <HabitCalendar
-                      habits={habits.map(h => ({ id: h.id, title: h.title, icon: h.icon }))}
-                      completions={[]}
-                      onDayClick={handleDayClick}
-                    />
-                  </TabsContent>
-                </Tabs>
-              </div>
-
-              {/* Sidebar Stats */}
-              <div className="space-y-6">
-                {/* Stats */}
-                <div>
-                  <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
-                    ESTATÍSTICAS
-                  </h2>
-                  <div className="space-y-3">
-                    <div className="bg-slate-800 px-4 py-3 rounded-xl text-slate-200">
-                      🔥 Streak Atual: <span className="font-bold">{maxStreak} dias</span>
-                    </div>
-                    <div className="bg-slate-800 px-4 py-3 rounded-xl text-slate-200">
-                      ⚡ XP Total: <span className="font-bold">{xp}</span>
-                    </div>
-                    <div className="bg-slate-800 px-4 py-3 rounded-xl text-slate-200">
-                      🏆 {levelInfo.title}: <span className="font-bold">Nível {level}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Coach AI */}
-                <div>
-                  <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
-                    COACH IA
-                  </h2>
-                  <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6">
-                    <div className="flex items-center gap-3 mb-3">
-                      <span className="text-2xl">💡</span>
-                      <span className="text-white font-semibold">Seu Coach IA</span>
-                    </div>
-                    <p className="text-slate-300 text-sm">
-                      1% melhor todo dia é o caminho para a transformação.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {view === 'list' && (
-            <ListView
-              habits={habits}
-              onComplete={handleCompleteHabit}
-            />
-          )}
-          
-          {view === 'kanban' && (
-            <KanbanView
-              habits={habits}
-              onComplete={handleCompleteHabit}
-            />
-          )}
-
-        {/* Weekly Chart - Only in list/kanban view */}
-        {habits && habits.length > 0 && view !== 'focus' && (
-          <div className="mt-12 sm:mt-16">
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-50 mb-6 tracking-tight">Estatísticas da Semana</h2>
-            {weeklyStats.isLoading ? (
-              <div className="glass rounded-2xl sm:rounded-3xl p-8 text-center border border-slate-700/50">
-                <div className="animate-pulse">
-                  <div className="h-8 bg-slate-700 rounded w-48 mx-auto mb-4"></div>
-                  <div className="h-64 bg-slate-700 rounded"></div>
-                </div>
-              </div>
-            ) : weeklyStats.data ? (
-              <WeeklyChart weekData={weeklyStats.data.days} />
-            ) : (
-              <div className="glass rounded-2xl p-6 text-center text-slate-400 border border-slate-700/50">
-                Carregando estatísticas...
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Weekly Checklist - Only in list/kanban view */}
-        {habits.length > 0 && view !== 'focus' && (
-          <div className="mt-12 sm:mt-16">
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-50 mb-6 tracking-tight">Checklist Semanal</h2>
-            <WeeklyChecklist habits={habits} />
-          </div>
-        )}
-
-        {/* Badges - Only in list/kanban view */}
-        {habits.length > 0 && view !== 'focus' && (
-          <div className="mt-12 sm:mt-16">
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-50 mb-6 tracking-tight">Conquistas</h2>
-            <BadgeScroll />
-          </div>
-        )}
+        <div className="mb-10">
+          <h1 className="text-3xl sm:text-4xl font-bold text-slate-50 mb-2">
+            {getGreeting()}, {userName}! 👋
+          </h1>
+          <p className="text-slate-400 mb-4">{getDateString()}</p>
         </div>
+
+        {/* Main Content - Kanban View */}
+        <div className="animate-fade-in">
+          <KanbanView
+            habits={habits || []}
+            onComplete={handleCompleteHabit}
+            onAddHabit={() => setIsNewHabitModalOpen(true)}
+          />
+        </div>
+
+        {/* Tabs Section */}
+        {habits && habits.length > 0 && (
+          <div className="mt-12">
+            <Tabs defaultValue="stats" className="w-full">
+              <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-3">
+                <TabsTrigger value="stats">Estatísticas</TabsTrigger>
+                <TabsTrigger value="calendar">Calendário</TabsTrigger>
+                <TabsTrigger value="badges">Conquistas</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="stats" className="mt-8">
+                <div className="space-y-8">
+                  {/* Stats Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 text-center">
+                      <div className="text-3xl mb-2">🔥</div>
+                      <p className="text-slate-400 text-sm mb-1">Streak Atual</p>
+                      <p className="text-2xl font-bold text-slate-50">{maxStreak} dias</p>
+                    </div>
+                    <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 text-center">
+                      <div className="text-3xl mb-2">⚡</div>
+                      <p className="text-slate-400 text-sm mb-1">XP Total</p>
+                      <p className="text-2xl font-bold text-slate-50">{xp}</p>
+                    </div>
+                    <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 text-center">
+                      <div className="text-3xl mb-2">🏆</div>
+                      <p className="text-slate-400 text-sm mb-1">{levelInfo.title}</p>
+                      <p className="text-2xl font-bold text-slate-50">Nível {level}</p>
+                    </div>
+                  </div>
+
+                  {/* Weekly Chart */}
+                  {weeklyStats.isLoading ? (
+                    <div className="glass rounded-2xl sm:rounded-3xl p-8 text-center border border-slate-700/50">
+                      <div className="animate-pulse">
+                        <div className="h-8 bg-slate-700 rounded w-48 mx-auto mb-4"></div>
+                        <div className="h-64 bg-slate-700 rounded"></div>
+                      </div>
+                    </div>
+                  ) : weeklyStats.data ? (
+                    <WeeklyChart weekData={weeklyStats.data.days} />
+                  ) : (
+                    <div className="glass rounded-2xl p-6 text-center text-slate-400 border border-slate-700/50">
+                      Carregando estatísticas...
+                    </div>
+                  )}
+
+                  {/* Weekly Checklist */}
+                  <WeeklyChecklist habits={habits} />
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="calendar" className="mt-8">
+                <HabitCalendar
+                  habits={habits.map(h => ({ id: h.id, title: h.title, icon: h.icon }))}
+                  completions={[]}
+                  onDayClick={handleDayClick}
+                />
+              </TabsContent>
+              
+              <TabsContent value="badges" className="mt-8">
+                <BadgeScroll />
+              </TabsContent>
+            </Tabs>
+          </div>
+        )}
       </div>
 
       {/* Floating Action Button */}
@@ -334,13 +268,13 @@ const Dashboard = () => {
       {selectedDate && selectedDayData && (
         <DayDetailModal
           date={selectedDate}
-          habits={habits.map(h => ({ 
+          habits={habits?.map(h => ({ 
             id: h.id, 
             title: h.title, 
             icon: h.icon,
             goal_target: h.goal_target,
             goal_unit: h.goal_unit
-          }))}
+          })) || []}
           completions={selectedDayData.completions || []}
           onClose={() => {
             setSelectedDate(null);
