@@ -85,18 +85,18 @@ const HabitCalendar: React.FC<HabitCalendarProps> = ({ habits, completions, onDa
   };
 
   const getCellColor = (percentage: number, isFuture: boolean) => {
-    if (isFuture) return 'bg-slate-800 opacity-30';
-    if (percentage === 100) return 'bg-violet-600 shadow-lg shadow-violet-500/50';
-    if (percentage >= 80) return 'bg-violet-500';
-    if (percentage >= 50) return 'bg-violet-400';
-    if (percentage >= 1) return 'bg-amber-500';
-    return 'bg-slate-700';
+    if (isFuture) return 'bg-slate-800/30';
+    if (percentage === 100) return 'bg-gradient-to-br from-emerald-500 to-green-600 shadow-lg shadow-emerald-500/30';
+    if (percentage >= 80) return 'bg-gradient-to-br from-violet-500 to-purple-600 shadow-md shadow-violet-500/20';
+    if (percentage >= 50) return 'bg-gradient-to-br from-violet-400 to-purple-500';
+    if (percentage >= 1) return 'bg-gradient-to-br from-amber-500 to-orange-500';
+    return 'bg-slate-700/50';
   };
 
   return (
-    <div className="glass rounded-2xl p-6 border border-slate-700">
+    <div className="glass rounded-2xl p-6 sm:p-8 border border-slate-700">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
@@ -104,9 +104,9 @@ const HabitCalendar: React.FC<HabitCalendarProps> = ({ habits, completions, onDa
             onClick={previousMonth}
             className="hover:bg-slate-700"
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={24} />
           </Button>
-          <h2 className="text-xl font-semibold text-slate-200 min-w-[200px] text-center">
+          <h2 className="text-section-title min-w-[200px] text-center capitalize">
             {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
           </h2>
           <Button
@@ -115,7 +115,7 @@ const HabitCalendar: React.FC<HabitCalendarProps> = ({ habits, completions, onDa
             onClick={nextMonth}
             className="hover:bg-slate-700"
           >
-            <ChevronRight size={20} />
+            <ChevronRight size={24} />
           </Button>
         </div>
         <Button
@@ -124,7 +124,7 @@ const HabitCalendar: React.FC<HabitCalendarProps> = ({ habits, completions, onDa
           onClick={goToToday}
           className="border-slate-600 hover:bg-slate-700"
         >
-          <Calendar size={16} className="mr-2" />
+          <Calendar size={18} className="mr-2" />
           Hoje
         </Button>
       </div>
@@ -132,11 +132,11 @@ const HabitCalendar: React.FC<HabitCalendarProps> = ({ habits, completions, onDa
       {/* Calendar Grid */}
       <div>
         {/* Week Days Headers */}
-        <div className="grid grid-cols-7 gap-2 mb-2">
+        <div className="grid grid-cols-7 gap-3 sm:gap-4 mb-4">
           {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day) => (
             <div
               key={day}
-              className="text-xs font-semibold text-slate-400 text-center py-2"
+              className="text-sm font-semibold text-slate-400 text-center py-2"
             >
               {day}
             </div>
@@ -144,7 +144,7 @@ const HabitCalendar: React.FC<HabitCalendarProps> = ({ habits, completions, onDa
         </div>
 
         {/* Calendar Days */}
-        <div className="grid grid-cols-7 gap-2">
+        <div className="grid grid-cols-7 gap-3 sm:gap-4">
           {calendarDays.map((dayCell, index) => (
             <TooltipProvider key={index}>
               <Tooltip>
@@ -155,24 +155,56 @@ const HabitCalendar: React.FC<HabitCalendarProps> = ({ habits, completions, onDa
                     onMouseLeave={() => setHoveredDate(null)}
                     disabled={dayCell.isFuture}
                     className={cn(
-                      'h-12 rounded-lg flex items-center justify-center text-sm font-medium transition-all',
-                      'hover:scale-105 hover:shadow-lg',
+                      'relative min-h-[48px] sm:min-h-[56px] rounded-xl flex items-center justify-center text-base sm:text-lg font-semibold transition-all duration-200',
+                      'hover:scale-105 hover:shadow-xl',
                       getCellColor(dayCell.percentage, dayCell.isFuture),
-                      dayCell.isToday && 'ring-2 ring-blue-400',
+                      dayCell.isToday && 'ring-2 ring-violet-500 shadow-lg shadow-violet-500/50',
                       dayCell.isFuture && 'cursor-not-allowed',
                       !dayCell.isFuture && 'cursor-pointer',
-                      format(dayCell.date, 'M') !== format(currentMonth, 'M') && 'opacity-50'
+                      format(dayCell.date, 'M') !== format(currentMonth, 'M') && 'opacity-40'
                     )}
                   >
-                    <span className="text-white">
+                    {/* Mini Progress Ring */}
+                    {dayCell.hasData && !dayCell.isFuture && (
+                      <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 36 36">
+                        <circle
+                          cx="18"
+                          cy="18"
+                          r="16"
+                          fill="none"
+                          className="stroke-slate-600/30"
+                          strokeWidth="2"
+                        />
+                        <circle
+                          cx="18"
+                          cy="18"
+                          r="16"
+                          fill="none"
+                          className={cn(
+                            dayCell.percentage === 100 ? 'stroke-emerald-400' : 'stroke-violet-400'
+                          )}
+                          strokeWidth="2"
+                          strokeDasharray={`${(dayCell.percentage / 100) * 100.53} 100.53`}
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    )}
+                    
+                    {/* Day Number */}
+                    <span className="relative z-10 text-white">
                       {format(dayCell.date, 'd')}
                     </span>
+                    
+                    {/* Celebration Emoji */}
+                    {dayCell.percentage === 100 && !dayCell.isFuture && (
+                      <span className="absolute -top-1 -right-1 text-sm animate-bounce">✨</span>
+                    )}
                   </button>
                 </TooltipTrigger>
                 {!dayCell.isFuture && dayCell.hasData && (
                   <TooltipContent className="bg-slate-800 border-slate-700">
                     <div className="space-y-2">
-                      <p className="font-semibold">
+                      <p className="font-semibold capitalize">
                         {format(dayCell.date, "EEEE, d 'de' MMMM", { locale: ptBR })}
                       </p>
                       <p className="text-sm text-slate-300">
@@ -202,23 +234,27 @@ const HabitCalendar: React.FC<HabitCalendarProps> = ({ habits, completions, onDa
       </div>
 
       {/* Legend */}
-      <div className="mt-6 pt-4 border-t border-slate-700">
-        <p className="text-xs font-semibold text-slate-400 mb-3">Legenda:</p>
-        <div className="flex flex-wrap gap-4 text-xs text-slate-400">
+      <div className="mt-8 pt-6 border-t border-slate-700">
+        <p className="text-sm font-semibold text-slate-400 mb-4">Legenda:</p>
+        <div className="flex flex-wrap gap-6 text-sm text-slate-400">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-violet-600" />
+            <div className="w-5 h-5 rounded-md bg-gradient-to-br from-emerald-500 to-green-600" />
             <span>100%</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-violet-400" />
-            <span>50-99%</span>
+            <div className="w-5 h-5 rounded-md bg-gradient-to-br from-violet-500 to-purple-600" />
+            <span>80-99%</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-amber-500" />
+            <div className="w-5 h-5 rounded-md bg-gradient-to-br from-violet-400 to-purple-500" />
+            <span>50-79%</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 rounded-md bg-gradient-to-br from-amber-500 to-orange-500" />
             <span>1-49%</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-slate-700" />
+            <div className="w-5 h-5 rounded-md bg-slate-700/50" />
             <span>0%</span>
           </div>
         </div>

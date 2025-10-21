@@ -6,6 +6,12 @@ import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { cn } from '@/lib/utils';
 import * as LucideIcons from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface Habit {
   id: number;
@@ -61,10 +67,10 @@ export const NotionCalendar: React.FC<NotionCalendarProps> = ({
   const isFuture = (date: Date) => date > new Date();
 
   return (
-    <Card className="p-6">
+    <Card className="card-padding">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-section-title capitalize">
           {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
         </h2>
         <div className="flex gap-2">
@@ -80,23 +86,23 @@ export const NotionCalendar: React.FC<NotionCalendarProps> = ({
             size="icon"
             onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={24} />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
           >
-            <ChevronRight size={20} />
+            <ChevronRight size={24} />
           </Button>
         </div>
       </div>
 
       {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-3 sm:gap-4">
         {/* Day Headers */}
         {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day) => (
-          <div key={day} className="text-center text-sm font-medium text-muted-foreground py-2">
+          <div key={day} className="text-center text-sm font-semibold text-muted-foreground py-2">
             {day}
           </div>
         ))}
@@ -108,72 +114,80 @@ export const NotionCalendar: React.FC<NotionCalendarProps> = ({
           const todayDay = isToday(day);
           const pastDay = isPast(day);
           const futureDay = isFuture(day);
+          const completedCount = habits.filter(h => isHabitCompletedOnDay(h.id, day)).length;
+          const percentage = habits.length > 0 ? (completedCount / habits.length) * 100 : 0;
 
           return (
             <button
               key={day.toString()}
               onClick={() => onDayClick?.(day)}
               className={cn(
-                'min-h-24 p-2 rounded-lg border transition-all hover:border-primary/50',
+                'relative min-h-28 sm:min-h-32 p-3 sm:p-4 rounded-xl border transition-all duration-200',
+                'hover:border-primary/50 hover:shadow-lg hover:scale-[1.02]',
                 !isCurrentMonth && 'opacity-40',
-                todayDay && 'ring-2 ring-primary',
-                'flex flex-col gap-1'
+                todayDay && 'ring-2 ring-violet-500 shadow-lg shadow-violet-500/50',
+                percentage === 100 && !futureDay && 'bg-gradient-to-br from-emerald-500/10 to-green-600/10 border-emerald-500/30',
+                'flex flex-col gap-2'
               )}
             >
               {/* Day Number */}
               <div className="flex items-center justify-between">
                 <span className={cn(
-                  'text-sm font-medium',
+                  'text-base sm:text-lg font-semibold',
                   todayDay && 'text-primary font-bold'
                 )}>
                   {format(day, 'd')}
                 </span>
-                {dayCompletions.length === habits.length && habits.length > 0 && (
-                  <span className="text-xs">✨</span>
+                {percentage === 100 && habits.length > 0 && !futureDay && (
+                  <span className="text-base animate-bounce">✨</span>
                 )}
               </div>
 
-              {/* Habits Checklist */}
-              <div className="flex flex-col gap-0.5 items-start w-full">
-                {habits.slice(0, 4).map((habit) => {
+              {/* Habits Dots with Tooltips */}
+              <div className="flex flex-wrap gap-1.5 items-start w-full">
+                {habits.slice(0, 8).map((habit) => {
                   const Icon = getIconComponent(habit.icon);
                   const isCompleted = isHabitCompletedOnDay(habit.id, day);
 
                   return (
-                    <div
-                      key={habit.id}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (todayDay && !futureDay) {
-                          onHabitToggle(habit.id);
-                        }
-                      }}
-                      className={cn(
-                        'flex items-center gap-1 text-xs w-full rounded px-1',
-                        todayDay && !futureDay && 'cursor-pointer hover:bg-accent/50',
-                        futureDay && 'opacity-50 cursor-not-allowed'
-                      )}
-                      title={habit.title}
-                    >
-                      {isCompleted ? (
-                        <span className="text-green-500">✓</span>
-                      ) : (
-                        <span className="text-muted-foreground">○</span>
-                      )}
-                      <Icon size={12} className={isCompleted ? 'text-green-500' : 'text-muted-foreground'} />
-                      <span className={cn(
-                        'truncate flex-1 text-left',
-                        isCompleted && 'line-through text-muted-foreground'
-                      )}>
-                        {habit.title}
-                      </span>
-                    </div>
+                    <TooltipProvider key={habit.id}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (todayDay && !futureDay) {
+                                onHabitToggle(habit.id);
+                              }
+                            }}
+                            className={cn(
+                              'w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200',
+                              todayDay && !futureDay && 'cursor-pointer hover:scale-125',
+                              futureDay && 'opacity-50 cursor-not-allowed',
+                              isCompleted 
+                                ? 'bg-gradient-to-br from-emerald-500 to-green-600 shadow-md shadow-emerald-500/30' 
+                                : 'bg-slate-700/50 border border-slate-600'
+                            )}
+                          >
+                            <Icon size={12} className={isCompleted ? 'text-white' : 'text-muted-foreground'} />
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs font-medium">{habit.title}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {isCompleted ? 'Completado ✓' : 'Pendente'}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   );
                 })}
-                {habits.length > 4 && (
-                  <span className="text-xs text-muted-foreground">
-                    +{habits.length - 4}
-                  </span>
+                {habits.length > 8 && (
+                  <div className="w-6 h-6 rounded-full bg-slate-700/50 border border-slate-600 flex items-center justify-center">
+                    <span className="text-[10px] text-muted-foreground font-medium">
+                      +{habits.length - 8}
+                    </span>
+                  </div>
                 )}
               </div>
             </button>
@@ -182,17 +196,17 @@ export const NotionCalendar: React.FC<NotionCalendarProps> = ({
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
-        <div className="flex items-center gap-1">
-          <span className="text-green-500">✓</span>
+      <div className="flex items-center gap-6 mt-8 pt-6 border-t border-border text-sm text-muted-foreground">
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-500 to-green-600" />
           <span>Completado</span>
         </div>
-        <div className="flex items-center gap-1">
-          <span>○</span>
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded-full bg-slate-700/50 border border-slate-600" />
           <span>Pendente</span>
         </div>
-        <div className="flex items-center gap-1">
-          <span>✨</span>
+        <div className="flex items-center gap-2">
+          <span className="text-base">✨</span>
           <span>Todos completados</span>
         </div>
       </div>
