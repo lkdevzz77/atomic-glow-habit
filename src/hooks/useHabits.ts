@@ -252,7 +252,7 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
     },
     onSuccess: async (xpResult, { habitId, habitTitle }) => {
       // 1. Toast
-      if (xpResult?.didLevelUp) {
+      if (xpResult?.levelUp) {
         toast({
           title: "🎊 LEVEL UP!",
           description: `Você alcançou o nível ${xpResult.newLevel}!`,
@@ -260,7 +260,7 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
       } else {
         toast({
           title: `${habitTitle} completado! 🎉`,
-          description: `+${xpResult.newVotes} voto${xpResult.newVotes > 1 ? 's' : ''} de identidade`,
+          description: `+${xpResult.newVoteCount} XP`,
         });
       }
       

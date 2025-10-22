@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { BadgeDisplay } from '@/components/BadgeDisplay';
+import BadgeDisplay from '@/components/BadgeDisplay';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Trophy, Target, Flame, User, TrendingUp } from 'lucide-react';
 import { ICON_SIZES } from '@/config/iconSizes';

@@ -12,6 +12,9 @@ interface Badge {
   icon: string;
   target: number;
   category: string;
+  tier: string;
+  xp_reward: number;
+  hidden?: boolean;
 }
 
 interface UserBadge {
@@ -39,7 +42,9 @@ const UpcomingBadges = () => {
             description,
             icon,
             target,
-            category
+            category,
+            tier,
+            xp_reward
           )
         `)
         .eq('user_id', user?.id)
@@ -48,7 +53,9 @@ const UpcomingBadges = () => {
         .limit(3);
 
       if (error) throw error;
-      return data as UserBadge[];
+      
+      // Filtrar badges ocultas
+      return (data as UserBadge[]).filter(ub => !ub.badges.hidden);
     },
     enabled: !!user?.id,
   });

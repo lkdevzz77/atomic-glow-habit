@@ -18,26 +18,35 @@ export type Database = {
         Row: {
           category: string
           description: string
+          hidden: boolean | null
           icon: string
           id: string
           name: string
           target: number
+          tier: string | null
+          xp_reward: number | null
         }
         Insert: {
           category: string
           description: string
+          hidden?: boolean | null
           icon: string
           id: string
           name: string
           target: number
+          tier?: string | null
+          xp_reward?: number | null
         }
         Update: {
           category?: string
           description?: string
+          hidden?: boolean | null
           icon?: string
           id?: string
           name?: string
           target?: number
+          tier?: string | null
+          xp_reward?: number | null
         }
         Relationships: []
       }
