@@ -270,3 +270,4 @@ const BadgeDisplay = ({ mode = 'grid', filter = 'all', limit }: BadgeDisplayProp
 };
 
 export default BadgeDisplay;
+
