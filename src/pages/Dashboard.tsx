@@ -14,6 +14,8 @@ import WeeklyChart from "@/components/WeeklyChart";
 import WeeklyChecklist from "@/components/WeeklyChecklist";
 import WeeklyComparison from "@/components/WeeklyComparison";
 import { NotionCalendar } from "@/components/NotionCalendar";
+import { HabitTimeline } from "@/components/HabitTimeline";
+import { useIsMobile } from "@/hooks/use-mobile";
 import BadgeScroll from "@/components/BadgeScroll";
 import UpcomingBadges from "@/components/UpcomingBadges";
 import StatMetricCard from "@/components/StatMetricCard";
@@ -31,6 +33,7 @@ const Dashboard = () => {
   const { data: habits, isLoading: habitsLoading, completeHabit } = useHabits();
   const { weeklyStats } = useStats();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isDayDetailModalOpen, setIsDayDetailModalOpen] = useState(false);
@@ -130,15 +133,27 @@ const Dashboard = () => {
 
           {/* Calendar View */}
           <TabsContent value="calendar" className="mt-6">
-            <NotionCalendar
-              habits={habits?.map(h => ({ id: h.id, title: h.title, icon: h.icon })) || []}
-              completions={allCompletions}
-              onHabitToggle={handleCompleteHabit}
-              onDayClick={(date) => {
-                setSelectedDate(date);
-                setIsDayDetailModalOpen(true);
-              }}
-            />
+            {isMobile ? (
+              <HabitTimeline
+                habits={habits?.map(h => ({ id: h.id, title: h.title, icon: h.icon })) || []}
+                completions={allCompletions}
+                onHabitToggle={handleCompleteHabit}
+                onDayClick={(date) => {
+                  setSelectedDate(date);
+                  setIsDayDetailModalOpen(true);
+                }}
+              />
+            ) : (
+              <NotionCalendar
+                habits={habits?.map(h => ({ id: h.id, title: h.title, icon: h.icon })) || []}
+                completions={allCompletions}
+                onHabitToggle={handleCompleteHabit}
+                onDayClick={(date) => {
+                  setSelectedDate(date);
+                  setIsDayDetailModalOpen(true);
+                }}
+              />
+            )}
           </TabsContent>
 
           {/* Stats View */}
