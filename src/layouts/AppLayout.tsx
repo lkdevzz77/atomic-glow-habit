@@ -8,7 +8,7 @@ import { BottomNavigation } from '@/components/BottomNavigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHabits } from '@/hooks/useHabits';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { getXPForLevel } from '@/systems/levelSystem';
 import { triggerHaptic } from '@/utils/haptics';
 
