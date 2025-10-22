@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { X, BookOpen, Dumbbell, Brain, Heart, Droplet, Utensils, Moon, Sun, Target, Zap, Award, Plus, Coffee, Sunrise, Sunset, Sparkles, Check, Clock, AlertCircle, Flame } from "lucide-react";
+import { Drawer, DrawerContent } from "@/components/ui/drawer";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { X, BookOpen, Dumbbell, Brain, Heart, Droplet, Utensils, Moon, Sun, Target, Zap, Award, Plus, Coffee, Sunrise, Sunset, Sparkles, Check, Clock, AlertCircle, Flame, ChevronDown } from "lucide-react";
 import { useHabits } from "@/hooks/useHabits";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -9,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { triggerHabitConfetti } from "@/utils/confettiAnimation";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { triggerHaptic } from "@/utils/haptics";
 
 interface NewHabitModalProps {
   open: boolean;
@@ -92,6 +96,7 @@ const LAWS = [
 
 const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
   const { createHabit, isCreating } = useHabits();
+  const isMobile = useIsMobile();
   const [currentStep, setCurrentStep] = useState(1);
   const [prevStep, setPrevStep] = useState(1);
   const [attemptedNext, setAttemptedNext] = useState(false);
@@ -217,49 +222,75 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
     if (!open && onClose) onClose();
   };
 
+  const Container = isMobile ? Drawer : Dialog;
+  const Content = isMobile ? DrawerContent : DialogContent;
+
   return (
-    <Dialog open={open} onOpenChange={handleDialogChange}>
-      <DialogContent className="max-w-5xl w-full h-[90vh] overflow-hidden glass border-slate-700 p-0">
+    <Container open={open} onOpenChange={handleDialogChange}>
+      <Content className={cn(
+        "overflow-hidden glass border-slate-700 p-0",
+        isMobile 
+          ? "h-[95vh] rounded-t-3xl" 
+          : "max-w-5xl w-full h-[90vh] rounded-2xl"
+      )}>
         {/* Header */}
-        <div className="sticky top-0 bg-slate-900/95 backdrop-blur-xl border-b border-slate-700 p-6 z-10">
+        <div className={cn(
+          "sticky top-0 bg-slate-900/95 backdrop-blur-xl border-b border-slate-700 z-10",
+          isMobile ? "p-4" : "p-6"
+        )}>
           <button
             onClick={() => { 
               resetForm(); 
               if (onOpenChange) onOpenChange(false);
               if (onClose) onClose();
             }}
-            className="absolute top-6 right-6 text-slate-400 hover:text-violet-400 transition-colors"
+            className={cn(
+              "absolute text-slate-400 hover:text-violet-400 transition-colors",
+              isMobile ? "top-4 right-4" : "top-6 right-6"
+            )}
           >
-            <X className="w-6 h-6" />
+            <X className={cn(isMobile ? "w-5 h-5" : "w-6 h-6")} />
           </button>
 
           {/* Law Badge Header */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className={cn(
-              "w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-all",
-              currentLaw?.color === 'violet' && "bg-gradient-to-br from-violet-500 to-purple-600 shadow-violet-500/50",
-              currentLaw?.color === 'purple' && "bg-gradient-to-br from-purple-500 to-fuchsia-600 shadow-purple-500/50",
-              currentLaw?.color === 'fuchsia' && "bg-gradient-to-br from-fuchsia-500 to-pink-600 shadow-fuchsia-500/50",
-              currentLaw?.color === 'pink' && "bg-gradient-to-br from-pink-500 to-rose-600 shadow-pink-500/50"
-            )}>
-              <span className="text-2xl">{currentLaw?.emoji}</span>
-            </div>
-            <div>
-              <div className={cn(
-                "text-xs font-semibold uppercase tracking-wider",
-                currentLaw?.color === 'violet' && "text-violet-400",
-                currentLaw?.color === 'purple' && "text-purple-400",
-                currentLaw?.color === 'fuchsia' && "text-fuchsia-400",
-                currentLaw?.color === 'pink' && "text-pink-400"
-              )}>
-                Lei #{currentStep}
+          {isMobile ? (
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-3xl">{currentLaw?.emoji}</span>
+              <div>
+                <h3 className="text-lg font-bold text-slate-100">
+                  {currentLaw?.title}
+                </h3>
+                <p className="text-xs text-slate-400">{currentLaw?.description}</p>
               </div>
-              <h3 className="text-xl font-bold text-slate-100">
-                {currentLaw?.title}
-              </h3>
-              <p className="text-sm text-slate-400">{currentLaw?.description}</p>
             </div>
-          </div>
+          ) : (
+            <div className="flex items-center gap-3 mb-6">
+              <div className={cn(
+                "w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-all",
+                currentLaw?.color === 'violet' && "bg-gradient-to-br from-violet-500 to-purple-600 shadow-violet-500/50",
+                currentLaw?.color === 'purple' && "bg-gradient-to-br from-purple-500 to-fuchsia-600 shadow-purple-500/50",
+                currentLaw?.color === 'fuchsia' && "bg-gradient-to-br from-fuchsia-500 to-pink-600 shadow-fuchsia-500/50",
+                currentLaw?.color === 'pink' && "bg-gradient-to-br from-pink-500 to-rose-600 shadow-pink-500/50"
+              )}>
+                <span className="text-2xl">{currentLaw?.emoji}</span>
+              </div>
+              <div>
+                <div className={cn(
+                  "text-xs font-semibold uppercase tracking-wider",
+                  currentLaw?.color === 'violet' && "text-violet-400",
+                  currentLaw?.color === 'purple' && "text-purple-400",
+                  currentLaw?.color === 'fuchsia' && "text-fuchsia-400",
+                  currentLaw?.color === 'pink' && "text-pink-400"
+                )}>
+                  Lei #{currentStep}
+                </div>
+                <h3 className="text-xl font-bold text-slate-100">
+                  {currentLaw?.title}
+                </h3>
+                <p className="text-sm text-slate-400">{currentLaw?.description}</p>
+              </div>
+            </div>
+          )}
           
           {/* Progress with gradient */}
           <div className="space-y-2">
@@ -284,8 +315,14 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr,360px] gap-6 p-6">
+        <div className={cn(
+          "flex-1 overflow-y-auto",
+          isMobile && "overscroll-contain"
+        )}>
+          <div className={cn(
+            "grid grid-cols-1 lg:grid-cols-[1fr,360px] gap-6",
+            isMobile ? "p-4" : "p-6"
+          )}>
             {/* Form */}
             <div 
               key={currentStep}
@@ -306,7 +343,10 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="Ex: Ler, Meditar, Exercitar..."
-                      className="text-lg bg-slate-800/50 border-slate-700 focus:border-violet-500"
+                      className={cn(
+                        "bg-slate-800/50 border-slate-700 focus:border-violet-500",
+                        isMobile ? "h-14 text-base" : "text-lg"
+                      )}
                       autoFocus
                     />
                     {!title && attemptedNext && (
@@ -322,20 +362,27 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
                     <label className="block text-sm font-medium text-slate-300 mb-3">
                       Escolha um ícone:
                     </label>
-                    <div className="grid grid-cols-5 sm:grid-cols-6 gap-2">
+                    <div className={cn(
+                      "grid gap-3",
+                      isMobile ? "grid-cols-4" : "grid-cols-5 sm:grid-cols-6"
+                    )}>
                       {ICON_OPTIONS.map(({ icon: Icon, name, display }) => (
                         <button
                           key={name}
-                          onClick={() => setSelectedIcon(name)}
+                          onClick={() => {
+                            setSelectedIcon(name);
+                            triggerHaptic('light');
+                          }}
                           className={cn(
-                            "p-3 rounded-xl border-2 transition-all hover:scale-105",
+                            "rounded-xl border-2 transition-all hover:scale-105",
+                            isMobile ? "p-4 min-h-[64px]" : "p-3",
                             selectedIcon === name
                               ? "border-violet-500 bg-violet-900/30 scale-105 shadow-lg shadow-violet-500/50"
                               : "border-slate-700 bg-slate-800/30 hover:border-slate-600"
                           )}
                           title={display}
                         >
-                          <Icon size={24} className="mx-auto text-violet-400" />
+                          <Icon size={isMobile ? 28 : 24} className="mx-auto text-violet-400" />
                         </button>
                       ))}
                     </div>
@@ -355,8 +402,14 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
                       
                       <select 
                         value={trigger}
-                        onChange={(e) => setTrigger(e.target.value)}
-                        className="w-full px-4 py-3 bg-slate-800 border-2 border-slate-700 rounded-xl text-slate-100 font-semibold focus:border-violet-500 focus:outline-none"
+                        onChange={(e) => {
+                          setTrigger(e.target.value);
+                          triggerHaptic('light');
+                        }}
+                        className={cn(
+                          "w-full px-4 bg-slate-800 border-2 border-slate-700 rounded-xl text-slate-100 font-semibold focus:border-violet-500 focus:outline-none",
+                          isMobile ? "py-4 text-base" : "py-3"
+                        )}
                       >
                         <option value="">Selecione uma atividade...</option>
                         {TRIGGER_OPTIONS.map(opt => (
@@ -405,23 +458,31 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
                     <label className="text-sm text-slate-300 mb-3 block">
                       Aproximadamente que horas? (opcional)
                     </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <div className={cn(
+                      "grid gap-2",
+                      isMobile ? "grid-cols-2" : "grid-cols-4"
+                    )}>
                       {PERIOD_OPTIONS.map(({ id, label, icon: Icon, time }) => (
                         <button
                           key={id}
                           onClick={() => {
                             setSelectedPeriod(time);
                             setCustomTime("");
+                            triggerHaptic('light');
                           }}
                           className={cn(
-                            "p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-2",
+                            "rounded-xl border-2 transition-all flex flex-col items-center gap-2",
+                            isMobile ? "p-4 min-h-[72px]" : "p-3",
                             selectedPeriod === time
                               ? "border-violet-500 bg-violet-900/30 shadow-lg shadow-violet-500/50"
                               : "border-slate-700 bg-slate-800/30 hover:border-slate-600"
                           )}
                         >
-                          <Icon size={20} className="text-slate-300" />
-                          <span className="text-xs font-medium text-slate-300">{label}</span>
+                          <Icon size={isMobile ? 24 : 20} className="text-slate-300" />
+                          <span className={cn(
+                            "font-medium",
+                            isMobile ? "text-sm" : "text-xs"
+                          )}>{label}</span>
                         </button>
                       ))}
                     </div>
@@ -451,7 +512,10 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
                       value={motivation}
                       onChange={(e) => setMotivation(e.target.value)}
                       placeholder="Ex: Quero ter mais energia, aprender coisas novas, ser um exemplo para meus filhos..."
-                      className="min-h-[120px] text-base bg-slate-800/50 border-slate-700 resize-none"
+                      className={cn(
+                        "text-base bg-slate-800/50 border-slate-700 resize-none",
+                        isMobile ? "min-h-[100px]" : "min-h-[120px]"
+                      )}
                     />
                     <p className="text-xs text-slate-400 mt-2">
                       Seja específico. Essa motivação aparecerá quando você precisar de um empurrãozinho.
@@ -476,15 +540,20 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
                           onClick={() => {
                             setTemptationBundle(opt.value);
                             setCustomTemptation("");
+                            triggerHaptic('light');
                           }}
                           className={cn(
-                            "p-4 bg-slate-800/50 border-2 rounded-xl transition-all hover:scale-105",
+                            "bg-slate-800/50 border-2 rounded-xl transition-all hover:scale-105",
+                            isMobile ? "p-5 min-h-[100px]" : "p-4",
                             temptationBundle === opt.value
                               ? "border-purple-500 bg-purple-900/30 shadow-lg shadow-purple-500/50"
                               : "border-slate-700 hover:border-purple-500/50"
                           )}
                         >
-                          <div className="text-3xl mb-2">{opt.emoji}</div>
+                          <div className={cn(
+                            "mb-2",
+                            isMobile ? "text-4xl" : "text-3xl"
+                          )}>{opt.emoji}</div>
                           <p className="text-sm font-medium text-slate-200">{opt.label}</p>
                         </button>
                       ))}
@@ -536,15 +605,24 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
                       Meta inicial (comece pequeno!)
                     </label>
                     
-                    <div className="border-2 border-fuchsia-500/30 rounded-2xl p-8 bg-fuchsia-900/10">
+                    <div className={cn(
+                      "border-2 border-fuchsia-500/30 rounded-2xl bg-fuchsia-900/10",
+                      isMobile ? "p-6" : "p-8"
+                    )}>
                       <div className="flex items-baseline justify-center gap-3 mb-6">
-                        <span className="text-6xl font-bold bg-gradient-to-r from-fuchsia-400 to-violet-400 bg-clip-text text-transparent">
+                        <span className={cn(
+                          "font-bold bg-gradient-to-r from-fuchsia-400 to-violet-400 bg-clip-text text-transparent",
+                          isMobile ? "text-5xl" : "text-6xl"
+                        )}>
                           {goal}
                         </span>
                         <select 
                           value={unit}
                           onChange={(e) => setUnit(e.target.value)}
-                          className="text-2xl bg-slate-800 border-2 border-slate-700 rounded-xl px-4 py-2 text-slate-200 font-semibold focus:border-fuchsia-500 focus:outline-none"
+                          className={cn(
+                            "bg-slate-800 border-2 border-slate-700 rounded-xl px-4 py-2 text-slate-200 font-semibold focus:border-fuchsia-500 focus:outline-none",
+                            isMobile ? "text-xl" : "text-2xl"
+                          )}
                         >
                           {UNIT_OPTIONS.map(u => <option key={u}>{u}</option>)}
                         </select>
@@ -556,7 +634,10 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
                         max="60"
                         value={goal}
                         onChange={(e) => setGoal(Number(e.target.value))}
-                        className="w-full h-3 appearance-none rounded-full cursor-pointer"
+                        className={cn(
+                          "w-full appearance-none rounded-full cursor-pointer",
+                          isMobile ? "h-4" : "h-3"
+                        )}
                         style={{
                           background: `linear-gradient(to right, 
                             #D946EF 0%, 
@@ -578,18 +659,36 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
 
                   {/* AI Coach recomendação */}
                   {showAICoach && goal > 10 && (
-                    <div className="border-2 border-fuchsia-500/50 rounded-2xl p-6 space-y-4 animate-fade-in relative overflow-hidden bg-fuchsia-900/10">
+                    <div className={cn(
+                      "border-2 border-fuchsia-500/50 rounded-2xl space-y-4 animate-fade-in relative overflow-hidden bg-fuchsia-900/10",
+                      isMobile ? "p-4" : "p-6"
+                    )}>
                       <div className="absolute top-0 right-0 w-32 h-32 bg-fuchsia-500/20 rounded-full blur-3xl"></div>
                       
-                      <div className="flex items-start gap-4 relative z-10">
-                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-fuchsia-600 via-purple-600 to-violet-600 flex items-center justify-center shadow-lg shadow-fuchsia-500/50">
-                          <Sparkles className="w-8 h-8 text-white animate-pulse" />
+                      <div className={cn(
+                        "flex gap-4 relative z-10",
+                        isMobile && "flex-col items-center text-center"
+                      )}>
+                        <div className={cn(
+                          "rounded-2xl bg-gradient-to-br from-fuchsia-600 via-purple-600 to-violet-600 flex items-center justify-center shadow-lg shadow-fuchsia-500/50",
+                          isMobile ? "w-14 h-14" : "w-16 h-16"
+                        )}>
+                          <Sparkles className={cn(
+                            "text-white animate-pulse",
+                            isMobile ? "w-7 h-7" : "w-8 h-8"
+                          )} />
                         </div>
                         <div className="flex-1">
-                          <h4 className="text-lg font-bold text-fuchsia-400 mb-2">
+                          <h4 className={cn(
+                            "font-bold text-fuchsia-400 mb-2",
+                            isMobile ? "text-base" : "text-lg"
+                          )}>
                             COACH IA SUGERE
                           </h4>
-                          <p className="text-slate-200 leading-relaxed">
+                          <p className={cn(
+                            "text-slate-200 leading-relaxed",
+                            isMobile && "text-sm"
+                          )}>
                             Baseado em <strong>12.000 hábitos analisados</strong>, pessoas que começam com{" "}
                             <span className="font-bold text-fuchsia-400 text-xl">{Math.max(Math.floor(goal/3), 2)} {unit}</span>{" "}
                             têm <strong className="text-green-400">3.2x mais chance</strong> de manter o hábito após 30 dias.
@@ -616,16 +715,25 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
                             </div>
                           </div>
                           
-                          <div className="flex gap-3 mt-4">
+                          <div className={cn(
+                            "flex gap-3 mt-4",
+                            isMobile && "flex-col"
+                          )}>
                             <Button
                               onClick={handleAcceptAISuggestion}
-                              className="bg-gradient-to-r from-fuchsia-600 to-violet-600 hover:from-fuchsia-700 hover:to-violet-700"
+                              className={cn(
+                                "bg-gradient-to-r from-fuchsia-600 to-violet-600 hover:from-fuchsia-700 hover:to-violet-700",
+                                isMobile && "w-full h-12"
+                              )}
                             >
                               Aceitar Sugestão
                             </Button>
                             <Button 
                               variant="ghost" 
-                              className="text-slate-400"
+                              className={cn(
+                                "text-slate-400",
+                                isMobile && "w-full h-12"
+                              )}
                               onClick={() => setShowAICoach(false)}
                             >
                               Manter {goal} {unit}
@@ -757,8 +865,102 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
             </div>
 
             {/* Preview Aprimorado */}
-            <div className="hidden lg:block">
-              <div className="sticky top-6 space-y-4">
+            {isMobile ? (
+              <Collapsible>
+                <CollapsibleTrigger className="w-full p-4 bg-slate-800/50 rounded-xl flex items-center justify-between">
+                  <span className="font-semibold">Ver Preview</span>
+                  <ChevronDown className="w-5 h-5" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-4">
+                  <div className="glass rounded-2xl border-2 border-slate-700 overflow-hidden">
+                    <div className="bg-gradient-to-br from-violet-600 to-purple-600 p-6">
+                      <div className="flex items-center justify-center mb-4">
+                        <div className="w-20 h-20 rounded-3xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-2xl">
+                          {(() => {
+                            const IconComponent = ICON_OPTIONS.find(opt => opt.name === selectedIcon)?.icon;
+                            return IconComponent ? <IconComponent className="w-12 h-12 text-white" /> : null;
+                          })()}
+                        </div>
+                      </div>
+                      <h4 className="text-center text-2xl font-bold text-white">
+                        {title || "Seu Novo Hábito"}
+                      </h4>
+                    </div>
+                    
+                    <div className="p-6 space-y-4">
+                      {(trigger || location || selectedPeriod) && (
+                        <div className="flex items-start gap-3 p-3 bg-violet-900/20 border border-violet-700/30 rounded-xl">
+                          <span className="text-xl">🎯</span>
+                          <div className="flex-1 text-sm">
+                            <p className="font-semibold text-violet-400 mb-1">Gatilho</p>
+                            <p className="text-slate-300 leading-relaxed">
+                              {trigger && trigger !== 'custom' && `Após ${trigger}`}
+                              {trigger === 'custom' && customTrigger && `Após ${customTrigger}`}
+                              {location && ` na ${location}`}
+                              {selectedPeriod && ` às ${selectedPeriod}`}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {(motivation || temptationBundle || customTemptation) && (
+                        <div className="flex items-start gap-3 p-3 bg-purple-900/20 border border-purple-700/30 rounded-xl">
+                          <span className="text-xl">✨</span>
+                          <div className="flex-1 text-sm">
+                            <p className="font-semibold text-purple-400 mb-1">Motivação</p>
+                            <p className="text-slate-300 leading-relaxed line-clamp-3">
+                              {motivation || (temptationBundle === 'custom' ? customTemptation : temptationBundle)}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="flex items-start gap-3 p-3 bg-fuchsia-900/20 border border-fuchsia-700/30 rounded-xl">
+                        <span className="text-xl">🚀</span>
+                        <div className="flex-1 text-sm">
+                          <p className="font-semibold text-fuchsia-400 mb-1">Meta Inicial</p>
+                          <p className="text-slate-300 text-lg font-bold">
+                            {goal} {unit}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {reward && (
+                        <div className="flex items-start gap-3 p-3 bg-pink-900/20 border border-pink-700/30 rounded-xl">
+                          <span className="text-xl">🎉</span>
+                          <div className="flex-1 text-sm">
+                            <p className="font-semibold text-pink-400 mb-1">Recompensa (7 dias)</p>
+                            <p className="text-slate-300 leading-relaxed line-clamp-2">
+                              {reward}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="pt-4 border-t border-slate-700">
+                        <div className="flex justify-between text-xs text-slate-400 mb-2">
+                          <span>Progresso Hoje</span>
+                          <span>0%</span>
+                        </div>
+                        <Progress value={0} className="h-2" />
+                        
+                        <div className="flex items-center justify-between mt-4 text-sm">
+                          <div className="flex items-center gap-2 text-slate-400">
+                            <Flame className="w-4 h-4" />
+                            <span>0 dias</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-slate-400">
+                            <span>Nível 1</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            ) : (
+              <div className="hidden lg:block">
+                <div className="sticky top-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-semibold text-slate-400 uppercase">Preview ao Vivo</h3>
                   <div className="flex items-center gap-1">
@@ -872,11 +1074,15 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
                 </div>
               </div>
             </div>
+            )}
           </div>
         </div>
 
         {/* Footer com breadcrumb */}
-        <div className="sticky bottom-0 bg-slate-900/95 backdrop-blur-xl border-t border-slate-700 p-6">
+        <div className={cn(
+          "sticky bottom-0 bg-slate-900/95 backdrop-blur-xl border-t border-slate-700 z-10",
+          isMobile ? "p-4" : "p-6"
+        )}>
           {/* Breadcrumb das leis */}
           <div className="flex items-center justify-center gap-2 mb-4">
             {LAWS.map((law, idx) => (
@@ -903,36 +1109,58 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
           </div>
           
           {/* Botões de navegação */}
-          <div className="flex items-center justify-between">
-            <Button
-              onClick={handleBack}
-              disabled={currentStep === 1}
-              variant="ghost"
-              className="text-slate-300 hover:text-violet-400 transition-all duration-200"
-            >
-              ← Voltar
-            </Button>
+          <div className={cn(
+            "flex gap-3",
+            isMobile && "flex-col"
+          )}>
+            {currentStep > 1 && (
+              <Button
+                onClick={() => {
+                  handleBack();
+                  triggerHaptic('light');
+                }}
+                variant="outline"
+                className={cn(
+                  isMobile && "h-12 w-full order-2",
+                  !isMobile && "flex-1"
+                )}
+              >
+                ← Voltar
+              </Button>
+            )}
 
             {currentStep < 4 ? (
               <Button
-                onClick={handleNext}
-                className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white px-8 transition-all duration-200"
+                onClick={() => {
+                  handleNext();
+                  triggerHaptic('medium');
+                }}
+                className={cn(
+                  "bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white transition-all duration-200",
+                  isMobile ? "h-12 w-full order-1" : "flex-1 px-8"
+                )}
               >
                 Continuar →
               </Button>
             ) : (
               <Button
-                onClick={handleCreate}
+                onClick={() => {
+                  handleCreate();
+                  triggerHaptic('success');
+                }}
                 disabled={isCreating}
-                className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white px-8 transition-all duration-200"
+                className={cn(
+                  "bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white transition-all duration-200",
+                  isMobile ? "h-12 w-full order-1" : "flex-1 px-8"
+                )}
               >
                 {isCreating ? "Plantando..." : "Plantar Semente ⚛️"}
               </Button>
             )}
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </Content>
+    </Container>
   );
 };
 
