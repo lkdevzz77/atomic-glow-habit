@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Calendar, Target, BarChart, Award } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { triggerHabitConfetti } from "@/utils/confettiAnimation";
+import { triggerHaptic } from "@/utils/haptics";
 import { AppLayout } from "@/layouts/AppLayout";
 import { useHabits } from "@/hooks/useHabits";
 import { useStats } from "@/hooks/useStats";
@@ -19,7 +20,7 @@ import StatMetricCard from "@/components/StatMetricCard";
 import HabitInsights from "@/components/HabitInsights";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { BarChart, Trophy, AlertCircle } from "lucide-react";
+import { Trophy, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AnimatedPage } from "@/components/AnimatedPage";
@@ -84,12 +85,39 @@ const Dashboard = () => {
 
           {/* Main Content */}
           <Tabs defaultValue="kanban" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:w-auto"  >
-            <TabsTrigger value="kanban">Hábitos</TabsTrigger>
-            <TabsTrigger value="calendar">Calendário</TabsTrigger>
-            <TabsTrigger value="stats">Estatísticas</TabsTrigger>
-            <TabsTrigger value="badges">Conquistas</TabsTrigger>
-          </TabsList>
+            <TabsList className="w-full sm:w-auto">
+              <TabsTrigger 
+                value="kanban"
+                onClick={() => triggerHaptic('light')}
+              >
+                <Target className="w-4 h-4" />
+                <span>Hábitos</span>
+              </TabsTrigger>
+              
+              <TabsTrigger 
+                value="calendar"
+                onClick={() => triggerHaptic('light')}
+              >
+                <Calendar className="w-4 h-4" />
+                <span>Calendário</span>
+              </TabsTrigger>
+              
+              <TabsTrigger 
+                value="stats"
+                onClick={() => triggerHaptic('light')}
+              >
+                <BarChart className="w-4 h-4" />
+                <span>Estatísticas</span>
+              </TabsTrigger>
+              
+              <TabsTrigger 
+                value="badges"
+                onClick={() => triggerHaptic('light')}
+              >
+                <Award className="w-4 h-4" />
+                <span>Conquistas</span>
+              </TabsTrigger>
+            </TabsList>
 
           {/* Kanban View */}
           <TabsContent value="kanban" className="mt-6">

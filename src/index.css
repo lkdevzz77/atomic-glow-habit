@@ -389,7 +389,15 @@ All colors MUST be HSL.
     border: none;
   }
 
+/* Scrollbar customizations */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
   /* ✨ Micro-interactions - Suavizadas */
   * {
     transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);

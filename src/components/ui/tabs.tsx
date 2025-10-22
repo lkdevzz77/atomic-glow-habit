@@ -12,7 +12,11 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground",
+      // Mobile: scroll horizontal com pills
+      "flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1",
+      "sm:inline-flex sm:h-12 sm:items-center sm:justify-center",
+      "sm:rounded-xl sm:bg-slate-900/50 sm:backdrop-blur-xl sm:p-1.5",
+      "sm:border sm:border-slate-800/50",
       className,
     )}
     {...props}
@@ -27,7 +31,29 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+      // Base: touch-friendly com ícones
+      "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full",
+      "touch-target-comfortable min-w-[120px] sm:min-w-[140px]",
+      "px-4 py-2.5 sm:px-6 sm:py-2",
+      "text-sm font-medium transition-all duration-300",
+      
+      // Estado inativo: sutil
+      "text-slate-400 hover:text-slate-200",
+      "bg-slate-900/30 hover:bg-slate-800/50",
+      "border border-slate-800/30",
+      
+      // Estado ativo: GRADIENTE ROXO
+      "data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-purple-600",
+      "data-[state=active]:text-white data-[state=active]:border-transparent",
+      "data-[state=active]:shadow-lg data-[state=active]:shadow-violet-500/30",
+      "data-[state=active]:scale-[1.02]",
+      
+      // Acessibilidade
+      "focus-visible:outline-none focus-visible:ring-2",
+      "focus-visible:ring-violet-500 focus-visible:ring-offset-2",
+      "focus-visible:ring-offset-slate-950",
+      "disabled:pointer-events-none disabled:opacity-50",
+      
       className,
     )}
     {...props}
