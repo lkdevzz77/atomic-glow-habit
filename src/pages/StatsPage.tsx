@@ -1,17 +1,37 @@
 import React from 'react';
 import { useHabits } from '@/hooks/useHabits';
 import { useStats } from '@/hooks/useStats';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { AppLayout } from '@/layouts/AppLayout';
 import { PageLoader } from '@/components/PageLoader';
 import { AnimatedPage } from '@/components/AnimatedPage';
 import StatMetricCard from '@/components/StatMetricCard';
-import WeeklyChart from '@/components/WeeklyChart';
-import WeeklyChecklist from '@/components/WeeklyChecklist';
-import { BarChart, TrendingUp, Target, Award, Flame, Clock } from 'lucide-react';
+import PeriodChart from '@/components/stats/PeriodChart';
+import HabitsTimeline from '@/components/stats/HabitsTimeline';
+import SmartInsights from '@/components/stats/SmartInsights';
+import { BarChart, Target, Flame, Trophy } from 'lucide-react';
 
 const StatsPage = () => {
+  const { user } = useAuth();
   const { data: habits, isLoading } = useHabits();
   const { weeklyStats, streakStats } = useStats();
+
+  // Buscar completions para timeline
+  const { data: completions } = useQuery({
+    queryKey: ['habit-completions-stats', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data } = await supabase
+        .from('habit_completions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date', { ascending: false });
+      return data || [];
+    },
+    enabled: !!user && !!habits,
+  });
 
   const completionRate = weeklyStats.data?.averageCompletion || 0;
   const bestDay = weeklyStats.data?.bestDay.date 
@@ -31,87 +51,95 @@ const StatsPage = () => {
   return (
     <AppLayout>
       <AnimatedPage>
-        <div className="space-y-8">
-          {/* Header */}
+        <div className="space-y-6">
+          {/* Header Minimalista */}
           <div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent mb-2">
-              📊 Suas Estatísticas
-            </h2>
-            <p className="text-slate-400">
-              "O que é medido é gerenciado. O que é gerenciado melhora." — James Clear
+            <h1 className="text-2xl font-bold text-slate-100">Estatísticas</h1>
+            <p className="text-sm text-slate-400 mt-1">
+              Acompanhe seu progresso ao longo do tempo
             </p>
           </div>
 
-          {/* SEÇÃO 1: Métricas em Destaque */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <StatMetricCard
-              icon={<BarChart className="w-6 h-6 text-white" />}
-              title="Taxa de Conclusão"
-              value={`${Math.round(completionRate)}%`}
-              subtitle={completionRate >= 70 ? 'Ótimo desempenho!' : 'Continue se esforçando'}
-              trend={completionRate >= 70 ? 'up' : 'neutral'}
-              color="violet"
-            />
-            
-            <StatMetricCard
-              icon={<Target className="w-6 h-6 text-white" />}
-              title="Total de Conclusões"
-              value={totalCompletions}
-              subtitle={`${totalCompletions} hábitos completados`}
-              trend={totalCompletions > 30 ? 'up' : 'neutral'}
-              color="emerald"
-            />
-            
-            <StatMetricCard
-              icon={<Flame className="w-6 h-6 text-white" />}
-              title="Sequência Ativa"
-              value={`${activeStreak} dias`}
-              subtitle={activeStreak >= 7 ? 'Você está pegando fogo! 🔥' : 'Continue assim!'}
-              trend={activeStreak >= 7 ? 'up' : 'neutral'}
-              color="amber"
-            />
-            
-            <StatMetricCard
-              icon={<TrendingUp className="w-6 h-6 text-white" />}
-              title="Progresso Médio"
-              value={`${Math.round(completionRate)}%`}
-              subtitle="Média diária"
-              trend={completionRate >= 75 ? 'up' : 'neutral'}
-              color="violet"
-            />
-            
-            <StatMetricCard
-              icon={<Award className="w-6 h-6 text-white" />}
-              title="Melhor Dia"
-              value={bestDay}
-              subtitle="Seu dia mais produtivo"
-              trend="neutral"
-              color="emerald"
-            />
-            
-            <StatMetricCard
-              icon={<Clock className="w-6 h-6 text-white" />}
-              title="Consistência"
-              value={`${Math.round((activeStreak / 30) * 100)}%`}
-              subtitle="Score de regularidade"
-              trend={(activeStreak / 30) * 100 >= 80 ? 'up' : 'neutral'}
-              color="amber"
-            />
+          {/* Métricas Principais - 4 cards essenciais */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="neuro-card p-6 rounded-xl">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 rounded-lg bg-violet-500/10">
+                  <BarChart className="w-5 h-5 text-violet-400" />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-sm text-slate-400 font-medium">Taxa de Conclusão</h4>
+                <p className="text-4xl font-bold text-slate-100">{Math.round(completionRate)}%</p>
+                <p className="text-xs text-slate-500">
+                  {completionRate >= 70 ? 'Ótimo desempenho!' : 'Continue se esforçando'}
+                </p>
+              </div>
+            </div>
+
+            <div className="neuro-card p-6 rounded-xl">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 rounded-lg bg-amber-500/10">
+                  <Flame className="w-5 h-5 text-amber-400" />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-sm text-slate-400 font-medium">Sequência Ativa</h4>
+                <p className="text-4xl font-bold text-slate-100">{activeStreak}</p>
+                <p className="text-xs text-slate-500">
+                  {activeStreak >= 7 ? 'Você está pegando fogo! 🔥' : 'Continue assim!'}
+                </p>
+              </div>
+            </div>
+
+            <div className="neuro-card p-6 rounded-xl">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 rounded-lg bg-emerald-500/10">
+                  <Target className="w-5 h-5 text-emerald-400" />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-sm text-slate-400 font-medium">Total de Conclusões</h4>
+                <p className="text-4xl font-bold text-slate-100">{totalCompletions}</p>
+                <p className="text-xs text-slate-500">{totalCompletions} hábitos completados</p>
+              </div>
+            </div>
+
+            <div className="neuro-card p-6 rounded-xl">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 rounded-lg bg-violet-500/10">
+                  <Trophy className="w-5 h-5 text-violet-400" />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-sm text-slate-400 font-medium">Melhor Dia</h4>
+                <p className="text-2xl font-bold text-slate-100">{bestDay}</p>
+                <p className="text-xs text-slate-500">Seu dia mais produtivo</p>
+              </div>
+            </div>
           </div>
 
-          {/* SEÇÃO 2: Gráfico Semanal */}
-          <div>
-            <h3 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-violet-400" />
-              Evolução Semanal
-            </h3>
-            <WeeklyChart />
-          </div>
+          {/* Insights Inteligentes */}
+          <SmartInsights
+            averageCompletion={completionRate}
+            currentStreak={activeStreak}
+            bestDay={weeklyStats.data?.bestDay || { date: '', percentage: 0 }}
+            worstDay={weeklyStats.data?.worstDay || { date: '', percentage: 0 }}
+            totalCompletions={totalCompletions}
+          />
 
-          {/* SEÇÃO 3: Checklist Detalhado */}
-          <div>
-            <WeeklyChecklist habits={habits || []} />
-          </div>
+          {/* Timeline Compacta */}
+          {habits && completions && (
+            <HabitsTimeline 
+              habits={habits} 
+              completions={completions}
+              days={14}
+              compact={true}
+            />
+          )}
+
+          {/* Gráfico com Filtro de Período */}
+          <PeriodChart />
         </div>
       </AnimatedPage>
     </AppLayout>
