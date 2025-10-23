@@ -261,18 +261,18 @@ const HabitDetailChart = ({ habits, completions }: HabitDetailChartProps) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-xl border border-border bg-card/50 backdrop-blur-sm p-4"
+      className="rounded-2xl bg-card/30 backdrop-blur-sm p-6 space-y-5"
     >
-      {/* Header with mode toggle */}
-      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <div className="flex gap-2">
+      {/* Header with mode toggle and period */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="inline-flex gap-1 p-1 rounded-xl bg-muted/50">
           <button
             onClick={() => setMode('individual')}
             className={cn(
-              'px-3 py-1.5 text-xs rounded-lg transition-all font-medium',
+              'px-4 py-1.5 text-sm rounded-lg transition-all font-medium',
               mode === 'individual'
-                ? 'bg-violet-500 text-white'
-                : 'bg-accent text-muted-foreground hover:bg-accent/80'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
             )}
           >
             Individual
@@ -280,26 +280,26 @@ const HabitDetailChart = ({ habits, completions }: HabitDetailChartProps) => {
           <button
             onClick={() => setMode('compare')}
             className={cn(
-              'px-3 py-1.5 text-xs rounded-lg transition-all font-medium',
+              'px-4 py-1.5 text-sm rounded-lg transition-all font-medium',
               mode === 'compare'
-                ? 'bg-violet-500 text-white'
-                : 'bg-accent text-muted-foreground hover:bg-accent/80'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
             )}
           >
             Comparar
           </button>
         </div>
 
-        <div className="flex gap-2">
+        <div className="inline-flex gap-1 p-1 rounded-xl bg-muted/50">
           {(['7d', '14d', '30d'] as const).map(p => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
               className={cn(
-                'px-3 py-1 text-xs rounded-lg transition-all',
+                'px-3 py-1.5 text-sm rounded-lg transition-all font-medium',
                 period === p
-                  ? 'bg-violet-500 text-white'
-                  : 'bg-accent text-muted-foreground hover:bg-accent/80'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
               )}
             >
               {p}
@@ -322,10 +322,10 @@ const HabitDetailChart = ({ habits, completions }: HabitDetailChartProps) => {
               value={selectedHabitId?.toString()}
               onValueChange={(value) => setSelectedHabitId(parseInt(value))}
             >
-              <SelectTrigger className="w-full mb-4">
+              <SelectTrigger className="w-full border-0 bg-muted/50 h-11">
                 <SelectValue>
                   {habits.find(h => h.id === selectedHabitId) && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2.5">
                       {getIconComponent(habits.find(h => h.id === selectedHabitId)!.icon)}
                       <span className="font-medium">{habits.find(h => h.id === selectedHabitId)!.title}</span>
                     </div>
@@ -335,7 +335,7 @@ const HabitDetailChart = ({ habits, completions }: HabitDetailChartProps) => {
               <SelectContent>
                 {habits.map(habit => (
                   <SelectItem key={habit.id} value={habit.id.toString()}>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2.5">
                       {getIconComponent(habit.icon)}
                       <span>{habit.title}</span>
                     </div>
@@ -351,19 +351,18 @@ const HabitDetailChart = ({ habits, completions }: HabitDetailChartProps) => {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="mb-4"
           >
-            <div className="text-xs text-muted-foreground mb-2">Selecione até 3 hábitos para comparar:</div>
-            <div className="grid gap-2 max-h-48 overflow-y-auto pr-2">
+            <div className="text-xs font-medium text-muted-foreground mb-3">Selecione até 3 hábitos</div>
+            <div className="grid gap-1.5 max-h-48 overflow-y-auto pr-1">
               {habits.map((habit, index) => (
                 <div
                   key={habit.id}
                   onClick={() => toggleHabitForComparison(habit.id)}
                   className={cn(
-                    "flex items-center gap-2 p-2 rounded-lg border transition-all cursor-pointer",
+                    "flex items-center gap-2.5 p-2.5 rounded-xl transition-all cursor-pointer",
                     selectedHabitIds.includes(habit.id)
-                      ? 'bg-violet-500/10 border-violet-500/50'
-                      : 'bg-accent/50 border-transparent hover:bg-accent'
+                      ? 'bg-primary/10'
+                      : 'bg-muted/30 hover:bg-muted/50'
                   )}
                 >
                   <Checkbox
@@ -371,16 +370,16 @@ const HabitDetailChart = ({ habits, completions }: HabitDetailChartProps) => {
                     disabled={!selectedHabitIds.includes(habit.id) && selectedHabitIds.length >= 3}
                   />
                   <div 
-                    className="w-3 h-3 rounded-full" 
+                    className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
                     style={{ 
                       backgroundColor: selectedHabitIds.includes(habit.id) 
                         ? HABIT_COLORS[selectedHabitIds.indexOf(habit.id)] 
-                        : 'transparent',
-                      border: selectedHabitIds.includes(habit.id) ? 'none' : '2px solid hsl(var(--muted-foreground))'
+                        : 'hsl(var(--muted-foreground))',
+                      opacity: selectedHabitIds.includes(habit.id) ? 1 : 0.3
                     }}
                   />
                   {getIconComponent(habit.icon)}
-                  <span className="text-sm flex-1">{habit.title}</span>
+                  <span className="text-sm flex-1 font-medium">{habit.title}</span>
                 </div>
               ))}
             </div>
@@ -389,20 +388,20 @@ const HabitDetailChart = ({ habits, completions }: HabitDetailChartProps) => {
       </AnimatePresence>
 
       {/* Advanced Filters */}
-      <div className="mb-4 space-y-3">
+      <div className="space-y-4">
         {/* Weekday filter */}
         <div>
-          <div className="text-xs text-muted-foreground mb-2">Filtrar por dia da semana:</div>
-          <div className="flex gap-1 flex-wrap">
+          <div className="text-xs font-medium text-muted-foreground mb-2.5">Filtrar por dia</div>
+          <div className="flex gap-1.5 flex-wrap">
             {WEEKDAYS.map((day, index) => (
               <button
                 key={index}
                 onClick={() => toggleWeekday(index)}
                 className={cn(
-                  'px-2 py-1 text-xs rounded-md transition-all',
+                  'px-3 py-1.5 text-xs rounded-lg transition-all font-medium',
                   selectedWeekdays.includes(index)
-                    ? 'bg-violet-500 text-white'
-                    : 'bg-accent text-muted-foreground hover:bg-accent/80'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
                 )}
               >
                 {day}
@@ -411,7 +410,7 @@ const HabitDetailChart = ({ habits, completions }: HabitDetailChartProps) => {
             {selectedWeekdays.length > 0 && (
               <button
                 onClick={() => setSelectedWeekdays([])}
-                className="px-2 py-1 text-xs rounded-md bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                className="px-3 py-1.5 text-xs rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 font-medium transition-all"
               >
                 Limpar
               </button>
@@ -420,50 +419,54 @@ const HabitDetailChart = ({ habits, completions }: HabitDetailChartProps) => {
         </div>
 
         {/* Toggle filters */}
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-4">
           {mode === 'individual' && (
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex items-center gap-2.5 cursor-pointer group">
               <Checkbox
                 checked={comparePeriods}
                 onCheckedChange={(checked) => setComparePeriods(!!checked)}
               />
-              <span className="text-xs text-muted-foreground">Comparar com período anterior</span>
+              <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                Comparar períodos
+              </span>
             </label>
           )}
-          <label className="flex items-center gap-2 cursor-pointer">
+          <label className="flex items-center gap-2.5 cursor-pointer group">
             <Checkbox
               checked={onlyComplete}
               onCheckedChange={(checked) => setOnlyComplete(!!checked)}
             />
-            <span className="text-xs text-muted-foreground">Apenas dias 100% completos</span>
+            <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+              Apenas 100%
+            </span>
           </label>
         </div>
       </div>
 
       {/* Metrics */}
       {mode === 'individual' && 'average' in metrics ? (
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          <div className="bg-accent/50 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-violet-400">{metrics.streak}</div>
-            <div className="text-xs text-muted-foreground">dias seguidos</div>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-muted/30 rounded-xl p-4 text-center">
+            <div className="text-2xl font-bold text-primary mb-1">{metrics.streak}</div>
+            <div className="text-xs text-muted-foreground font-medium">Sequência</div>
           </div>
-          <div className="bg-accent/50 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-emerald-400">{metrics.total}</div>
-            <div className="text-xs text-muted-foreground">conclusões</div>
+          <div className="bg-muted/30 rounded-xl p-4 text-center">
+            <div className="text-2xl font-bold text-primary mb-1">{metrics.total}</div>
+            <div className="text-xs text-muted-foreground font-medium">Completos</div>
           </div>
-          <div className="bg-accent/50 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-blue-400">{metrics.average}%</div>
-            <div className="text-xs text-muted-foreground">média</div>
+          <div className="bg-muted/30 rounded-xl p-4 text-center">
+            <div className="text-2xl font-bold text-primary mb-1">{metrics.average}%</div>
+            <div className="text-xs text-muted-foreground font-medium">Média</div>
           </div>
         </div>
       ) : mode === 'compare' && 'averages' in metrics ? (
-        <div className="grid gap-2 mb-4">
+        <div className="grid gap-2">
           {selectedHabitIds.map((habitId, index) => {
             const habit = habits.find(h => h.id === habitId);
             return (
-              <div key={habitId} className="flex items-center gap-2 bg-accent/50 rounded-lg p-2">
+              <div key={habitId} className="flex items-center gap-3 bg-muted/30 rounded-xl p-3">
                 <div 
-                  className="w-3 h-3 rounded-full flex-shrink-0" 
+                  className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
                   style={{ backgroundColor: HABIT_COLORS[index] }}
                 />
                 <div className="flex-1 flex items-center gap-2">
@@ -480,7 +483,7 @@ const HabitDetailChart = ({ habits, completions }: HabitDetailChartProps) => {
       ) : null}
 
       {/* Chart */}
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height={220}>
         <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
           <defs>
             <linearGradient id="lineGradient" x1="0" y1="0" x2="0" y2="1">
@@ -523,49 +526,49 @@ const HabitDetailChart = ({ habits, completions }: HabitDetailChartProps) => {
               const data = payload[0].payload;
               
               return (
-                <div className="rounded-lg border border-border bg-background/95 backdrop-blur-sm p-3 shadow-lg">
-                  <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                <div className="rounded-xl bg-background/98 backdrop-blur-md p-3.5 shadow-xl border border-border/50 min-w-[180px]">
+                  <p className="text-sm font-semibold mb-2.5 flex items-center gap-2">
                     {data.fullDate}
-                    {data.isToday && <span className="text-xs bg-pink-500 text-white px-2 py-0.5 rounded">HOJE</span>}
+                    {data.isToday && <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full font-medium">HOJE</span>}
                   </p>
                   
                   {mode === 'individual' ? (
                     <>
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className="flex-1 bg-accent rounded-full h-2 overflow-hidden">
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex-1 bg-muted/50 rounded-full h-2 overflow-hidden">
                           <div 
-                            className="h-full bg-violet-500 transition-all"
+                            className="h-full bg-primary transition-all rounded-full"
                             style={{ width: `${Math.min(data.percentage || 0, 100)}%` }}
                           />
                         </div>
-                        <span className="text-xs font-medium">
+                        <span className="text-sm font-bold text-primary">
                           {data.percentage || 0}%
                         </span>
                       </div>
                       {data.percentage >= 100 && (
-                        <p className="text-xs text-emerald-400 flex items-center gap-1">
-                          <span>✅</span> Completado
+                        <p className="text-xs text-emerald-500 flex items-center gap-1.5 mt-2">
+                          <span>✓</span> Completo
                         </p>
                       )}
                       {comparePeriods && data.previousPercentage !== undefined && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Período anterior: {data.previousPercentage}%
+                        <p className="text-xs text-muted-foreground mt-2 pt-2 border-t border-border/50">
+                          Anterior: {data.previousPercentage}%
                         </p>
                       )}
                     </>
                   ) : (
-                    <div className="space-y-1">
+                    <div className="space-y-2">
                       {selectedHabitIds.map((habitId, index) => {
                         const habit = habits.find(h => h.id === habitId);
                         const percentage = data[`habit${index}`] || 0;
                         return (
-                          <div key={habitId} className="flex items-center gap-2">
+                          <div key={habitId} className="flex items-center gap-2.5">
                             <div 
                               className="w-2 h-2 rounded-full flex-shrink-0" 
                               style={{ backgroundColor: HABIT_COLORS[index] }}
                             />
-                            <span className="text-xs flex-1 truncate">{habit?.title}</span>
-                            <span className="text-xs font-medium">{percentage}%</span>
+                            <span className="text-xs flex-1 truncate font-medium">{habit?.title}</span>
+                            <span className="text-xs font-bold" style={{ color: HABIT_COLORS[index] }}>{percentage}%</span>
                           </div>
                         );
                       })}
@@ -657,9 +660,9 @@ const HabitDetailChart = ({ habits, completions }: HabitDetailChartProps) => {
 
       {/* Insight */}
       {insight && (
-        <div className="mt-4 p-3 rounded-lg bg-violet-900/10 border border-violet-500/20">
-          <p className="text-sm text-foreground flex items-center gap-2">
-            <span className="text-lg">💡</span>
+        <div className="p-4 rounded-xl bg-primary/5">
+          <p className="text-sm text-foreground/90 flex items-center gap-2.5 leading-relaxed">
+            <span className="text-base">💡</span>
             {insight}
           </p>
         </div>
