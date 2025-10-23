@@ -70,18 +70,13 @@ const PeriodChart = () => {
                 key={`cell-${index}`}
                 fill={
                   entry.isToday
-                    ? '#EC4899'
+                    ? 'hsl(var(--primary))'
                     : entry.percentage >= 80
-                    ? '#8B5CF6'
-                    : entry.percentage >= 60
-                    ? '#A78BFA'
-                    : entry.percentage >= 40
-                    ? '#C4B5FD'
-                    : entry.percentage >= 20
-                    ? '#DDD6FE'
-                    : '#E9D5FF'
+                    ? 'hsl(var(--chart-1))'
+                    : entry.percentage >= 50
+                    ? 'hsl(var(--chart-2))'
+                    : 'hsl(var(--chart-3))'
                 }
-                className={entry.isToday ? 'animate-pulse' : ''}
               />
             ))}
           </Bar>
@@ -97,13 +92,13 @@ const PeriodChart = () => {
           <p className="text-xs text-muted-foreground mb-1 flex items-center justify-center gap-1">
             <TrendingUp className="w-3 h-3" /> Melhor
           </p>
-          <p className="text-lg font-bold" style={{ color: '#8B5CF6' }}>{stats.bestPeriod.percentage}%</p>
+          <p className="text-lg font-bold text-chart-1">{stats.bestPeriod.percentage}%</p>
         </div>
         <div className="text-center">
           <p className="text-xs text-muted-foreground mb-1 flex items-center justify-center gap-1">
             <TrendingDown className="w-3 h-3" /> Menor
           </p>
-          <p className="text-lg font-bold" style={{ color: '#DDD6FE' }}>{stats.worstPeriod.percentage}%</p>
+          <p className="text-lg font-bold text-chart-3">{stats.worstPeriod.percentage}%</p>
         </div>
       </div>
     </motion.div>

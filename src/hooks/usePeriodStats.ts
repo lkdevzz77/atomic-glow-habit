@@ -43,7 +43,7 @@ export const usePeriodStats = (period: PeriodType) => {
         case '7d':
           startDate = subDays(today, 6);
           intervals = eachDayOfInterval({ start: startDate, end: today });
-          formatLabel = (d) => format(d, 'EEE', { locale: ptBR });
+          formatLabel = (d) => format(d, 'dd/MM', { locale: ptBR });
           break;
         case '14d':
           startDate = subDays(today, 13);
