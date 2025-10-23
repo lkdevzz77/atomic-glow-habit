@@ -133,7 +133,7 @@ const Dashboard = () => {
             <div>
               <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
                 <Atom className="w-7 h-7 text-violet-500 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
-                <span className="text-violet-500">Olá</span>, {userName}
+                <span className="text-violet-500">Olá {userName}</span>
               </h1>
               <p className="text-sm text-muted-foreground mt-1">
                 {i18n.language === 'en' 
