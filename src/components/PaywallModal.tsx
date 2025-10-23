@@ -1,7 +1,9 @@
 import React from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Sparkles, Lock, Star } from 'lucide-react';
+import { CheckCircle2, Lock, Star, Rocket } from 'lucide-react';
+import { motion } from 'framer-motion';
+import atomLogo from '@/assets/atom-logo.png';
 
 interface PaywallModalProps {
   open: boolean;
@@ -40,17 +42,38 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <div className="text-center space-y-6">
-          {/* Icon */}
+          {/* Logo Átomo Animada */}
           <div className="flex justify-center">
-            <div className="p-4 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-full">
-              <Sparkles className="w-12 h-12 text-violet-500" />
+            <div className="relative">
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-violet-500/20 blur-2xl rounded-full animate-pulse" />
+              
+              {/* Logo */}
+              <motion.img
+                src={atomLogo}
+                alt="atomicTracker Pro"
+                className="w-24 h-24 relative z-10"
+                initial={{ scale: 0, rotate: -180, opacity: 0 }}
+                animate={{ 
+                  scale: 1, 
+                  rotate: 0,
+                  opacity: 1
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 15,
+                  duration: 0.6
+                }}
+              />
             </div>
           </div>
           
           {/* Title */}
           <div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent mb-2">
-              Desbloqueie Seu Potencial Máximo 🚀
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent mb-2 flex items-center justify-center gap-2">
+              Desbloqueie Seu Potencial Máximo
+              <Rocket className="w-7 h-7 text-violet-500" />
             </h2>
             <p className="text-sm text-muted-foreground/80">
               Usuários Pro alcançam objetivos 3x mais rápido e mantêm sequências 2x mais longas
