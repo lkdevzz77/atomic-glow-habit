@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
+import * as LucideIcons from 'lucide-react';
 
 interface Badge {
   id: string;
@@ -90,7 +91,12 @@ const UpcomingBadges = () => {
           return (
             <div key={badge.id} className="space-y-2">
               <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 text-2xl">{badge.icon}</div>
+                <div className="flex-shrink-0">
+                  {(() => {
+                    const IconComponent = LucideIcons[badge.icon as keyof typeof LucideIcons] as React.ComponentType<{ size?: number; className?: string }>;
+                    return IconComponent ? <IconComponent size={24} className="text-violet-400" /> : <span className="text-2xl">{badge.icon}</span>;
+                  })()}
+                </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="text-sm font-semibold text-slate-200 truncate">
                     {badge.name}

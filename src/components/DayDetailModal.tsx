@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
+import { Icon } from '@/config/icon-map';
+import * as LucideIcons from 'lucide-react';
 
 interface Habit {
   id: number;
@@ -81,7 +83,10 @@ const DayDetailModal: React.FC<DayDetailModalProps> = ({
                   />
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-2xl">{habit.icon}</span>
+                      {(() => {
+                        const IconComponent = LucideIcons[habit.icon as keyof typeof LucideIcons] as React.ComponentType<{ size?: number; className?: string }>;
+                        return IconComponent ? <IconComponent size={20} className="text-violet-400" /> : <span className="text-xl">{habit.icon}</span>;
+                      })()}
                       <span className={`font-medium ${isCompleted ? 'line-through text-slate-500' : 'text-slate-200'}`}>
                         {habit.title}
                       </span>
