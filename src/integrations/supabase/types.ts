@@ -314,10 +314,7 @@ export type Database = {
           total_xp: number
         }[]
       }
-      get_server_date: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      get_server_date: { Args: never; Returns: string }
       get_user_todays_completions: {
         Args: { p_user_id: string }
         Returns: {
