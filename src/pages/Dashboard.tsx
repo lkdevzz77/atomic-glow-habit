@@ -16,6 +16,8 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AnimatedPage } from "@/components/AnimatedPage";
 import { PageLoader } from "@/components/PageLoader";
+import { FloatingActionButton } from "@/components/FloatingActionButton";
+import { Plus } from "lucide-react";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -85,13 +87,22 @@ const Dashboard = () => {
       <AnimatedPage>
         <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
           {/* Header */}
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">
-              Olá, {userName}
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Cada ação é um voto para quem você está se tornando
-            </p>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">
+                Olá, {userName}
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Cada ação é um voto para quem você está se tornando
+              </p>
+            </div>
+            <Button 
+              onClick={() => setIsNewHabitModalOpen(true)}
+              className="hidden md:flex"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Novo Hábito
+            </Button>
           </div>
 
           {/* Kanban View */}
@@ -105,6 +116,12 @@ const Dashboard = () => {
 
         {/* Modals */}
         <NewHabitModal open={isNewHabitModalOpen} onOpenChange={setIsNewHabitModalOpen} />
+        
+        {/* Mobile FAB */}
+        <FloatingActionButton 
+          onClick={() => setIsNewHabitModalOpen(true)}
+          label="Novo Hábito"
+        />
       </AnimatedPage>
     </AppLayout>;
 };

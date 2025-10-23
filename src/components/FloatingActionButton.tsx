@@ -32,8 +32,8 @@ export function FloatingActionButton({
       className={cn(
         'md:hidden fixed bottom-20 right-4 z-50',
         'w-14 h-14 rounded-full',
-        'bg-gradient-to-br from-violet-500 to-purple-600',
-        'shadow-lg shadow-violet-500/50',
+        'bg-primary hover:bg-primary/90',
+        'shadow-lg',
         'flex items-center justify-center',
         'transition-all',
         className
@@ -45,7 +45,7 @@ export function FloatingActionButton({
       transition={{ type: 'spring', stiffness: 260, damping: 20 }}
       aria-label={label}
     >
-      <Plus className="text-white" size={24} />
+      <Plus className="text-primary-foreground" size={24} />
     </motion.button>
   );
 }
