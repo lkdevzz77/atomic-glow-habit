@@ -6,6 +6,7 @@ import { NotionCalendar } from '@/components/NotionCalendar';
 import { AnimatedPage } from '@/components/AnimatedPage';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import { Calendar } from 'lucide-react';
 
 const CalendarPage = () => {
   const { data: habits, isLoading: habitsLoading } = useHabits();
@@ -38,13 +39,18 @@ const CalendarPage = () => {
       <AnimatedPage>
         <div className="space-y-8">
           {/* Header */}
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent mb-2">
-              📅 Calendário de Hábitos
-            </h1>
-            <p className="text-slate-400">
-              "Um pequeno passo por dia, uma jornada transformadora por ano."
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+              <Calendar className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">
+                Calendário de Hábitos
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Um pequeno passo por dia, uma jornada transformadora por ano
+              </p>
+            </div>
           </div>
 
           {/* Calendário */}
