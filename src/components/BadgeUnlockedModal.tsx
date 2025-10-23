@@ -1,15 +1,9 @@
 import React, { useEffect } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { triggerAtomicAnimation } from '@/utils/atomicParticles';
+import { cn } from '@/lib/utils';
 
 interface Badge {
   id: string;
@@ -43,10 +37,7 @@ const tierLabels = {
 export default function BadgeUnlockedModal({ badge, open, onClose }: BadgeUnlockedModalProps) {
   useEffect(() => {
     if (open && badge) {
-      // Delay para animação aparecer após modal abrir
-      setTimeout(() => {
-        triggerAtomicAnimation(0.5, 0.4);
-      }, 300);
+      setTimeout(() => triggerAtomicAnimation(0.5, 0.4), 300);
     }
   }, [open, badge]);
 
@@ -54,60 +45,35 @@ export default function BadgeUnlockedModal({ badge, open, onClose }: BadgeUnlock
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader className="text-center space-y-4">
-          <div className="mx-auto">
-            <div
-              className={cn(
-                'inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-br',
-                tierGradients[badge.tier as keyof typeof tierGradients],
-                'animate-scale-in shadow-2xl'
-              )}
-            >
-              <span className="text-7xl">{badge.icon}</span>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="inline-flex px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-violet-500 text-white">
+      <DialogContent className="max-w-md bg-slate-900/95 border-2 border-violet-500/50">
+        <div className={cn("p-8 bg-gradient-to-br rounded-t-lg", tierGradients[badge.tier as keyof typeof tierGradients])}>
+          <div className="text-center space-y-4">
+            <div className="text-8xl animate-scale-in">{badge.icon}</div>
+            <span className={cn("px-4 py-2 rounded-full text-sm font-bold uppercase inline-block",
+              badge.tier === 'legendary' && "bg-purple-500 text-white",
+              badge.tier === 'gold' && "bg-yellow-500 text-black",
+              badge.tier === 'silver' && "bg-slate-400 text-black",
+              badge.tier === 'bronze' && "bg-amber-700 text-white"
+            )}>
               {tierLabels[badge.tier as keyof typeof tierLabels]}
-            </div>
-            <DialogTitle className="text-2xl font-bold text-white">
-              🎉 Conquista Desbloqueada!
-            </DialogTitle>
-            <DialogDescription className="text-lg font-semibold text-violet-300">
-              {badge.name}
-            </DialogDescription>
+            </span>
+            <h2 className="text-3xl font-bold text-white">Conquista Desbloqueada!</h2>
           </div>
-        </DialogHeader>
-
-        <div className="space-y-4">
-          <p className="text-center text-slate-300 text-sm leading-relaxed">
-            {badge.description}
-          </p>
-
-          {/* XP Reward */}
-          <div className="bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 border-2 border-emerald-500/30 rounded-xl p-4">
-            <div className="flex items-center justify-center gap-3">
-              <Sparkles className="w-6 h-6 text-emerald-400" />
-              <div className="text-center">
-                <p className="text-xs text-emerald-300 font-medium uppercase tracking-wide">
-                  Recompensa de XP
-                </p>
-                <p className="text-3xl font-bold text-emerald-400">
-                  +{badge.xp_reward} XP
-                </p>
-              </div>
-              <Sparkles className="w-6 h-6 text-emerald-400" />
+        </div>
+        <div className="p-8 space-y-6">
+          <div className="text-center space-y-2">
+            <h3 className="text-2xl font-bold text-white">{badge.name}</h3>
+            <p className="text-slate-300">{badge.description}</p>
+          </div>
+          <div className="flex items-center justify-center gap-3 p-6 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border-2 border-emerald-500/30">
+            <Sparkles className="w-8 h-8 text-emerald-400" />
+            <div>
+              <p className="text-sm text-emerald-300">Recompensa</p>
+              <p className="text-3xl font-bold text-emerald-400">+{badge.xp_reward} XP</p>
             </div>
           </div>
-
-          <Button
-            onClick={onClose}
-            className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700"
-            size="lg"
-          >
-            Continuar Jornada 🚀
+          <Button onClick={onClose} className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500">
+            Continuar Jornada
           </Button>
         </div>
       </DialogContent>

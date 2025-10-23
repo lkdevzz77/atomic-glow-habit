@@ -300,6 +300,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      award_xp: {
+        Args: { p_user_id: string; p_xp_amount: number }
+        Returns: undefined
+      }
       calculate_habit_streak: {
         Args: { p_habit_id: number }
         Returns: {

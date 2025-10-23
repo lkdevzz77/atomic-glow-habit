@@ -102,17 +102,49 @@ export default function LevelJourneyPage() {
               >
                 {/* Badge do nível na linha - Compact on mobile */}
                 <div className="absolute left-0 top-0 -translate-x-1/2">
-                  <div className={cn(
-                    'rounded-full flex items-center justify-center border-2',
-                    isMobile ? 'w-8 h-8' : 'w-10 h-10',
-                    isCompleted && 'bg-emerald-500 border-emerald-400',
-                    isCurrent && 'bg-gradient-to-br from-violet-500 to-purple-600 border-violet-400 animate-pulse',
-                    isLocked && 'bg-card border-border'
-                  )}>
-                    {isCompleted && <Check className="text-white" size={isMobile ? 16 : ICON_SIZES.md} />}
-                    {isCurrent && <Icon size={isMobile ? 16 : ICON_SIZES.md} className="text-white" />}
-                    {isLocked && <Lock className="text-muted-foreground" size={isMobile ? 16 : ICON_SIZES.md} />}
-                  </div>
+                  {isCurrent ? (
+                    // Progress ring para nível atual
+                    <div className="relative">
+                      <svg className={isMobile ? "w-8 h-8" : "w-10 h-10"} style={{ transform: 'rotate(-90deg)' }}>
+                        <circle
+                          cx={isMobile ? "16" : "20"}
+                          cy={isMobile ? "16" : "20"}
+                          r={isMobile ? "12" : "16"}
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          fill="none"
+                          className="text-slate-700"
+                        />
+                        <circle
+                          cx={isMobile ? "16" : "20"}
+                          cy={isMobile ? "16" : "20"}
+                          r={isMobile ? "12" : "16"}
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          fill="none"
+                          strokeLinecap="round"
+                          className="text-violet-500 transition-all duration-500"
+                          strokeDasharray={`${2 * Math.PI * (isMobile ? 12 : 16)}`}
+                          strokeDashoffset={`${2 * Math.PI * (isMobile ? 12 : 16) * (1 - progress / 100)}`}
+                        />
+                      </svg>
+                      <div className={cn(
+                        "absolute inset-0 flex items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-purple-600"
+                      )}>
+                        <Icon size={isMobile ? 12 : ICON_SIZES.sm} className="text-white" />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={cn(
+                      'rounded-full flex items-center justify-center border-2',
+                      isMobile ? 'w-8 h-8' : 'w-10 h-10',
+                      isCompleted && 'bg-emerald-500 border-emerald-400',
+                      isLocked && 'bg-card border-border'
+                    )}>
+                      {isCompleted && <Check className="text-white" size={isMobile ? 16 : ICON_SIZES.md} />}
+                      {isLocked && <Lock className="text-muted-foreground" size={isMobile ? 16 : ICON_SIZES.md} />}
+                    </div>
+                  )}
                 </div>
 
                 {/* Glow sutil no nível atual */}

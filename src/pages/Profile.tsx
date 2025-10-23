@@ -1,95 +1,115 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { useMutation } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
-import { Icons } from '@/components/ui/icons';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Skeleton } from '@/components/LoadingStates';
-import { User, Edit3, Calendar } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AppLayout } from '@/layouts/AppLayout';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { AnimatedPage } from '@/components/AnimatedPage';
-
-const profileSchema = z.object({
-  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
-  desiredIdentity: z.string().min(10, 'Descreva sua identidade desejada em pelo menos 10 caracteres'),
-  specificChange: z.string().min(10, 'Descreva a mudança específica em pelo menos 10 caracteres'),
-});
-
-type ProfileFormValues = z.infer<typeof profileSchema>;
+import { useLevel } from '@/hooks/useLevel';
+import { Progress } from '@/components/ui/progress';
+import LevelBadge from '@/components/LevelBadge';
+import { AvatarPicker } from '@/components/AvatarPicker';
+import BadgeDisplay from '@/components/BadgeDisplay';
+import { Target, Trophy, Flame, Calendar, Sparkles } from 'lucide-react';
+import { ICON_SIZES } from '@/config/iconSizes';
+import { toast } from 'sonner';
 
 export default function Profile() {
   const { user } = useAuth();
-  const [isEditing, setIsEditing] = React.useState(false);
+  const { level, xp, progress, levelInfo, currentLevelXP, nextLevelXP } = useLevel();
 
-  // Form
-  const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      name: user?.user_metadata?.name || '',
-      desiredIdentity: user?.user_metadata?.desired_identity || '',
-      specificChange: user?.user_metadata?.specific_change || '',
+  // Fetch profile data
+  const { data: profile } = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user?.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
     },
+    enabled: !!user?.id,
   });
 
-  // Update profile mutation
-  const updateProfile = useMutation({
-    mutationFn: async (values: ProfileFormValues) => {
-      const { error } = await supabase.auth.updateUser({
-        data: {
-          name: values.name,
-          desired_identity: values.desiredIdentity,
-          specific_change: values.specificChange,
-        },
-      });
+  // Fetch real stats
+  const { data: stats } = useQuery({
+    queryKey: ['profile-stats', user?.id],
+    queryFn: async () => {
+      // Total habits
+      const { count: totalHabits } = await supabase
+        .from('habits')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user?.id);
+
+      // Longest streak
+      const { data: habitsData } = await supabase
+        .from('habits')
+        .select('longest_streak')
+        .eq('user_id', user?.id);
+      
+      const longestStreak = Math.max(...(habitsData?.map(h => h.longest_streak) || [0]));
+
+      // Unlocked badges
+      const { count: unlockedBadges } = await supabase
+        .from('user_badges')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user?.id)
+        .eq('unlocked', true);
+
+      // Active days
+      const { data: completionsData } = await supabase
+        .from('habit_completions')
+        .select('date')
+        .eq('user_id', user?.id)
+        .gte('percentage', 100);
+      
+      const uniqueDates = new Set(completionsData?.map(c => c.date) || []);
+      const activeDays = uniqueDates.size;
+
+      return {
+        totalHabits: totalHabits || 0,
+        longestStreak,
+        unlockedBadges: unlockedBadges || 0,
+        activeDays,
+      };
+    },
+    enabled: !!user?.id,
+  });
+
+  // Handle avatar update
+  const handleAvatarUpdate = async (
+    type: 'initials' | 'upload' | 'icon',
+    icon?: string,
+    color?: string,
+    url?: string
+  ) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          avatar_type: type,
+          avatar_icon: icon,
+          avatar_color: color,
+          avatar_url: url,
+        })
+        .eq('id', user?.id);
 
       if (error) throw error;
-      return values;
-    },
-    onSuccess: () => {
-      toast({
-        title: "Perfil atualizado!",
-        description: "Suas informações foram salvas com sucesso.",
-        variant: "default",
-      });
-      setIsEditing(false);
-    },
-    onError: (error) => {
-      toast({
-        title: "Erro ao atualizar perfil",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
 
-  function onSubmit(values: ProfileFormValues) {
-    updateProfile.mutate(values);
-  }
+      toast.success('Avatar atualizado!');
+    } catch (error) {
+      console.error('Error updating avatar:', error);
+      toast.error('Erro ao atualizar avatar');
+    }
+  };
 
   if (!user) return null;
+
+  const xpToNext = nextLevelXP - currentLevelXP;
 
   return (
     <AppLayout>
@@ -97,175 +117,154 @@ export default function Profile() {
         <div className="max-w-4xl mx-auto space-y-6 md:space-y-8">
           <Breadcrumbs />
           
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-200">Perfil</h1>
-              <p className="text-slate-400 mt-1">Gerencie suas informações pessoais e objetivos</p>
-            </div>
-            <Button
-              onClick={() => setIsEditing(!isEditing)}
-              variant="outline"
-              className="gap-2"
-            >
-              <Edit3 size={16} />
-              {isEditing ? 'Cancelar' : 'Editar Perfil'}
-            </Button>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-slate-200">Perfil</h1>
+            <p className="text-slate-400 mt-1">Seu progresso e personalização</p>
           </div>
 
-          <div className="grid gap-4 md:gap-6">
-        {/* Card Principal */}
-        <Card>
-          <CardHeader className="pb-4">
-            <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center">
-                <span className="text-2xl font-bold text-white">
-                  {user.user_metadata?.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}
-                </span>
-              </div>
-              <div>
-                <CardTitle>{user.user_metadata?.name || 'Usuário'}</CardTitle>
-                <CardDescription>{user.email}</CardDescription>
-                <div className="flex items-center gap-2 mt-1 text-xs text-slate-400">
-                  <Calendar size={12} />
-                  <span>
-                    Membro desde{' '}
-                    {new Date(user.created_at).toLocaleDateString('pt-BR', {
-                      month: 'long',
-                      year: 'numeric',
-                    })}
-                  </span>
+          {/* Header com Avatar e Nível */}
+          <Card className="border-2 border-violet-500/30 bg-gradient-to-br from-violet-500/10 to-purple-500/10">
+            <CardContent className="p-6">
+              <div className="flex flex-col sm:flex-row items-center gap-6">
+                {/* Avatar Grande */}
+                <div className="relative">
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center text-4xl font-bold text-white border-4 border-violet-500/50">
+                    {profile?.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}
+                  </div>
+                  <div className="absolute -bottom-2 -right-2">
+                    <LevelBadge level={level} size="sm" />
+                  </div>
+                </div>
+
+                {/* Info e Progresso */}
+                <div className="flex-1 text-center sm:text-left space-y-3 w-full">
+                  <div>
+                    <h2 className="text-2xl font-bold text-white">
+                      {profile?.name || 'Usuário'}
+                    </h2>
+                    <p className="text-violet-300">{user.email}</p>
+                    <div className="flex items-center gap-2 mt-1 text-xs text-slate-400 justify-center sm:justify-start">
+                      <Calendar size={12} />
+                      <span>
+                        Membro desde{' '}
+                        {new Date(user.created_at).toLocaleDateString('pt-BR', {
+                          month: 'long',
+                          year: 'numeric',
+                        })}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* XP Progress */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-violet-300 font-semibold">Nível {level} • {levelInfo.title}</span>
+                      <span className="text-violet-400/70">{xpToNext} XP para próximo</span>
+                    </div>
+                    <Progress value={progress} className="h-2" />
+                    <p className="text-xs text-violet-300">
+                      {currentLevelXP} / {nextLevelXP} XP
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </CardHeader>
-        </Card>
-
-        {/* Formulário de Perfil */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Identidade e Objetivos</CardTitle>
-            <CardDescription>
-              Defina quem você quer se tornar e que mudanças específicas deseja alcançar
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nome</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          disabled={!isEditing}
-                          placeholder="Seu nome completo"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="desiredIdentity"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Identidade Desejada</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          disabled={!isEditing}
-                          placeholder="Como você quer se descrever daqui a 6 meses?"
-                          className="min-h-[100px]"
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Ex: "Uma pessoa que pratica exercícios regularmente e mantém uma dieta saudável"
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="specificChange"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Mudança Específica</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          disabled={!isEditing}
-                          placeholder="Que mudança específica você quer alcançar?"
-                          className="min-h-[100px]"
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Ex: "Conseguir correr 5km sem parar e estabelecer uma rotina de alimentação balanceada"
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {isEditing && (
-                  <Button
-                    type="submit"
-                    className="w-full sm:w-auto"
-                    disabled={updateProfile.isPending}
-                  >
-                    {updateProfile.isPending && (
-                      <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    Salvar Alterações
-                  </Button>
-                )}
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-
-        {/* Estatísticas */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Estatísticas</CardTitle>
-            <CardDescription>Acompanhe seu progresso</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Total de Hábitos */}
-              <div className="p-4 rounded-lg bg-slate-800/50 space-y-2">
-                <div className="text-sm font-medium text-slate-400">Total de Hábitos</div>
-                <div className="text-2xl font-bold text-slate-200">12</div>
-              </div>
-
-              {/* Streak mais longo */}
-              <div className="p-4 rounded-lg bg-slate-800/50 space-y-2">
-                <div className="text-sm font-medium text-slate-400">Melhor Streak</div>
-                <div className="text-2xl font-bold text-slate-200">7 dias</div>
-              </div>
-
-              {/* Badges */}
-              <div className="p-4 rounded-lg bg-slate-800/50 space-y-2">
-                <div className="text-sm font-medium text-slate-400">Badges Conquistados</div>
-                <div className="text-2xl font-bold text-slate-200">3</div>
-              </div>
-
-              {/* Dias Ativos */}
-              <div className="p-4 rounded-lg bg-slate-800/50 space-y-2">
-                <div className="text-sm font-medium text-slate-400">Dias Ativos</div>
-                <div className="text-2xl font-bold text-slate-200">15</div>
-              </div>
-            </div>
-          </CardContent>
+            </CardContent>
           </Card>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <Card>
+              <CardContent className="p-4 text-center space-y-2">
+                <Target className="w-6 h-6 text-violet-400 mx-auto" />
+                <p className="text-xs text-muted-foreground">Hábitos</p>
+                <p className="text-2xl font-bold text-slate-200">{stats?.totalHabits || 0}</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-4 text-center space-y-2">
+                <Flame className="w-6 h-6 text-orange-400 mx-auto" />
+                <p className="text-xs text-muted-foreground">Melhor Streak</p>
+                <p className="text-2xl font-bold text-slate-200">{stats?.longestStreak || 0}d</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-4 text-center space-y-2">
+                <Trophy className="w-6 h-6 text-amber-400 mx-auto" />
+                <p className="text-xs text-muted-foreground">Conquistas</p>
+                <p className="text-2xl font-bold text-slate-200">{stats?.unlockedBadges || 0}</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-4 text-center space-y-2">
+                <Sparkles className="w-6 h-6 text-emerald-400 mx-auto" />
+                <p className="text-xs text-muted-foreground">XP Total</p>
+                <p className="text-2xl font-bold text-slate-200">{xp}</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Personalização de Avatar */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Personalizar Avatar</CardTitle>
+              <CardDescription>
+                Escolha como você quer aparecer no app
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AvatarPicker
+                currentType={profile?.avatar_type || 'initials'}
+                currentIcon={profile?.avatar_icon || 'User'}
+                currentColor={profile?.avatar_color || 'violet'}
+                currentUrl={profile?.avatar_url || ''}
+                onUpdate={handleAvatarUpdate}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Conquistas Recentes */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Conquistas Recentes</CardTitle>
+                  <CardDescription>Suas últimas badges desbloqueadas</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <BadgeDisplay mode="scroll" filter="unlocked" limit={5} />
+            </CardContent>
+          </Card>
+
+          {/* Benefícios Desbloqueados */}
+          {levelInfo.perks.length > 0 && (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Sparkles className="text-amber-500" size={ICON_SIZES.lg} />
+                  <CardTitle>Benefícios Desbloqueados</CardTitle>
+                </div>
+                <CardDescription>
+                  Recompensas do Nível {level}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  {levelInfo.perks.map((perk, index) => (
+                    <li key={index} className="flex items-start gap-2 text-body">
+                      <span className="text-emerald-500 text-lg">✓</span>
+                      <span>{perk}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
         </div>
-      </div>
       </AnimatedPage>
     </AppLayout>
   );

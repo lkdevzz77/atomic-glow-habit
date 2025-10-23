@@ -19,36 +19,28 @@ export interface LevelUpResult {
 
 export const LEVELS: Level[] = [
   { level: 1, title: "Próton Iniciante", minXP: 0, maxXP: 200, icon: Sprout, color: "emerald", perks: [] },
-  { level: 2, title: "Elétron Curioso", minXP: 200, maxXP: 500, icon: Leaf, color: "lime", perks: ["Estatísticas básicas"] },
-  { level: 3, title: "Átomo Formador", minXP: 500, maxXP: 900, icon: User, color: "blue", perks: ["Badges especiais"] },
-  { level: 4, title: "Molécula Ativa", minXP: 900, maxXP: 1500, icon: UserCheck, color: "cyan", perks: ["Gráficos de progresso"] },
+  { level: 2, title: "Elétron Curioso", minXP: 200, maxXP: 500, icon: Leaf, color: "lime", perks: ["Estatísticas básicas desbloqueadas"] },
+  { level: 3, title: "Átomo Formador", minXP: 500, maxXP: 900, icon: User, color: "blue", perks: ["Badges especiais disponíveis"] },
+  { level: 4, title: "Molécula Ativa", minXP: 900, maxXP: 1500, icon: UserCheck, color: "cyan", perks: ["Gráficos de progresso avançados"] },
   { level: 5, title: "Composto Estável", minXP: 1500, maxXP: 2400, icon: Award, color: "violet", perks: ["IA Coach personalizado", "Análises semanais"] },
-  { level: 6, title: "Cristal Organizado", minXP: 2400, maxXP: 3600, icon: Medal, color: "purple", perks: ["Insights avançados", "Personalização completa"] },
-  { level: 7, title: "Reator Controlado", minXP: 3600, maxXP: 5200, icon: Crown, color: "amber", perks: ["Relatórios mensais", "Comparações temporais"] },
-  { level: 8, title: "Fusão Nuclear", minXP: 5200, maxXP: 7500, icon: Sparkles, color: "yellow", perks: ["Exportação de dados", "Estatísticas completas"] },
-  { level: 9, title: "Supernova Radiante", minXP: 7500, maxXP: 10500, icon: Zap, color: "orange", perks: ["Todas features desbloqueadas", "Badge lendária"] },
-  { level: 10, title: "Estrela de Nêutrons", minXP: 10500, maxXP: Infinity, icon: Atom, color: "violet", perks: ["Maestria absoluta", "Status permanente"] },
+  { level: 6, title: "Cristal Organizado", minXP: 2400, maxXP: 3600, icon: Medal, color: "purple", perks: ["Relatórios mensais", "Insights avançados"] },
+  { level: 7, title: "Reator Controlado", minXP: 3600, maxXP: 5200, icon: Crown, color: "amber", perks: ["Análises preditivas", "Sugestões personalizadas"] },
+  { level: 8, title: "Fusão Nuclear", minXP: 5200, maxXP: 7500, icon: Sparkles, color: "yellow", perks: ["Avatar customizado", "Exportação de dados"] },
+  { level: 9, title: "Supernova Radiante", minXP: 7500, maxXP: 10500, icon: Zap, color: "orange", perks: ["Todas estatísticas desbloqueadas", "Suporte prioritário"] },
+  { level: 10, title: "Estrela de Nêutrons", minXP: 10500, maxXP: Infinity, icon: Atom, color: "violet", perks: ["Maestria atômica completa", "Acesso total ao sistema"] },
 ];
 
 export const XP_REWARDS = {
-  // Ações básicas diárias
   completeHabit: 15,
   firstHabitOfDay: 10,
   completeAllDaily: 30,
   perfectDay: 50,
-  
-  // Performance semanal
   perfectWeek: 200,
   weeklyStreak5: 100,
   weeklyStreak12: 500,
-  
-  // Ações de setup
   createFirstHabit: 20,
   completeOnboarding: 50,
   setupIdentity: 30,
-  
-  // Nota: XP de badges vem da tabela 'badges' (campo xp_reward)
-  // Nota: XP de streaks vem da função get_habit_completion_xp
 };
 
 export function calculateLevel(totalXP: number): {
@@ -67,7 +59,6 @@ export function calculateLevel(totalXP: number): {
     }
   }
   
-  // If XP is beyond max level
   if (totalXP >= LEVELS[LEVELS.length - 1].minXP) {
     currentLevel = LEVELS[LEVELS.length - 1];
   }
