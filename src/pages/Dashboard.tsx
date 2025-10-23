@@ -19,7 +19,6 @@ import { format } from "date-fns";
 import { ptBR, enUS } from "date-fns/locale";
 import { AnimatedPage } from "@/components/AnimatedPage";
 import { PageLoader } from "@/components/PageLoader";
-import { FloatingActionButton } from "@/components/FloatingActionButton";
 import { Plus, Atom } from "lucide-react";
 
 const Dashboard = () => {
@@ -174,12 +173,6 @@ const Dashboard = () => {
 
         {/* Modals */}
         <NewHabitModal open={isNewHabitModalOpen} onOpenChange={setIsNewHabitModalOpen} />
-        
-        {/* Mobile FAB */}
-        <FloatingActionButton 
-          onClick={() => setIsNewHabitModalOpen(true)}
-          label="Novo Hábito"
-        />
       </AnimatedPage>
     </AppLayout>;
 };
