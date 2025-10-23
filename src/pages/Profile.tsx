@@ -216,7 +216,7 @@ export default function Profile() {
             </CardHeader>
             <CardContent>
               <AvatarPicker
-                currentType={profile?.avatar_type || 'initials'}
+                currentType={(profile?.avatar_type as 'initials' | 'upload' | 'icon') || 'initials'}
                 currentIcon={profile?.avatar_icon || 'User'}
                 currentColor={profile?.avatar_color || 'violet'}
                 currentUrl={profile?.avatar_url || ''}
