@@ -9,6 +9,7 @@ import { AppLayout } from "@/layouts/AppLayout";
 import { useHabits } from "@/hooks/useHabits";
 import { useStats } from "@/hooks/useStats";
 import { useAuth } from "@/contexts/AuthContext";
+import { DailyProgressCard } from "@/components/DailyProgressCard";
 import NewHabitModal from "@/components/NewHabitModal";
 import KanbanView from "@/components/views/KanbanView";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ import { Plus } from "lucide-react";
 const Dashboard = () => {
   const { user } = useAuth();
   const { data: habits, isLoading: habitsLoading, completeHabit } = useHabits();
+  const { weeklyStats, streakStats } = useStats();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
@@ -83,6 +85,20 @@ const Dashboard = () => {
   }
   
   const userName = user.user_metadata?.name || 'Usuário';
+  
+  // Calculate daily progress data
+  const today = new Date().toISOString().split('T')[0];
+  const completedToday = habits?.filter(h => h.completedToday).length || 0;
+  
+  const activeStreaks = habits?.filter(h => (h.streak || 0) > 0).length || 0;
+  const xpEarned = completedToday * 10; // Simplified XP calculation
+  
+  // Prepare weekly data for mini graph
+  const weeklyData = weeklyStats?.data?.days?.map(day => ({
+    day: day.day.substring(0, 3), // D, S, T, Q, Q, S, S
+    percentage: day.percentage
+  })) || [];
+
   return <AppLayout>
       <AnimatedPage>
         <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
@@ -111,6 +127,15 @@ const Dashboard = () => {
             onComplete={handleCompleteHabit} 
             onAddHabit={() => setIsNewHabitModalOpen(true)}
             onUndo={handleUndoHabit}
+          />
+
+          {/* Daily Progress Card */}
+          <DailyProgressCard
+            completedToday={completedToday}
+            totalHabits={habits?.length || 0}
+            activeStreaks={activeStreaks}
+            xpEarned={xpEarned}
+            weeklyData={weeklyData}
           />
         </div>
 
