@@ -42,6 +42,7 @@ const CoachAI = () => {
               alt=""
               className="w-6 h-6 sm:w-8 sm:h-8 opacity-80"
               style={{
+                filter: 'drop-shadow(0 0 8px rgba(124, 58, 237, 0.6))',
                 animation: 'spin-slow 8s linear infinite'
               }}
             />

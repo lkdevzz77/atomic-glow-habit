@@ -30,6 +30,7 @@ import { AnimatedPage } from '@/components/AnimatedPage';
 import { PageLoader } from '@/components/PageLoader';
 import { QuickStatsCard } from '@/components/habits/QuickStatsCard';
 import { HabitEmptyState } from '@/components/habits/HabitEmptyState';
+import { DeleteHabitDialog } from '@/components/DeleteHabitDialog';
 import { 
   calculateCompletionRate, 
   getStreakEmoji, 
@@ -51,7 +52,11 @@ export default function HabitsPage() {
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'archived'>('all');
   const [sortBy, setSortBy] = useState<'recent' | 'streak' | 'name' | 'completion'>('recent');
   const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
+  const [deleteHabitId, setDeleteHabitId] = useState<number | null>(null);
   const isMobile = useIsMobile();
+
+  // Find the habit to delete for the dialog
+  const habitToDelete = habits?.find(h => h.id === deleteHabitId);
 
   // Calculate daily stats
   const completedToday = habits?.filter(h => h.completedToday).length || 0;
@@ -85,9 +90,18 @@ export default function HabitsPage() {
     });
 
   const handleDelete = async (id: number) => {
-    if (confirm('Tem certeza que deseja deletar este hábito?')) {
-      deleteHabit(id);
+    setDeleteHabitId(id);
+  };
+
+  const confirmDelete = () => {
+    if (deleteHabitId !== null) {
+      deleteHabit(deleteHabitId);
+      setDeleteHabitId(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteHabitId(null);
   };
 
   if (isLoading) {
@@ -344,6 +358,13 @@ export default function HabitsPage() {
           <NewHabitModal
             open={isNewHabitModalOpen}
             onOpenChange={setIsNewHabitModalOpen}
+          />
+
+          <DeleteHabitDialog
+            open={deleteHabitId !== null}
+            habitTitle={habitToDelete?.title || ''}
+            onConfirm={confirmDelete}
+            onCancel={cancelDelete}
           />
         </div>
       </AnimatedPage>

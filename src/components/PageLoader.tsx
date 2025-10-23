@@ -10,7 +10,7 @@ export function PageLoader() {
             src="/atom-logo.png" 
             alt="Loading" 
             className="w-8 h-8"
-            style={{ filter: 'brightness(2) drop-shadow(0 0 8px rgba(255,255,255,0.6))' }}
+            style={{ filter: 'drop-shadow(0 0 8px rgba(124, 58, 237, 0.8))' }}
           />
         </div>
         

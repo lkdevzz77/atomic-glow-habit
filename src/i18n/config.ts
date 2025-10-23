@@ -15,7 +15,8 @@ const resources = {
       "settings": { "title": "Settings", "language": "Language", "theme": "Theme", "notifications": "Notifications", "sound": "Sound", "vibration": "Vibration" },
       "auth": { "signIn": "Sign In", "signUp": "Sign Up", "signOut": "Sign Out", "email": "Email", "password": "Password", "forgotPassword": "Forgot Password?", "dontHaveAccount": "Don't have an account?", "alreadyHaveAccount": "Already have an account?" },
       "levels": { "1": "Beginner Proton", "2": "Curious Electron", "3": "Forming Atom", "4": "Active Molecule", "5": "Stable Compound", "6": "Organized Crystal", "7": "Controlled Reactor", "8": "Nuclear Fusion", "9": "Radiant Supernova", "10": "Neutron Star" },
-      "levelUp": { "title": "Level Up!", "message": "You've reached level {{level}}!", "newPerks": "New Perks Unlocked" }
+      "levelUp": { "title": "Level Up!", "message": "You've reached level {{level}}!", "newPerks": "New Perks Unlocked" },
+      "deleteHabit": { "title": "Delete Habit?", "description": "Are you sure you want to delete {{habitName}}? This action cannot be undone.", "cancel": "Cancel", "confirm": "Delete" }
     }
   },
   'pt-BR': {
@@ -30,7 +31,8 @@ const resources = {
       "settings": { "title": "Configurações", "language": "Idioma", "theme": "Tema", "notifications": "Notificações", "sound": "Som", "vibration": "Vibração" },
       "auth": { "signIn": "Entrar", "signUp": "Cadastrar", "signOut": "Sair", "email": "Email", "password": "Senha", "forgotPassword": "Esqueceu a senha?", "dontHaveAccount": "Não tem uma conta?", "alreadyHaveAccount": "Já tem uma conta?" },
       "levels": { "1": "Próton Iniciante", "2": "Elétron Curioso", "3": "Átomo Formador", "4": "Molécula Ativa", "5": "Composto Estável", "6": "Cristal Organizado", "7": "Reator Controlado", "8": "Fusão Nuclear", "9": "Supernova Radiante", "10": "Estrela de Nêutrons" },
-      "levelUp": { "title": "Subiu de Nível!", "message": "Você alcançou o nível {{level}}!", "newPerks": "Novas Vantagens Desbloqueadas" }
+      "levelUp": { "title": "Subiu de Nível!", "message": "Você alcançou o nível {{level}}!", "newPerks": "Novas Vantagens Desbloqueadas" },
+      "deleteHabit": { "title": "Excluir Hábito?", "description": "Tem certeza que deseja excluir {{habitName}}? Esta ação não pode ser desfeita.", "cancel": "Cancelar", "confirm": "Excluir" }
     }
   }
 };

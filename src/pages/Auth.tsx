@@ -81,10 +81,9 @@ const Auth = () => {
             <img 
               src="/atom-logo.png" 
               alt="atomicTracker" 
-              className="w-12 h-12 sm:w-16 sm:h-16"
+              className="w-12 h-12 sm:w-16 sm:h-16 animate-float"
               style={{
-                filter: 'drop-shadow(0 0 20px rgba(124, 58, 237, 0.8))',
-                animation: 'float 3s ease-in-out infinite'
+                filter: 'drop-shadow(0 0 20px rgba(124, 58, 237, 0.8))'
               }}
             />
           </div>

@@ -22,10 +22,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
           <img 
             src="/atom-logo.png" 
             alt="Loading" 
-            className="w-16 h-16 mx-auto mb-4"
+            className="w-16 h-16 mx-auto mb-4 animate-pulse"
             style={{
-              filter: 'drop-shadow(0 0 30px rgba(124, 58, 237, 0.8))',
-              animation: 'pulse 2s ease-in-out infinite'
+              filter: 'drop-shadow(0 0 30px rgba(124, 58, 237, 0.8))'
             }}
           />
           <p className="text-slate-300">Carregando...</p>
