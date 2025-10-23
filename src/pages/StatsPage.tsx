@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { AppLayout } from '@/layouts/AppLayout';
 import { PageLoader } from '@/components/PageLoader';
 import { AnimatedPage } from '@/components/AnimatedPage';
+import { FeatureLock } from '@/components/FeatureLock';
 import StatMetricCard from '@/components/StatMetricCard';
 import PeriodChart from '@/components/stats/PeriodChart';
 import HabitDetailChart from '@/components/stats/HabitDetailChart';
@@ -100,16 +101,19 @@ const StatsPage = () => {
             totalCompletions={totalCompletions}
           />
 
-          {/* Gráfico de Período */}
-          <PeriodChart />
-
-          {/* Timeline Compacta */}
-        {habits && completions && habits.length > 0 && (
-          <HabitDetailChart 
-            habits={habits} 
-            completions={completions}
-          />
-        )}
+          {/* Gráficos Avançados (bloqueados para free) */}
+          <FeatureLock feature="stats">
+            <div className="space-y-4">
+              <PeriodChart />
+              
+              {habits && completions && habits.length > 0 && (
+                <HabitDetailChart 
+                  habits={habits} 
+                  completions={completions}
+                />
+              )}
+            </div>
+          </FeatureLock>
         </div>
       </AnimatedPage>
     </AppLayout>

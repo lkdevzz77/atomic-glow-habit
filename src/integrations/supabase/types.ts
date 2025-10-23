@@ -217,6 +217,7 @@ export type Database = {
           name: string
           points: number
           specific_change: string | null
+          tier: string | null
           updated_at: string
           xp: number | null
         }
@@ -234,6 +235,7 @@ export type Database = {
           name: string
           points?: number
           specific_change?: string | null
+          tier?: string | null
           updated_at?: string
           xp?: number | null
         }
@@ -251,10 +253,58 @@ export type Database = {
           name?: string
           points?: number
           specific_change?: string | null
+          tier?: string | null
           updated_at?: string
           xp?: number | null
         }
         Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          started_at: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          tier: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          started_at?: string
+          status: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          tier: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          started_at?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          tier?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_badges: {
         Row: {
@@ -323,6 +373,7 @@ export type Database = {
         }[]
       }
       get_server_date: { Args: never; Returns: string }
+      get_user_tier: { Args: { p_user_id: string }; Returns: string }
       get_user_todays_completions: {
         Args: { p_user_id: string }
         Returns: {

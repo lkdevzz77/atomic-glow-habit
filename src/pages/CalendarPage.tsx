@@ -4,6 +4,7 @@ import { AppLayout } from '@/layouts/AppLayout';
 import { PageLoader } from '@/components/PageLoader';
 import { NotionCalendar } from '@/components/NotionCalendar';
 import { AnimatedPage } from '@/components/AnimatedPage';
+import { FeatureLock } from '@/components/FeatureLock';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { Calendar } from 'lucide-react';
@@ -53,12 +54,14 @@ const CalendarPage = () => {
             </div>
           </div>
 
-          {/* Calendário */}
-          <NotionCalendar 
-            habits={habits || []} 
-            completions={completions || []}
-            onHabitToggle={() => {}}
-          />
+          {/* Calendário com bloqueio */}
+          <FeatureLock feature="calendar">
+            <NotionCalendar 
+              habits={habits || []} 
+              completions={completions || []}
+              onHabitToggle={() => {}}
+            />
+          </FeatureLock>
         </div>
       </AnimatedPage>
     </AppLayout>

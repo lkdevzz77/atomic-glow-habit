@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/layouts/AppLayout';
 import { FloatingActionButton } from '@/components/FloatingActionButton';
 import { useHabits } from '@/hooks/useHabits';
-import { useLevel } from '@/hooks/useLevel';
+import { useSubscription } from '@/hooks/useSubscription';
+import { PaywallModal } from '@/components/PaywallModal';
 import { Button } from '@/components/ui/button';
 import NewHabitModal from '@/components/NewHabitModal';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -21,10 +22,12 @@ import { calculateCompletionRate } from '@/utils/habitMetrics';
 export default function HabitsPage() {
   const navigate = useNavigate();
   const { data: habits, deleteHabit, isLoading } = useHabits();
+  const { isPro, isFree } = useSubscription();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'archived'>('all');
   const [sortBy, setSortBy] = useState<'recent' | 'streak' | 'name' | 'completion'>('recent');
   const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
+  const [showHabitLimitModal, setShowHabitLimitModal] = useState(false);
   const [deleteHabitId, setDeleteHabitId] = useState<number | null>(null);
 
   // Find the habit to delete for the dialog
@@ -76,6 +79,15 @@ export default function HabitsPage() {
     setDeleteHabitId(null);
   };
 
+  const handleCreateHabit = () => {
+    // Checar limite de 3 hábitos para usuários free
+    if (isFree && totalHabits >= 3) {
+      setShowHabitLimitModal(true);
+      return;
+    }
+    setIsNewHabitModalOpen(true);
+  };
+
   if (isLoading) {
     return (
       <AppLayout>
@@ -102,7 +114,7 @@ export default function HabitsPage() {
 
           {/* Desktop button */}
           <Button 
-            onClick={() => setIsNewHabitModalOpen(true)} 
+            onClick={handleCreateHabit} 
             className="w-full sm:w-auto hidden md:flex"
           >
             <Plus className="mr-2" size={20} />
@@ -110,7 +122,7 @@ export default function HabitsPage() {
           </Button>
 
           {/* FAB - Mobile only */}
-          <FloatingActionButton onClick={() => setIsNewHabitModalOpen(true)} />
+          <FloatingActionButton onClick={handleCreateHabit} />
 
           {/* Stats Bar + Filters */}
           {totalHabits > 0 && (
@@ -161,6 +173,12 @@ export default function HabitsPage() {
             habitTitle={habitToDelete?.title || ''}
             onConfirm={confirmDelete}
             onCancel={cancelDelete}
+          />
+
+          <PaywallModal
+            open={showHabitLimitModal}
+            onOpenChange={setShowHabitLimitModal}
+            feature="habits"
           />
         </div>
       </AnimatedPage>
