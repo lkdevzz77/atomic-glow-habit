@@ -18,18 +18,16 @@ export interface LevelUpResult {
 }
 
 export const LEVELS: Level[] = [
-  { level: 1, title: "Semente", minXP: 0, maxXP: 200, icon: Sprout, color: "emerald", perks: [] },
-  { level: 2, title: "Broto", minXP: 200, maxXP: 500, icon: Leaf, color: "lime", perks: ["+1 Streak Freeze"] },
-  { level: 3, title: "Aprendiz", minXP: 500, maxXP: 900, icon: User, color: "blue", perks: ["+2 Streak Freezes"] },
-  { level: 4, title: "Praticante", minXP: 900, maxXP: 1500, icon: UserCheck, color: "cyan", perks: ["+3 Streak Freezes"] },
-  { level: 5, title: "Dedicado", minXP: 1500, maxXP: 2400, icon: Award, color: "violet", perks: ["+5 Streak Freezes", "Badge Especial"] },
-  { level: 6, title: "Consistente", minXP: 2400, maxXP: 3600, icon: Medal, color: "purple", perks: ["+5 Streak Freezes", "Tema Roxo Escuro"] },
-  { level: 7, title: "Disciplinado", minXP: 3600, maxXP: 5200, icon: Crown, color: "amber", perks: ["Análises Avançadas", "IA Coach Ilimitada"] },
-  { level: 8, title: "Mestre", minXP: 5200, maxXP: 7500, icon: Sparkles, color: "yellow", perks: ["Avatar Customizado", "Temas Premium"] },
-  { level: 9, title: "Lendário", minXP: 7500, maxXP: 10500, icon: Zap, color: "orange", perks: ["Estatísticas Avançadas", "Prioridade no Suporte"] },
-  { level: 10, title: "Atômico", minXP: 10500, maxXP: 15000, icon: Atom, color: "violet", perks: ["Acesso Total", "Badge Lendária"] },
-  { level: 11, title: "Titã", minXP: 15000, maxXP: 20000, icon: Zap, color: "orange", perks: ["Titã da Disciplina", "Tudo Desbloqueado"] },
-  { level: 12, title: "Imortal", minXP: 20000, maxXP: Infinity, icon: Atom, color: "violet", perks: ["Status Imortal", "Maestria Absoluta"] },
+  { level: 1, title: "Próton Iniciante", minXP: 0, maxXP: 200, icon: Sprout, color: "emerald", perks: [] },
+  { level: 2, title: "Elétron Curioso", minXP: 200, maxXP: 500, icon: Leaf, color: "lime", perks: ["Estatísticas básicas"] },
+  { level: 3, title: "Átomo Formador", minXP: 500, maxXP: 900, icon: User, color: "blue", perks: ["Badges especiais"] },
+  { level: 4, title: "Molécula Ativa", minXP: 900, maxXP: 1500, icon: UserCheck, color: "cyan", perks: ["Gráficos de progresso"] },
+  { level: 5, title: "Composto Estável", minXP: 1500, maxXP: 2400, icon: Award, color: "violet", perks: ["IA Coach personalizado", "Análises semanais"] },
+  { level: 6, title: "Cristal Organizado", minXP: 2400, maxXP: 3600, icon: Medal, color: "purple", perks: ["Insights avançados", "Personalização completa"] },
+  { level: 7, title: "Reator Controlado", minXP: 3600, maxXP: 5200, icon: Crown, color: "amber", perks: ["Relatórios mensais", "Comparações temporais"] },
+  { level: 8, title: "Fusão Nuclear", minXP: 5200, maxXP: 7500, icon: Sparkles, color: "yellow", perks: ["Exportação de dados", "Estatísticas completas"] },
+  { level: 9, title: "Supernova Radiante", minXP: 7500, maxXP: 10500, icon: Zap, color: "orange", perks: ["Todas features desbloqueadas", "Badge lendária"] },
+  { level: 10, title: "Estrela de Nêutrons", minXP: 10500, maxXP: Infinity, icon: Atom, color: "violet", perks: ["Maestria absoluta", "Status permanente"] },
 ];
 
 export const XP_REWARDS = {
@@ -39,37 +37,18 @@ export const XP_REWARDS = {
   completeAllDaily: 30,
   perfectDay: 50,
   
-  // Streaks (progressão graduada)
-  streak3Days: 25,
-  streak7Days: 75,
-  streak14Days: 150,
-  streak21Days: 250,
-  streak30Days: 400,
-  streak60Days: 800,
-  streak90Days: 1500,
-  streak180Days: 3000,
-  streak365Days: 7500,
-  
   // Performance semanal
   perfectWeek: 200,
   weeklyStreak5: 100,
   weeklyStreak12: 500,
-  
-  // Conquistas e badges
-  unlockBronzeBadge: 50,
-  unlockSilverBadge: 150,
-  unlockGoldBadge: 400,
-  unlockLegendaryBadge: 1000,
   
   // Ações de setup
   createFirstHabit: 20,
   completeOnboarding: 50,
   setupIdentity: 30,
   
-  // Maestria
-  habitMastery100: 500,
-  habitMastery365: 2000,
-  allHabitsStreak30: 800,
+  // Nota: XP de badges vem da tabela 'badges' (campo xp_reward)
+  // Nota: XP de streaks vem da função get_habit_completion_xp
 };
 
 export function calculateLevel(totalXP: number): {
@@ -132,12 +111,16 @@ export function checkLevelUp(oldXP: number, newXP: number): LevelUpResult {
 }
 
 export function getLevelTitle(level: number): string {
-  if (level >= 10) return "Mestre Atômico";
-  if (level >= 8) return "Artífice de Hábitos";
-  if (level >= 6) return "Construtor Dedicado";
-  if (level >= 4) return "Aprendiz Persistente";
-  if (level >= 2) return "Iniciante Comprometido";
-  return "Novato em Ascensão";
+  if (level >= 10) return "Estrela de Nêutrons";
+  if (level >= 9) return "Supernova Radiante";
+  if (level >= 8) return "Fusão Nuclear";
+  if (level >= 7) return "Reator Controlado";
+  if (level >= 6) return "Cristal Organizado";
+  if (level >= 5) return "Composto Estável";
+  if (level >= 4) return "Molécula Ativa";
+  if (level >= 3) return "Átomo Formador";
+  if (level >= 2) return "Elétron Curioso";
+  return "Próton Iniciante";
 }
 
 export function getXPForLevel(level: number): number {

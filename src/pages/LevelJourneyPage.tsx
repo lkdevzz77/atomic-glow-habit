@@ -115,11 +115,9 @@ export default function LevelJourneyPage() {
                   </div>
                 </div>
 
-                {/* Indicador "VOCÊ ESTÁ AQUI" */}
+                {/* Glow sutil no nível atual */}
                 {isCurrent && (
-                  <div className="absolute -left-2 top-12 px-2 py-1 bg-violet-500 text-white text-xs font-bold rounded animate-pulse">
-                    ← VOCÊ ESTÁ AQUI
-                  </div>
+                  <div className="absolute -left-3 -top-1 w-14 h-14 bg-violet-500/30 blur-xl rounded-full animate-pulse" />
                 )}
 
                 {/* Conteúdo do nível */}
@@ -137,7 +135,7 @@ export default function LevelJourneyPage() {
                   </div>
 
                   <p className="text-xs text-muted-foreground">
-                    {lvlInfo.minXP} - {lvlInfo.maxXP} XP
+                    {lvlInfo.minXP.toLocaleString()} - {lvlInfo.maxXP === Infinity ? '∞' : lvlInfo.maxXP.toLocaleString()} XP
                   </p>
 
                   {lvlInfo.perks.length > 0 && (

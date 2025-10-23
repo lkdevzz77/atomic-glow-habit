@@ -109,8 +109,8 @@ const UpcomingBadges = () => {
                       {ub.progress}/{badge.target}
                     </span>
                     <span className="text-slate-500">•</span>
-                    <span className="text-slate-400">
-                      Faltam {remaining}
+                    <span className="text-emerald-400 font-semibold">
+                      +{badge.xp_reward} XP
                     </span>
                   </div>
                 </div>

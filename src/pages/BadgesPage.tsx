@@ -120,21 +120,21 @@ export default function BadgesPage() {
               <p className="text-muted-foreground text-sm mb-4">
                 Conquistas relacionadas a sequências e consistência
               </p>
-              <BadgeDisplay mode="grid" filter="all" />
+              <BadgeDisplay mode="grid" filter="streak" />
             </TabsContent>
 
             <TabsContent value="habits" className="mt-6">
               <p className="text-muted-foreground text-sm mb-4">
                 Conquistas relacionadas à criação e conclusão de hábitos
               </p>
-              <BadgeDisplay mode="grid" filter="all" />
+              <BadgeDisplay mode="grid" filter="habits" />
             </TabsContent>
 
             <TabsContent value="identity" className="mt-6">
               <p className="text-muted-foreground text-sm mb-4">
                 Conquistas relacionadas à construção de identidade
               </p>
-              <BadgeDisplay mode="grid" filter="all" />
+              <BadgeDisplay mode="grid" filter="identity" />
             </TabsContent>
           </Tabs>
         </div>
