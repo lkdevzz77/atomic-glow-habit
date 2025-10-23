@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import HabitCardCompact from '../HabitCardCompact';
 import EmptyStateCard from '@/components/EmptyStateCard';
-import { triggerMiniConfetti } from '@/utils/confettiAnimation';
+import { triggerMiniAtomicAnimation } from '@/utils/atomicParticles';
 interface Habit {
   id: number;
   title: string;
@@ -33,8 +33,8 @@ const KanbanView: React.FC<KanbanViewProps> = ({
   const handleComplete = (habitId: number) => {
     setCompletingId(habitId);
 
-    // Mini confetti animation
-    triggerMiniConfetti();
+    // Mini atomic animation
+    triggerMiniAtomicAnimation();
 
     // Slight delay for visual feedback
     setTimeout(() => {
@@ -65,7 +65,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({
   
   return <div className="space-y-6">
       {/* Progress Summary */}
-      <div className="bg-gradient-to-r from-violet-900/20 to-purple-900/20 border border-violet-700/30 rounded-2xl p-6">
+      <div className="bg-slate-800/40 border border-violet-500/20 rounded-2xl p-6">
         <div className="flex items-center justify-between mb-3">
           <div>
             <h2 className="text-2xl font-bold text-slate-50">
@@ -75,23 +75,23 @@ const KanbanView: React.FC<KanbanViewProps> = ({
               {completionPercentage}% do progresso diário
             </p>
           </div>
-          {completionPercentage === 100 && habits.length > 0 && <motion.div initial={{
-          scale: 0
-        }} animate={{
-          scale: 1
-        }} className="text-5xl">
-              🎉
-            </motion.div>}
+          {completionPercentage === 100 && habits.length > 0 && (
+            <motion.div 
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center"
+            >
+              <CheckCircle className="w-6 h-6 text-white" strokeWidth={2.5} />
+            </motion.div>
+          )}
         </div>
         <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-          <motion.div className="h-full bg-gradient-to-r from-violet-600 to-purple-600" initial={{
-          width: 0
-        }} animate={{
-          width: `${completionPercentage}%`
-        }} transition={{
-          duration: 0.5,
-          ease: "easeOut"
-        }} />
+          <motion.div 
+            className="h-full bg-gradient-to-r from-violet-600 to-purple-600" 
+            initial={{ width: 0 }} 
+            animate={{ width: `${completionPercentage}%` }} 
+            transition={{ duration: 0.5, ease: "easeOut" }} 
+          />
         </div>
       </div>
 
@@ -202,7 +202,9 @@ const KanbanView: React.FC<KanbanViewProps> = ({
             opacity: 1,
             scale: 1
           }} className="flex flex-col items-center justify-center py-16">
-                <div className="text-6xl mb-4 opacity-30">📋</div>
+                <div className="w-16 h-16 rounded-full border-2 border-dashed border-slate-700 flex items-center justify-center mb-4">
+                  <Target className="w-8 h-8 text-slate-600" />
+                </div>
                 <p className="text-slate-500 text-sm">
                   Nenhum hábito completado ainda
                 </p>

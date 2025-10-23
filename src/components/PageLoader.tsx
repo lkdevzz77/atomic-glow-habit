@@ -3,16 +3,30 @@ import React from 'react';
 export function PageLoader() {
   return (
     <div className="min-h-[400px] flex items-center justify-center">
-      <div className="text-center space-y-4">
-        <img 
-          src="/atom-logo.png" 
-          alt="Loading" 
-          className="w-16 h-16 mx-auto animate-pulse"
-          style={{ filter: 'drop-shadow(0 0 30px rgba(124, 58, 237, 0.8))' }}
-        />
-        <div className="space-y-2">
-          <div className="skeleton-neuro h-4 w-48 mx-auto rounded" />
-          <div className="skeleton-neuro h-3 w-32 mx-auto rounded" />
+      <div className="relative">
+        {/* Núcleo */}
+        <div className="w-16 h-16 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full animate-pulse flex items-center justify-center">
+          <img 
+            src="/atom-logo.png" 
+            alt="Loading" 
+            className="w-8 h-8"
+            style={{ filter: 'brightness(2) drop-shadow(0 0 8px rgba(255,255,255,0.6))' }}
+          />
+        </div>
+        
+        {/* Órbita 1 */}
+        <div className="absolute inset-0 animate-spin" style={{ animationDuration: '2s' }}>
+          <div className="w-2 h-2 bg-violet-400 rounded-full absolute top-0 left-1/2 -translate-x-1/2" />
+        </div>
+        
+        {/* Órbita 2 */}
+        <div className="absolute inset-0 animate-spin" style={{ animationDuration: '2s', animationDelay: '0.66s' }}>
+          <div className="w-2 h-2 bg-purple-400 rounded-full absolute top-0 left-1/2 -translate-x-1/2" />
+        </div>
+        
+        {/* Órbita 3 */}
+        <div className="absolute inset-0 animate-spin" style={{ animationDuration: '2s', animationDelay: '1.33s' }}>
+          <div className="w-2 h-2 bg-violet-300 rounded-full absolute top-0 left-1/2 -translate-x-1/2" />
         </div>
       </div>
     </div>

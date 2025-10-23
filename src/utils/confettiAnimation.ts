@@ -1,26 +1,16 @@
-import confetti from 'canvas-confetti';
+/**
+ * @deprecated Este arquivo foi substituído por atomicParticles.ts
+ * Use triggerAtomicAnimation() ou triggerMiniAtomicAnimation() ao invés
+ */
+
+import { triggerAtomicAnimation, triggerMiniAtomicAnimation } from './atomicParticles';
 
 /**
- * Trigger a unified confetti animation for habit completion
+ * @deprecated Use triggerAtomicAnimation() de atomicParticles.ts
  */
-export const triggerHabitConfetti = () => {
-  confetti({
-    particleCount: 100,
-    spread: 70,
-    origin: { y: 0.6 },
-    colors: ['#8B5CF6', '#A78BFA', '#C4B5FD', '#DDD6FE']
-  });
-};
+export const triggerHabitConfetti = triggerAtomicAnimation;
 
 /**
- * Trigger a mini confetti animation (used in Kanban view)
+ * @deprecated Use triggerMiniAtomicAnimation() de atomicParticles.ts
  */
-export const triggerMiniConfetti = () => {
-  confetti({
-    particleCount: 30,
-    angle: 90,
-    spread: 45,
-    origin: { x: 0.5, y: 0.5 },
-    colors: ['#8B5CF6', '#A78BFA', '#C4B5FD']
-  });
-};
+export const triggerMiniConfetti = triggerMiniAtomicAnimation;

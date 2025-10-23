@@ -46,11 +46,15 @@ export function AppSidebar() {
     >
       <SidebarHeader className="p-4 border-b border-slate-800/50">
         <div className="flex items-center gap-3">
-          <img 
-            src="/atom-logo.png" 
-            alt="Logo" 
-            className="w-8 h-8 brightness-90 hue-rotate-[280deg] saturate-150" 
-          />
+          <div className="relative">
+            <div className="absolute inset-0 bg-violet-500/20 blur-xl rounded-full" />
+            <img 
+              src="/atom-logo.png" 
+              alt="Logo" 
+              className="relative w-8 h-8"
+              style={{ filter: 'brightness(1.1) saturate(1.3) hue-rotate(280deg) drop-shadow(0 0 8px rgba(139,92,246,0.6))' }}
+            />
+          </div>
           {open && (
             <div className="flex flex-col">
               <span className="font-semibold text-sm text-slate-200">atomicTracker</span>

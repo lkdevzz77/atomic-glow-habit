@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Plus, Calendar, Target, BarChart, Award } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { triggerHabitConfetti } from "@/utils/confettiAnimation";
+import { triggerAtomicAnimation } from "@/utils/atomicParticles";
 import { triggerHaptic } from "@/utils/haptics";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 import { AppLayout } from "@/layouts/AppLayout";
 import { useHabits } from "@/hooks/useHabits";
 import { useStats } from "@/hooks/useStats";
@@ -34,9 +37,24 @@ const Dashboard = () => {
   const { weeklyStats } = useStats();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const queryClient = useQueryClient();
   const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isDayDetailModalOpen, setIsDayDetailModalOpen] = useState(false);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      
+      if (e.key === 'n' || e.key === 'N') {
+        setIsNewHabitModalOpen(true);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
 
   const handleCompleteHabit = async (habitId: number) => {
     const habit = habits?.find(h => h.id === habitId);
@@ -44,8 +62,29 @@ const Dashboard = () => {
     
     await completeHabit({ habitId, percentage: 100, habitTitle: habit.title });
     
-    // Confetti animation
-    triggerHabitConfetti();
+    // Atomic animation
+    triggerAtomicAnimation();
+    
+    // Toast with undo
+    toast.success(`${habit.title} concluído!`, {
+      description: "Ótimo trabalho! Continue assim 🚀",
+      duration: 5000,
+      action: {
+        label: "Desfazer",
+        onClick: async () => {
+          const today = new Date().toISOString().split('T')[0];
+          await supabase
+            .from('habit_completions')
+            .delete()
+            .eq('habit_id', habitId)
+            .eq('date', today);
+          
+          queryClient.invalidateQueries({ queryKey: ['habits'] });
+          
+          toast.info("Conclusão desfeita", { duration: 2000 });
+        },
+      },
+    });
   };
 
   if (!user) {
@@ -78,7 +117,7 @@ const Dashboard = () => {
         <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
         {/* Header */}
         <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
             {userName}
           </h1>
           <p className="text-muted-foreground mt-1">
@@ -92,6 +131,7 @@ const Dashboard = () => {
               <TabsTrigger 
                 value="kanban"
                 onClick={() => triggerHaptic('light')}
+                className="relative data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-violet-500 data-[state=active]:after:rounded-full"
               >
                 <Target className="w-4 h-4" />
                 <span>Hábitos</span>
@@ -100,6 +140,7 @@ const Dashboard = () => {
               <TabsTrigger 
                 value="calendar"
                 onClick={() => triggerHaptic('light')}
+                className="relative data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-violet-500 data-[state=active]:after:rounded-full"
               >
                 <Calendar className="w-4 h-4" />
                 <span>Calendário</span>
@@ -108,6 +149,7 @@ const Dashboard = () => {
               <TabsTrigger 
                 value="stats"
                 onClick={() => triggerHaptic('light')}
+                className="relative data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-violet-500 data-[state=active]:after:rounded-full"
               >
                 <BarChart className="w-4 h-4" />
                 <span>Estatísticas</span>
@@ -116,6 +158,7 @@ const Dashboard = () => {
               <TabsTrigger 
                 value="badges"
                 onClick={() => triggerHaptic('light')}
+                className="relative data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-violet-500 data-[state=active]:after:rounded-full"
               >
                 <Award className="w-4 h-4" />
                 <span>Conquistas</span>

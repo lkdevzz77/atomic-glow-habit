@@ -5,7 +5,7 @@ import { useHabits } from "@/hooks/useHabits";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/config/icon-map";
 import { SkeletonCard } from "./LoadingStates";
-import { triggerHabitConfetti } from "@/utils/confettiAnimation";
+import { triggerAtomicAnimation } from "@/utils/atomicParticles";
 import { supabase } from "@/integrations/supabase/client";
 import RecoveryModal from "./RecoveryModal";
 import { useAuth } from "@/contexts/AuthContext";
@@ -65,8 +65,8 @@ const HabitCard = ({ habit, isLoading }: HabitCardProps) => {
       habitTitle: habit.title
     });
 
-    // Trigger confetti animation
-    triggerHabitConfetti();
+    // Trigger atomic animation
+    triggerAtomicAnimation();
   };
 
   // Identity-based micro-copy

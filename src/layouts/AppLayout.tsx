@@ -77,18 +77,48 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
               <div className="flex-1" />
 
-              {/* Daily Progress - Hidden on mobile */}
+              {/* Daily Progress with Circular Indicator */}
               {habits && habits.length > 0 && (
-                <div className="hidden md:block max-w-[280px] lg:max-w-[300px]">
-                  <DailyProgress
-                    completed={habits.filter(h => h.completedToday).length}
-                    total={habits.length}
-                    habits={habits.map(h => ({
-                      id: h.id,
-                      title: h.title,
-                      completed: h.completedToday || false
-                    }))}
-                  />
+                <div className="hidden md:flex items-center gap-3">
+                  <div className="relative w-10 h-10">
+                    <svg className="w-10 h-10 -rotate-90">
+                      <circle
+                        cx="20"
+                        cy="20"
+                        r="16"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        fill="none"
+                        className="text-slate-800"
+                      />
+                      <circle
+                        cx="20"
+                        cy="20"
+                        r="16"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        fill="none"
+                        strokeLinecap="round"
+                        className="text-violet-500 transition-all duration-500"
+                        strokeDasharray={`${2 * Math.PI * 16}`}
+                        strokeDashoffset={`${2 * Math.PI * 16 * (1 - (habits.filter(h => h.completedToday).length / habits.length))}`}
+                      />
+                    </svg>
+                    <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-slate-300">
+                      {Math.round((habits.filter(h => h.completedToday).length / habits.length) * 100)}%
+                    </span>
+                  </div>
+                  <div className="max-w-[240px] lg:max-w-[260px]">
+                    <DailyProgress
+                      completed={habits.filter(h => h.completedToday).length}
+                      total={habits.length}
+                      habits={habits.map(h => ({
+                        id: h.id,
+                        title: h.title,
+                        completed: h.completedToday || false
+                      }))}
+                    />
+                  </div>
                 </div>
               )}
 
