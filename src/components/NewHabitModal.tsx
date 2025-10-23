@@ -40,6 +40,7 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
   const { createHabit, isCreating, data: habits } = useHabits();
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState("1");
+  const [maxTabReached, setMaxTabReached] = useState(1);
   
   // Form data
   const [title, setTitle] = useState("");
@@ -69,6 +70,30 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
     setEnvironmentPrep("");
     setReward("");
     setActiveTab("1");
+    setMaxTabReached(1);
+  };
+
+  const handleNext = () => {
+    const currentTabNum = parseInt(activeTab);
+    
+    // Validação básica antes de avançar
+    if (currentTabNum === 1 && !title.trim()) {
+      toast.error("Por favor, dê um nome ao seu hábito");
+      return;
+    }
+
+    if (currentTabNum < 4) {
+      const nextTab = (currentTabNum + 1).toString();
+      setActiveTab(nextTab);
+      setMaxTabReached(Math.max(maxTabReached, currentTabNum + 1));
+    }
+  };
+
+  const handleBack = () => {
+    const currentTabNum = parseInt(activeTab);
+    if (currentTabNum > 1) {
+      setActiveTab((currentTabNum - 1).toString());
+    }
   };
 
   const handleHabitStackChange = (habitId: number | null, habit?: any) => {
@@ -142,18 +167,37 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
             </Button>
           </div>
           
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-3">
+          <Tabs value={activeTab} className="mt-3">
             <TabsList className="w-full justify-start border-none bg-transparent gap-2 p-0">
-              <TabsTrigger value="1" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <TabsTrigger 
+                value="1" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                onClick={() => maxTabReached >= 1 && setActiveTab("1")}
+              >
                 Óbvio
               </TabsTrigger>
-              <TabsTrigger value="2" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <TabsTrigger 
+                value="2" 
+                disabled={maxTabReached < 2}
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+                onClick={() => maxTabReached >= 2 && setActiveTab("2")}
+              >
                 Atraente
               </TabsTrigger>
-              <TabsTrigger value="3" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <TabsTrigger 
+                value="3" 
+                disabled={maxTabReached < 3}
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+                onClick={() => maxTabReached >= 3 && setActiveTab("3")}
+              >
                 Fácil
               </TabsTrigger>
-              <TabsTrigger value="4" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <TabsTrigger 
+                value="4" 
+                disabled={maxTabReached < 4}
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+                onClick={() => maxTabReached >= 4 && setActiveTab("4")}
+              >
                 Recompensa
               </TabsTrigger>
             </TabsList>
@@ -320,22 +364,40 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
 
         {/* Footer */}
         <div className="border-t border-border/50 p-4 flex justify-between">
-          <Button
-            variant="ghost"
-            onClick={() => {
-              resetForm();
-              if (onOpenChange) onOpenChange(false);
-              if (onClose) onClose();
-            }}
-          >
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleCreate}
-            disabled={isCreating || !title.trim()}
-          >
-            {isCreating ? "Criando..." : "Criar Hábito"}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => {
+                resetForm();
+                if (onOpenChange) onOpenChange(false);
+                if (onClose) onClose();
+              }}
+            >
+              Cancelar
+            </Button>
+            {parseInt(activeTab) > 1 && (
+              <Button
+                variant="outline"
+                onClick={handleBack}
+              >
+                Voltar
+              </Button>
+            )}
+          </div>
+          <div className="flex gap-2">
+            {parseInt(activeTab) < 4 ? (
+              <Button onClick={handleNext}>
+                Próximo
+              </Button>
+            ) : (
+              <Button
+                onClick={handleCreate}
+                disabled={isCreating || !title.trim()}
+              >
+                {isCreating ? "Criando..." : "Criar Hábito"}
+              </Button>
+            )}
+          </div>
         </div>
       </Content>
     </Container>
