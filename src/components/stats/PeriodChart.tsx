@@ -94,7 +94,7 @@ const PeriodChart = () => {
               dataKey="percentage"
               content={(props: any) => {
                 const { x, y, width, payload } = props;
-                if (!payload.isToday) return null;
+                if (!payload || !payload.isToday) return null;
                 return (
                   <g>
                     <rect
