@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Mail, Lock, User, AlertCircle, ArrowRight } from 'lucide-react';
+import { AlertCircle, ArrowRight } from 'lucide-react';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import { z } from 'zod';
@@ -23,7 +23,8 @@ const Auth = () => {
   // Redirect if already logged in
   React.useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      const onboardingCompleted = user.user_metadata?.onboarding_completed;
+      navigate(onboardingCompleted ? '/dashboard' : '/onboarding');
     }
   }, [user, navigate]);
 
@@ -91,22 +92,12 @@ const Auth = () => {
             atomicTracker
           </h1>
           <p className="text-slate-300 text-sm sm:text-base">
-            Transforme sua vida 1% por dia
+            Construa hábitos que duram
           </p>
         </div>
 
         {/* Auth Card */}
-        <div className="glass rounded-2xl p-6 sm:p-8 border-2 border-slate-700 animate-scale-in">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold heading-section text-slate-50 mb-2">
-              {isSignUp ? 'Criar Conta' : 'Entrar'}
-            </h2>
-            <p className="text-slate-400 text-sm">
-              {isSignUp 
-                ? 'Comece sua jornada de transformação' 
-                : 'Continue sua jornada de hábitos'}
-            </p>
-          </div>
+        <div className="glass rounded-2xl p-6 sm:p-8 border border-slate-700/50 animate-scale-in">
 
           {error && (
             <div className="mb-4 p-3 bg-red-900/20 border border-red-500/50 rounded-lg flex items-start gap-2 animate-slide-down">
@@ -121,18 +112,14 @@ const Auth = () => {
                 <label className="block text-sm font-medium text-slate-300 mb-2">
                   Nome
                 </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                  <Input
-                    type="text"
-                    placeholder="Como podemos te chamar?"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="pl-10"
-                    disabled={loading}
-                    required
-                  />
-                </div>
+                <Input
+                  type="text"
+                  placeholder="Como podemos te chamar?"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={loading}
+                  required
+                />
               </div>
             )}
 
@@ -140,36 +127,28 @@ const Auth = () => {
               <label className="block text-sm font-medium text-slate-300 mb-2">
                 Email
               </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                <Input
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
-                  disabled={loading}
-                  required
-                />
-              </div>
+              <Input
+                type="email"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+                required
+              />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
                 Senha
               </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                <Input
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10"
-                  disabled={loading}
-                  required
-                />
-              </div>
+              <Input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                required
+              />
               {isSignUp && (
                 <p className="text-xs text-slate-400 mt-1">
                   Mínimo de 6 caracteres
@@ -221,7 +200,7 @@ const Auth = () => {
 
         {/* Footer */}
         <p className="text-center text-slate-400 text-xs mt-6">
-          Ao criar uma conta, você concorda com nossos Termos de Uso
+          Grátis para sempre • Sem cartão
         </p>
       </div>
     </div>

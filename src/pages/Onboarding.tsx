@@ -7,104 +7,35 @@ import Textarea from "@/components/Textarea";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import { useApp } from "@/contexts/AppContext";
 import { useAuth } from "@/contexts/AuthContext";
-import Step1Welcome from "@/components/onboarding/Step1Welcome";
-import Step2Identity from "@/components/onboarding/Step2Identity";
-import Step3Vision from "@/components/onboarding/Step3Vision";
-import Step4ChooseHabit from "@/components/onboarding/Step4ChooseHabit";
-import Step5Challenges from "@/components/onboarding/Step5Challenges";
-import Step6Routine from "@/components/onboarding/Step6Routine";
-import Step7Law1 from "@/components/onboarding/Step7Law1";
-import Step8Law2 from "@/components/onboarding/Step8Law2";
-import Step9Law3 from "@/components/onboarding/Step9Law3";
-import Step10Law4 from "@/components/onboarding/Step10Law4";
-import Step11Summary from "@/components/onboarding/Step11Summary";
+import Step1Quick from "@/components/onboarding/Step1Quick";
+import Step2Setup from "@/components/onboarding/Step2Setup";
 
 const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [onboardingMode, setOnboardingMode] = useState<'quick' | 'full' | null>(null);
-  const { onboardingData, updateOnboardingData } = useApp();
-  const { updateOnboardingStatus } = useAuth();
+  const { onboardingData } = useApp();
   const navigate = useNavigate();
 
-  // Quick mode: 3 steps | Full mode: 11 steps
-  const totalSteps = onboardingMode === 'quick' ? 3 : 11;
+  const totalSteps = 2;
 
-  const quickSteps = [
-    <Step1Welcome key={0} onModeSelect={setOnboardingMode} />,
-    <Step4ChooseHabit key={1} />,
-    <Step11Summary key={2} />
+  const steps = [
+    <Step1Quick key={0} />,
+    <Step2Setup key={1} />
   ];
-
-  const fullSteps = [
-    <Step1Welcome key={0} onModeSelect={setOnboardingMode} />,
-    <Step2Identity key={1} />,
-    <Step3Vision key={2} />,
-    <Step4ChooseHabit key={3} />,
-    <Step5Challenges key={4} />,
-    <Step6Routine key={5} />,
-    <Step7Law1 key={6} />,
-    <Step8Law2 key={7} />,
-    <Step9Law3 key={8} />,
-    <Step10Law4 key={9} />,
-    <Step11Summary key={10} />
-  ];
-
-  const steps = onboardingMode === 'quick' ? quickSteps : onboardingMode === 'full' ? fullSteps : [<Step1Welcome key={0} onModeSelect={setOnboardingMode} />];
 
   const canGoNext = () => {
-    // Step 0 requires mode selection
-    if (currentStep === 0) {
-      return onboardingMode !== null;
-    }
-
-    // Quick mode validation
-    if (onboardingMode === 'quick') {
-      switch (currentStep) {
-        case 1: // Step4ChooseHabit
-          return onboardingData.habitType || onboardingData.habitCustom;
-        case 2: // Step11Summary
-          return true;
-        default:
-          return true;
-      }
-    }
-
-    // Full mode validation
     switch (currentStep) {
-      case 0:
-        return onboardingMode !== null;
-      case 1:
-        return onboardingData.desiredIdentity && onboardingData.desiredIdentity.trim().length > 10;
-      case 2:
-        return onboardingData.specificChange && onboardingData.specificChange.trim().length > 10;
-      case 3:
+      case 0: // Step1Quick
         return onboardingData.habitType || onboardingData.habitCustom;
-      case 4:
-        return onboardingData.pastAttempts;
-      case 5:
-        return onboardingData.firstThingMorning;
-      case 6:
-        return onboardingData.when && onboardingData.where && onboardingData.triggerActivity;
-      case 7:
-        return true; // Law 2 is optional
-      case 8:
-        return onboardingData.initialGoal && onboardingData.initialGoal > 0;
-      case 9:
-        return onboardingData.trackingSystem && onboardingData.trackingSystem.length > 0;
-      case 10:
+      case 1: // Step2Setup - validation handled in component
         return true;
       default:
         return true;
     }
   };
 
-  const handleNext = async () => {
+  const handleNext = () => {
     if (currentStep < totalSteps - 1 && canGoNext()) {
       setCurrentStep(currentStep + 1);
-    } else if (currentStep === totalSteps - 1) {
-      // Mark onboarding as completed and redirect to dashboard
-      await updateOnboardingStatus(true);
-      navigate("/dashboard");
     }
   };
 

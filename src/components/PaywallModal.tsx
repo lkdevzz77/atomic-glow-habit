@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Lock, Star, Rocket } from 'lucide-react';
+import { CheckCircle2, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import atomLogo from '@/assets/atom-logo.png';
 
@@ -13,29 +13,51 @@ interface PaywallModalProps {
   onUpgrade?: () => void;
 }
 
-const ALL_PRO_BENEFITS = [
-  "Hábitos ilimitados + Calendário anual completo",
-  "Insights de IA personalizados e previsões",
-  "Estatísticas avançadas e comparação de períodos",
-  "Temas exclusivos + Exportar seus dados",
-  "Badges premium + Níveis até 50"
+const PRO_FEATURES = [
+  {
+    title: "Hábitos Ilimitados",
+    detail: "vs 3 no Free"
+  },
+  {
+    title: "Calendário Visual Completo",
+    detail: "Bloqueado no Free"
+  },
+  {
+    title: "Estatísticas Avançadas",
+    detail: "Padrões e tendências"
+  },
+  {
+    title: "Insights de IA",
+    detail: "Previsões personalizadas"
+  }
 ];
 
 export const PaywallModal: React.FC<PaywallModalProps> = ({ 
   open, 
   onOpenChange, 
-  emphasize,
-  trigger,
   onUpgrade 
 }) => {
+  const [timeRemaining, setTimeRemaining] = useState(15 * 60); // 15 minutes in seconds
+
+  useEffect(() => {
+    if (!open) return;
+
+    const timer = setInterval(() => {
+      setTimeRemaining((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [open]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
   const handleUpgrade = () => {
     onUpgrade?.();
     // TODO: Integrar com Stripe quando implementado
-  };
-  
-  const handleViewExample = () => {
-    // TODO: Mostrar preview de features Pro
-    console.log('View example clicked', { emphasize, trigger });
   };
   
   return (
@@ -71,85 +93,62 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
           
           {/* Title */}
           <div>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent mb-2 flex flex-col sm:flex-row items-center justify-center gap-2">
-              <span>Desbloqueie Seu Potencial Máximo</span>
-              <Rocket className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-violet-500" />
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-50 mb-2">
+              Destrave Todo o Potencial
             </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground/80 px-2">
-              Usuários Pro alcançam objetivos 3x mais rápido e mantêm sequências 2x mais longas
+            <p className="text-sm text-slate-400">
+              Usuários Pro mantêm hábitos 3x mais tempo
             </p>
           </div>
           
-          {/* Benefits */}
-          <div className="space-y-2 sm:space-y-3 text-left px-2 sm:px-0">
-            {ALL_PRO_BENEFITS.map((benefit, i) => (
-              <div key={i} className="flex items-start gap-2 sm:gap-3">
-                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-violet-500 flex-shrink-0 mt-0.5" />
-                <span className="text-xs sm:text-sm leading-relaxed">{benefit}</span>
+          {/* Features */}
+          <div className="space-y-3 text-left">
+            {PRO_FEATURES.map((feature, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <CheckCircle2 className="w-5 h-5 text-violet-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-slate-200">{feature.title}</p>
+                  <p className="text-xs text-slate-400">{feature.detail}</p>
+                </div>
               </div>
             ))}
           </div>
           
           {/* Pricing */}
-          <div className="p-3 sm:p-4 bg-gradient-to-br from-violet-500/10 to-purple-500/10 rounded-lg border border-violet-500/20">
-            <div className="flex items-baseline justify-center gap-1 sm:gap-2 mb-1 flex-wrap">
-              <span className="text-xs sm:text-sm text-muted-foreground line-through">R$11,99</span>
-              <span className="text-xs sm:text-sm text-muted-foreground">por apenas</span>
+          <div className="p-4 bg-gradient-to-br from-violet-500/10 to-purple-500/10 rounded-xl border border-violet-500/20">
+            <div className="flex items-baseline justify-center gap-2 mb-1">
+              <span className="text-4xl font-bold text-violet-400">R$ 11,99</span>
+              <span className="text-slate-400">/mês</span>
             </div>
-            <div className="flex items-baseline justify-center gap-1 sm:gap-2">
-              <span className="text-3xl sm:text-4xl font-bold text-violet-500">R$5,99</span>
-              <span className="text-sm sm:text-base text-muted-foreground">/mês</span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              ou R$49/ano (economize 31%)
-            </p>
-            <p className="text-xs text-violet-500 font-medium mt-2">
-              7 dias grátis • Cancele quando quiser
+            <p className="text-sm text-slate-400 text-center">
+              ou R$ 99/ano (economize 31%)
             </p>
           </div>
           
+          {/* Urgency Timer */}
+          <div className="flex items-center justify-center gap-2 text-sm text-slate-400">
+            <Clock className="w-4 h-4" />
+            <span>Oferta expira em: {formatTime(timeRemaining)}</span>
+          </div>
+
           {/* CTA */}
-          <div className="space-y-2 sm:space-y-3 px-2 sm:px-0">
+          <div className="space-y-3">
             <Button 
               onClick={handleUpgrade}
-              className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all hover:scale-105 text-sm sm:text-base font-semibold"
+              className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-base font-semibold"
               size="lg"
             >
-              Começar Trial Grátis de 7 Dias
-            </Button>
-            
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="w-full text-xs sm:text-sm"
-              onClick={handleViewExample}
-            >
-              Ver exemplo
+              Começar Trial de 7 Dias
             </Button>
             
             <button 
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors w-full py-2"
+              className="text-sm text-slate-500 hover:text-slate-400 transition-colors w-full underline"
               onClick={() => onOpenChange(false)}
             >
               Continuar no Free
             </button>
           </div>
           
-          {/* Footer */}
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-[10px] sm:text-xs text-muted-foreground pt-2 border-t px-2">
-            <span className="flex items-center gap-1">
-              <Lock className="w-3 h-3" />
-              <span className="hidden xs:inline">Pagamento seguro</span>
-              <span className="xs:hidden">Seguro</span>
-            </span>
-            <span className="hidden sm:inline">•</span>
-            <span className="text-center">12.482 usuários Pro</span>
-            <span className="hidden sm:inline">•</span>
-            <span className="flex items-center gap-1">
-              <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-              4.8/5
-            </span>
-          </div>
         </div>
       </DialogContent>
     </Dialog>
