@@ -22,11 +22,13 @@ interface KanbanViewProps {
   habits: Habit[];
   onComplete: (habitId: number) => void;
   onAddHabit: () => void;
+  onUndo?: (habitId: number) => void;
 }
 const KanbanView: React.FC<KanbanViewProps> = ({
   habits,
   onComplete,
-  onAddHabit
+  onAddHabit,
+  onUndo
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [completingId, setCompletingId] = useState<number | null>(null);
@@ -193,7 +195,10 @@ const KanbanView: React.FC<KanbanViewProps> = ({
               duration: 0.3,
               delay: index * 0.05
             }}>
-                    <HabitCardCompact habit={habit} />
+                    <HabitCardCompact 
+                      habit={habit} 
+                      onUndo={onUndo ? () => onUndo(habit.id) : undefined}
+                    />
                   </motion.div>)}
               </div> : <motion.div initial={{
             opacity: 0,

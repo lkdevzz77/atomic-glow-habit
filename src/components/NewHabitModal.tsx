@@ -386,13 +386,17 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
           </div>
           <div className="flex gap-2">
             {parseInt(activeTab) < 4 ? (
-              <Button onClick={handleNext}>
-                Próximo
+              <Button 
+                onClick={handleNext}
+                className="bg-primary hover:bg-primary/90"
+              >
+                Avançar →
               </Button>
             ) : (
               <Button
                 onClick={handleCreate}
                 disabled={isCreating || !title.trim()}
+                className="bg-primary hover:bg-primary/90"
               >
                 {isCreating ? "Criando..." : "Criar Hábito"}
               </Button>

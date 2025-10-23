@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle, Square, Flame, Clock, MapPin, Trash2 } from 'lucide-react';
+import { CheckCircle, Square, Flame, Clock, MapPin, Trash2, Undo2 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -23,9 +23,10 @@ interface HabitCardCompactProps {
   habit: Habit;
   onComplete?: () => void;
   onDelete?: () => void;
+  onUndo?: () => void;
 }
 
-const HabitCardCompact: React.FC<HabitCardCompactProps> = ({ habit, onComplete, onDelete }) => {
+const HabitCardCompact: React.FC<HabitCardCompactProps> = ({ habit, onComplete, onDelete, onUndo }) => {
   const completedToday = (habit as any).completedToday || false;
   const isMobile = useIsMobile();
   const [showActions, setShowActions] = useState(false);
@@ -147,8 +148,25 @@ const HabitCardCompact: React.FC<HabitCardCompactProps> = ({ habit, onComplete, 
       )}
       
       {completedToday && (
-        <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
-          <CheckCircle className="w-6 h-6 text-emerald-400" />
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {onUndo && (
+            <button
+              onClick={() => {
+                triggerHaptic('light');
+                onUndo();
+              }}
+              className={cn(
+                "opacity-0 group-hover:opacity-100 transition-opacity rounded-full p-2 hover:bg-slate-700/50",
+                isMobile && "opacity-100" // Always visible on mobile
+              )}
+              title="Desfazer"
+            >
+              <Undo2 className="w-4 h-4 text-slate-400 hover:text-slate-300" />
+            </button>
+          )}
+          <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+            <CheckCircle className="w-6 h-6 text-emerald-400" />
+          </div>
         </div>
       )}
     </motion.div>
