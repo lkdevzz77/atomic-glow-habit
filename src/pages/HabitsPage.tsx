@@ -178,7 +178,8 @@ export default function HabitsPage() {
           <PaywallModal
             open={showHabitLimitModal}
             onOpenChange={setShowHabitLimitModal}
-            feature="habits"
+            emphasize="habits"
+            trigger="habit_limit_reached"
           />
         </div>
       </AnimatedPage>
