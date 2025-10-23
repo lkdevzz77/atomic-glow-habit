@@ -14,6 +14,8 @@ import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import HabitsPage from "./pages/HabitsPage";
+import CalendarPage from "./pages/CalendarPage";
+import StatsPage from "./pages/StatsPage";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import BadgesPage from "./pages/BadgesPage";
@@ -32,6 +34,8 @@ function AnimatedRoutes() {
         <Route path="/onboarding" element={<ProtectedRoute requireAuth><Onboarding /></ProtectedRoute>} />
         <Route path="/dashboard" element={<ProtectedRoute requireAuth requireOnboarding><Dashboard /></ProtectedRoute>} />
         <Route path="/habits" element={<ProtectedRoute requireAuth requireOnboarding><HabitsPage /></ProtectedRoute>} />
+        <Route path="/calendar" element={<ProtectedRoute requireAuth requireOnboarding><CalendarPage /></ProtectedRoute>} />
+        <Route path="/stats" element={<ProtectedRoute requireAuth requireOnboarding><StatsPage /></ProtectedRoute>} />
         <Route path="/badges" element={<ProtectedRoute requireAuth requireOnboarding><BadgesPage /></ProtectedRoute>} />
         <Route path="/level-journey" element={<ProtectedRoute requireAuth requireOnboarding><LevelJourneyPage /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute requireAuth requireOnboarding><Profile /></ProtectedRoute>} />

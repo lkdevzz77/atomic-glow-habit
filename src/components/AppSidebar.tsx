@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Link, useLocation } from 'react-router-dom';
 import { useLevel } from '@/hooks/useLevel';
-import { Target, TrendingUp, Home, Award, User, Settings } from 'lucide-react';
+import { Target, TrendingUp, Home, Award, User, Settings, Calendar, BarChart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { triggerHaptic } from '@/utils/haptics';
 import LevelBadge from '@/components/LevelBadge';
@@ -21,6 +21,8 @@ import LevelBadge from '@/components/LevelBadge';
 const mainItems = [
   { title: 'Dashboard', url: '/dashboard', icon: Home },
   { title: 'Meus Hábitos', url: '/habits', icon: Target },
+  { title: 'Calendário', url: '/calendar', icon: Calendar },
+  { title: 'Estatísticas', url: '/stats', icon: BarChart },
 ];
 
 const secondaryItems = [

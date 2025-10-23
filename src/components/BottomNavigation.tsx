@@ -1,14 +1,14 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Target, Award, User } from 'lucide-react';
+import { Home, Target, Calendar, BarChart, Award, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { triggerHaptic } from '@/utils/haptics';
 
 const NAV_ITEMS = [
   { to: '/dashboard', icon: Home, label: 'Início' },
   { to: '/habits', icon: Target, label: 'Hábitos' },
-  { to: '/badges', icon: Award, label: 'Conquistas' },
-  { to: '/profile', icon: User, label: 'Perfil' },
+  { to: '/calendar', icon: Calendar, label: 'Calendário' },
+  { to: '/stats', icon: BarChart, label: 'Stats' },
 ];
 
 /**
