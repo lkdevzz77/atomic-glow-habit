@@ -9,7 +9,7 @@ import { PageLoader } from '@/components/PageLoader';
 import { AnimatedPage } from '@/components/AnimatedPage';
 import StatMetricCard from '@/components/StatMetricCard';
 import PeriodChart from '@/components/stats/PeriodChart';
-import HabitsTimeline from '@/components/stats/HabitsTimeline';
+import HabitDetailChart from '@/components/stats/HabitDetailChart';
 import SmartInsights from '@/components/stats/SmartInsights';
 import { Target, Flame, Trophy, CheckCircle2, TrendingUp } from 'lucide-react';
 
@@ -104,12 +104,12 @@ const StatsPage = () => {
           <PeriodChart />
 
           {/* Timeline Compacta */}
-          {habits && completions && (
-            <HabitsTimeline 
-              habits={habits} 
-              completions={completions}
-            />
-          )}
+        {habits && completions && habits.length > 0 && (
+          <HabitDetailChart 
+            habits={habits} 
+            completions={completions}
+          />
+        )}
         </div>
       </AnimatedPage>
     </AppLayout>
