@@ -30,11 +30,18 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AnimatedPage } from "@/components/AnimatedPage";
 import { PageLoader } from "@/components/PageLoader";
-
 const Dashboard = () => {
-  const { user } = useAuth();
-  const { data: habits, isLoading: habitsLoading, completeHabit } = useHabits();
-  const { weeklyStats } = useStats();
+  const {
+    user
+  } = useAuth();
+  const {
+    data: habits,
+    isLoading: habitsLoading,
+    completeHabit
+  } = useHabits();
+  const {
+    weeklyStats
+  } = useStats();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
@@ -46,25 +53,25 @@ const Dashboard = () => {
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      
       if (e.key === 'n' || e.key === 'N') {
         setIsNewHabitModalOpen(true);
       }
     };
-    
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
-
   const handleCompleteHabit = async (habitId: number) => {
     const habit = habits?.find(h => h.id === habitId);
     if (!habit) return;
-    
-    await completeHabit({ habitId, percentage: 100, habitTitle: habit.title });
-    
+    await completeHabit({
+      habitId,
+      percentage: 100,
+      habitTitle: habit.title
+    });
+
     // Atomic animation
     triggerAtomicAnimation();
-    
+
     // Toast with undo
     toast.success(`${habit.title} concluído!`, {
       description: "Ótimo trabalho! Continue assim 🚀",
@@ -73,46 +80,35 @@ const Dashboard = () => {
         label: "Desfazer",
         onClick: async () => {
           const today = new Date().toISOString().split('T')[0];
-          await supabase
-            .from('habit_completions')
-            .delete()
-            .eq('habit_id', habitId)
-            .eq('date', today);
-          
-          queryClient.invalidateQueries({ queryKey: ['habits'] });
-          
-          toast.info("Conclusão desfeita", { duration: 2000 });
-        },
-      },
+          await supabase.from('habit_completions').delete().eq('habit_id', habitId).eq('date', today);
+          queryClient.invalidateQueries({
+            queryKey: ['habits']
+          });
+          toast.info("Conclusão desfeita", {
+            duration: 2000
+          });
+        }
+      }
     });
   };
-
   if (!user) {
     navigate("/auth");
     return null;
   }
-
   if (habitsLoading) {
-    return (
-      <AppLayout>
+    return <AppLayout>
         <PageLoader />
-      </AppLayout>
-    );
+      </AppLayout>;
   }
-
   const userName = user.user_metadata?.name || 'Usuário';
 
   // Buscar todas as completions para o calendário
-  const allCompletions = habits?.flatMap(habit => 
-    (habit as any).completions?.map((c: any) => ({
-      habit_id: habit.id,
-      date: c.date,
-      percentage: c.percentage || 100
-    })) || []
-  ) || [];
-
-  return (
-    <AppLayout>
+  const allCompletions = habits?.flatMap(habit => (habit as any).completions?.map((c: any) => ({
+    habit_id: habit.id,
+    date: c.date,
+    percentage: c.percentage || 100
+  })) || []) || [];
+  return <AppLayout>
       <AnimatedPage>
         <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
         {/* Header */}
@@ -128,38 +124,22 @@ const Dashboard = () => {
           {/* Main Content */}
           <Tabs defaultValue="kanban" className="w-full">
             <TabsList className="w-full sm:w-auto">
-              <TabsTrigger 
-                value="kanban"
-                onClick={() => triggerHaptic('light')}
-                className="relative data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-violet-500 data-[state=active]:after:rounded-full"
-              >
+              <TabsTrigger value="kanban" onClick={() => triggerHaptic('light')} className="relative data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-violet-500 data-[state=active]:after:rounded-full">
                 <Target className="w-4 h-4" />
                 <span>Hábitos</span>
               </TabsTrigger>
               
-              <TabsTrigger 
-                value="calendar"
-                onClick={() => triggerHaptic('light')}
-                className="relative data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-violet-500 data-[state=active]:after:rounded-full"
-              >
+              <TabsTrigger value="calendar" onClick={() => triggerHaptic('light')} className="relative data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-violet-500 data-[state=active]:after:rounded-full">
                 <Calendar className="w-4 h-4" />
                 <span>Calendário</span>
               </TabsTrigger>
               
-              <TabsTrigger 
-                value="stats"
-                onClick={() => triggerHaptic('light')}
-                className="relative data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-violet-500 data-[state=active]:after:rounded-full"
-              >
+              <TabsTrigger value="stats" onClick={() => triggerHaptic('light')} className="relative data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-violet-500 data-[state=active]:after:rounded-full">
                 <BarChart className="w-4 h-4" />
                 <span>Estatísticas</span>
               </TabsTrigger>
               
-              <TabsTrigger 
-                value="badges"
-                onClick={() => triggerHaptic('light')}
-                className="relative data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-violet-500 data-[state=active]:after:rounded-full"
-              >
+              <TabsTrigger value="badges" onClick={() => triggerHaptic('light')} className="relative data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-violet-500 data-[state=active]:after:rounded-full">
                 <Award className="w-4 h-4" />
                 <span>Conquistas</span>
               </TabsTrigger>
@@ -167,36 +147,26 @@ const Dashboard = () => {
 
           {/* Kanban View */}
           <TabsContent value="kanban" className="mt-6">
-            <KanbanView
-              habits={habits || []}
-              onComplete={handleCompleteHabit}
-              onAddHabit={() => setIsNewHabitModalOpen(true)}
-            />
+            <KanbanView habits={habits || []} onComplete={handleCompleteHabit} onAddHabit={() => setIsNewHabitModalOpen(true)} />
           </TabsContent>
 
           {/* Calendar View */}
           <TabsContent value="calendar" className="mt-6">
-            {isMobile ? (
-              <HabitTimeline
-                habits={habits?.map(h => ({ id: h.id, title: h.title, icon: h.icon })) || []}
-                completions={allCompletions}
-                onHabitToggle={handleCompleteHabit}
-                onDayClick={(date) => {
-                  setSelectedDate(date);
-                  setIsDayDetailModalOpen(true);
-                }}
-              />
-            ) : (
-              <NotionCalendar
-                habits={habits?.map(h => ({ id: h.id, title: h.title, icon: h.icon })) || []}
-                completions={allCompletions}
-                onHabitToggle={handleCompleteHabit}
-                onDayClick={(date) => {
-                  setSelectedDate(date);
-                  setIsDayDetailModalOpen(true);
-                }}
-              />
-            )}
+            {isMobile ? <HabitTimeline habits={habits?.map(h => ({
+              id: h.id,
+              title: h.title,
+              icon: h.icon
+            })) || []} completions={allCompletions} onHabitToggle={handleCompleteHabit} onDayClick={date => {
+              setSelectedDate(date);
+              setIsDayDetailModalOpen(true);
+            }} /> : <NotionCalendar habits={habits?.map(h => ({
+              id: h.id,
+              title: h.title,
+              icon: h.icon
+            })) || []} completions={allCompletions} onHabitToggle={handleCompleteHabit} onDayClick={date => {
+              setSelectedDate(date);
+              setIsDayDetailModalOpen(true);
+            }} />}
           </TabsContent>
 
           {/* Stats View */}
@@ -213,30 +183,15 @@ const Dashboard = () => {
 
             {/* SEÇÃO 1: Métricas em Destaque */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <StatMetricCard
-                title="Taxa Média de Conclusão"
-                value={`${weeklyStats?.data?.averageCompletion || 0}%`}
-                subtitle="Esta semana"
-                icon={<BarChart className="w-6 h-6" />}
-              />
+              <StatMetricCard title="Taxa Média de Conclusão" value={`${weeklyStats?.data?.averageCompletion || 0}%`} subtitle="Esta semana" icon={<BarChart className="w-6 h-6" />} />
 
-              {weeklyStats?.data?.bestDay && (
-                <StatMetricCard
-                  title="Melhor Dia"
-                  value={format(new Date(weeklyStats.data.bestDay.date), "EEEE", { locale: ptBR })}
-                  subtitle={`${weeklyStats.data.bestDay.percentage}% concluído`}
-                  icon={<Trophy className="w-6 h-6" />}
-                />
-              )}
+              {weeklyStats?.data?.bestDay && <StatMetricCard title="Melhor Dia" value={format(new Date(weeklyStats.data.bestDay.date), "EEEE", {
+                locale: ptBR
+              })} subtitle={`${weeklyStats.data.bestDay.percentage}% concluído`} icon={<Trophy className="w-6 h-6" />} />}
 
-              {weeklyStats?.data?.worstDay && (
-                <StatMetricCard
-                  title="Dia Precisando Atenção"
-                  value={format(new Date(weeklyStats.data.worstDay.date), "EEEE", { locale: ptBR })}
-                  subtitle={`${weeklyStats.data.worstDay.percentage}% concluído`}
-                  icon={<AlertCircle className="w-6 h-6" />}
-                />
-              )}
+              {weeklyStats?.data?.worstDay && <StatMetricCard title="Dia Precisando Atenção" value={format(new Date(weeklyStats.data.worstDay.date), "EEEE", {
+                locale: ptBR
+              })} subtitle={`${weeklyStats.data.worstDay.percentage}% concluído`} icon={<AlertCircle className="w-6 h-6" />} />}
             </div>
 
             {/* SEÇÃO 2: Desempenho */}
@@ -265,32 +220,14 @@ const Dashboard = () => {
           </Tabs>
 
           {/* Floating Action Button */}
-          <Button
-            onClick={() => setIsNewHabitModalOpen(true)}
-            size="lg"
-            className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-2xl z-40"
-          >
-            <Plus size={24} />
-          </Button>
+          
         </div>
 
         {/* Modals */}
-        <NewHabitModal
-          open={isNewHabitModalOpen}
-          onOpenChange={setIsNewHabitModalOpen}
-        />
+        <NewHabitModal open={isNewHabitModalOpen} onOpenChange={setIsNewHabitModalOpen} />
 
-        {isDayDetailModalOpen && selectedDate && (
-          <DayDetailModal
-            date={selectedDate}
-            habits={habits || []}
-            completions={allCompletions}
-            onClose={() => setIsDayDetailModalOpen(false)}
-          />
-        )}
+        {isDayDetailModalOpen && selectedDate && <DayDetailModal date={selectedDate} habits={habits || []} completions={allCompletions} onClose={() => setIsDayDetailModalOpen(false)} />}
       </AnimatedPage>
-    </AppLayout>
-  );
+    </AppLayout>;
 };
-
 export default Dashboard;
