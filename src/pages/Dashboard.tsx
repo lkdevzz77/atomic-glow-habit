@@ -106,6 +106,7 @@ const Dashboard = () => {
   }
   
   const userName = user.user_metadata?.name || 'Usuário';
+  const todayFormatted = format(new Date(), "EEEE, d 'de' MMMM", { locale: dateLocale });
   
   // Calculate daily progress data
   const today = new Date().toISOString().split('T')[0];
@@ -130,12 +131,15 @@ const Dashboard = () => {
         <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
           {/* Header */}
           <div className="flex items-start justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                <Atom className="w-7 h-7 text-violet-500 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
+            <div className="space-y-1">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground/70">
+                {todayFormatted}
+              </p>
+              <h1 className="text-3xl md:text-4xl font-bold flex items-center gap-3">
+                <Atom className="w-8 h-8 md:w-9 md:h-9 text-violet-500 drop-shadow-[0_0_12px_rgba(139,92,246,0.6)]" />
                 <span className="text-violet-500">Olá {userName}</span>
               </h1>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-sm text-muted-foreground/90 mt-2 max-w-xl">
                 {i18n.language === 'en' 
                   ? 'Every action is a vote for the person you want to become'
                   : 'Cada ação é um voto para quem você está se tornando'}
