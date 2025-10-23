@@ -9,7 +9,7 @@ import { PageLoader } from '@/components/PageLoader';
 import { AnimatedPage } from '@/components/AnimatedPage';
 import StatMetricCard from '@/components/StatMetricCard';
 import PeriodChart from '@/components/stats/PeriodChart';
-import HabitsTimeline from '@/components/stats/HabitsTimeline';
+import WeeklyHeatmap from '@/components/stats/WeeklyHeatmap';
 import SmartInsights from '@/components/stats/SmartInsights';
 import { Target, Flame, Trophy, CheckCircle2, TrendingUp } from 'lucide-react';
 
@@ -91,6 +91,9 @@ const StatsPage = () => {
             />
           </div>
 
+          {/* Gráfico de Período */}
+          <PeriodChart />
+
           {/* Smart Insights */}
           <SmartInsights
             averageCompletion={completionRate}
@@ -100,14 +103,12 @@ const StatsPage = () => {
             totalCompletions={totalCompletions}
           />
 
-          {/* Gráfico de Período */}
-          <PeriodChart />
-
-          {/* Timeline Compacta */}
+          {/* Heatmap */}
           {habits && completions && (
-            <HabitsTimeline 
+            <WeeklyHeatmap 
               habits={habits} 
               completions={completions}
+              weeks={4}
             />
           )}
         </div>
