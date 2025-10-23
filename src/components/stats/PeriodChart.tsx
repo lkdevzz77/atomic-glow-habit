@@ -1,21 +1,20 @@
 import React, { useState } from 'react';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Bar, BarChart } from 'recharts';
 import { motion } from 'framer-motion';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { usePeriodStats } from '@/hooks/usePeriodStats';
-import { useIsMobile } from '@/hooks/use-mobile';
-import PeriodFilter, { PeriodType } from './PeriodFilter';
-import { TrendingUp } from 'lucide-react';
+import type { PeriodType } from '@/components/stats/PeriodFilter';
+import PeriodFilter from '@/components/stats/PeriodFilter';
+import { Skeleton } from '@/components/ui/skeleton';
+import { TrendingUp, TrendingDown, Calendar } from 'lucide-react';
 
 const PeriodChart = () => {
-  const [period, setPeriod] = useState<PeriodType>('14d');
+  const [period, setPeriod] = useState<PeriodType>('7d');
   const { data: stats, isLoading } = usePeriodStats(period);
-  const isMobile = useIsMobile();
 
   if (isLoading) {
     return (
-      <div className="neuro-card rounded-2xl p-6 animate-pulse">
-        <div className="h-6 bg-slate-700 rounded w-48 mb-6"></div>
-        <div className="h-64 bg-slate-800 rounded mb-6"></div>
+      <div className="rounded-xl border border-border bg-card/50 backdrop-blur-sm p-4">
+        <Skeleton className="h-[200px] w-full" />
       </div>
     );
   }
@@ -26,13 +25,10 @@ const PeriodChart = () => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-slate-900 border-2 border-violet-500 rounded-lg p-3 shadow-xl">
-          <p className="text-slate-50 font-semibold mb-1">{data.label}</p>
-          <p className="text-violet-400 text-sm">
-            {data.completed}/{data.total} hábitos
-          </p>
-          <p className="text-slate-300 text-sm font-bold">
-            {data.percentage}%
+        <div className="rounded-lg border border-border bg-background/95 backdrop-blur-sm p-3 shadow-lg">
+          <p className="text-sm font-medium text-foreground mb-1">{data.label}</p>
+          <p className="text-xs text-muted-foreground">
+            {data.completed}/{data.total} hábitos ({data.percentage}%)
           </p>
         </div>
       );
@@ -41,86 +37,71 @@ const PeriodChart = () => {
   };
 
   return (
-    <div className="neuro-card rounded-2xl p-4 sm:p-6">
-      {/* Header com filtro */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <h3 className="text-lg sm:text-xl font-bold text-slate-100 flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-violet-400" />
-          Evolução no Tempo
-        </h3>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="rounded-xl border border-border bg-card/50 backdrop-blur-sm p-4"
+    >
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Calendar className="w-4 h-4 text-muted-foreground" />
+          <h3 className="text-sm font-semibold text-foreground">Evolução no Tempo</h3>
+        </div>
         <PeriodFilter selectedPeriod={period} onPeriodChange={setPeriod} />
       </div>
 
-      {/* Gráfico com animação */}
-      <motion.div
-        key={period}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="bg-slate-800/40 rounded-xl p-4 sm:p-6 border border-slate-700/80">
-          <ResponsiveContainer width="100%" height={isMobile ? 180 : 240}>
-            <BarChart data={stats.data}>
-              <XAxis
-                dataKey="label"
-                stroke="#cbd5e1"
-                tick={{
-                  fill: '#cbd5e1',
-                  fontSize: isMobile ? 9 : 11
-                }}
-                angle={isMobile ? -45 : 0}
-                textAnchor={isMobile ? 'end' : 'middle'}
-                height={isMobile ? 60 : 30}
-                axisLine={{ stroke: '#475569' }}
+      <ResponsiveContainer width="100%" height={160}>
+        <BarChart data={stats.data} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+          <XAxis 
+            dataKey="label" 
+            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
+            axisLine={false}
+            tickLine={false}
+          />
+          <YAxis 
+            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
+            axisLine={false}
+            tickLine={false}
+          />
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--accent))' }} />
+          <Bar dataKey="percentage" radius={[6, 6, 0, 0]}>
+            {stats.data.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={
+                  entry.isToday
+                    ? 'hsl(var(--primary))'
+                    : entry.percentage >= 80
+                    ? 'hsl(var(--chart-1))'
+                    : entry.percentage >= 50
+                    ? 'hsl(var(--chart-2))'
+                    : 'hsl(var(--chart-3))'
+                }
               />
-              <YAxis
-                stroke="#cbd5e1"
-                tick={{ fill: '#cbd5e1', fontSize: 11 }}
-                axisLine={{ stroke: '#475569' }}
-                allowDecimals={false}
-              />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(124, 58, 237, 0.1)' }} />
-              <Bar dataKey="completed" radius={[8, 8, 0, 0]} maxBarSize={40}>
-                {stats.data.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={
-                      entry.isToday
-                        ? '#a78bfa'
-                        : entry.percentage >= 80
-                        ? '#7c3aed'
-                        : entry.percentage >= 50
-                        ? '#a78bfa'
-                        : entry.percentage > 0
-                        ? '#f59e0b'
-                        : '#475569'
-                    }
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
 
-        {/* Métricas do período */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
-          <div className="bg-slate-800/40 rounded-lg p-3 border border-slate-700/80">
-            <p className="text-xs text-slate-400 mb-1">Taxa Média</p>
-            <p className="text-2xl font-bold text-violet-400">{stats.averagePercentage}%</p>
-          </div>
-          <div className="bg-slate-800/40 rounded-lg p-3 border border-slate-700/80">
-            <p className="text-xs text-slate-400 mb-1">Melhor Período</p>
-            <p className="text-lg font-bold text-emerald-400">{stats.bestPeriod.label}</p>
-            <p className="text-xs text-slate-500">{stats.bestPeriod.percentage}%</p>
-          </div>
-          <div className="bg-slate-800/40 rounded-lg p-3 border border-slate-700/80">
-            <p className="text-xs text-slate-400 mb-1">Precisa Atenção</p>
-            <p className="text-lg font-bold text-amber-400">{stats.worstPeriod.label}</p>
-            <p className="text-xs text-slate-500">{stats.worstPeriod.percentage}%</p>
-          </div>
+      <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-border">
+        <div className="text-center">
+          <p className="text-xs text-muted-foreground mb-1">Média</p>
+          <p className="text-lg font-bold text-foreground">{stats.averagePercentage}%</p>
         </div>
-      </motion.div>
-    </div>
+        <div className="text-center border-x border-border">
+          <p className="text-xs text-muted-foreground mb-1 flex items-center justify-center gap-1">
+            <TrendingUp className="w-3 h-3" /> Melhor
+          </p>
+          <p className="text-lg font-bold text-chart-1">{stats.bestPeriod.percentage}%</p>
+        </div>
+        <div className="text-center">
+          <p className="text-xs text-muted-foreground mb-1 flex items-center justify-center gap-1">
+            <TrendingDown className="w-3 h-3" /> Menor
+          </p>
+          <p className="text-lg font-bold text-chart-3">{stats.worstPeriod.percentage}%</p>
+        </div>
+      </div>
+    </motion.div>
   );
 };
 

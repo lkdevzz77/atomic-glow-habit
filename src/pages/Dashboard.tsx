@@ -174,9 +174,7 @@ const Dashboard = () => {
                 title="Taxa Média de Conclusão"
                 value={`${weeklyStats?.data?.averageCompletion || 0}%`}
                 subtitle="Esta semana"
-                icon={<BarChart className="w-6 h-6 text-white" />}
-                color="violet"
-                quote="Você não precisa ser perfeito. Apenas precisa ser melhor que ontem."
+                icon={<BarChart className="w-6 h-6" />}
               />
 
               {weeklyStats?.data?.bestDay && (
@@ -184,10 +182,7 @@ const Dashboard = () => {
                   title="Melhor Dia"
                   value={format(new Date(weeklyStats.data.bestDay.date), "EEEE", { locale: ptBR })}
                   subtitle={`${weeklyStats.data.bestDay.percentage}% concluído`}
-                  icon={<Trophy className="w-6 h-6 text-white" />}
-                  trend="up"
-                  color="emerald"
-                  quote="Ganhe o dia e você ganhará a vida."
+                  icon={<Trophy className="w-6 h-6" />}
                 />
               )}
 
@@ -196,10 +191,7 @@ const Dashboard = () => {
                   title="Dia Precisando Atenção"
                   value={format(new Date(weeklyStats.data.worstDay.date), "EEEE", { locale: ptBR })}
                   subtitle={`${weeklyStats.data.worstDay.percentage}% concluído`}
-                  icon={<AlertCircle className="w-6 h-6 text-white" />}
-                  trend="down"
-                  color="amber"
-                  quote="Pequenos ajustes levam a grandes mudanças ao longo do tempo."
+                  icon={<AlertCircle className="w-6 h-6" />}
                 />
               )}
             </div>

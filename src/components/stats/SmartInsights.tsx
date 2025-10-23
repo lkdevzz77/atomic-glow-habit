@@ -75,7 +75,7 @@ const SmartInsights = ({
   if (insights.length === 0) return null;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {insights.map((insight, i) => (
         <motion.div
           key={i}
@@ -83,28 +83,20 @@ const SmartInsights = ({
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: i * 0.1 }}
           className={cn(
-            "p-4 rounded-xl border-l-4 neuro-card",
-            insight.type === 'success' && "border-emerald-500 bg-emerald-900/5",
-            insight.type === 'warning' && "border-amber-500 bg-amber-900/5",
-            insight.type === 'celebration' && "border-violet-500 bg-violet-900/5",
-            insight.type === 'tip' && "border-blue-500 bg-blue-900/5"
+            "p-3 rounded-lg border-l-4 bg-card/30 backdrop-blur-sm",
+            insight.type === 'success' && "border-chart-1",
+            insight.type === 'warning' && "border-chart-2",
+            insight.type === 'celebration' && "border-primary",
+            insight.type === 'tip' && "border-chart-3"
           )}
         >
           <div className="flex items-start gap-3">
-            <div className={cn(
-              "p-2 rounded-lg",
-              insight.type === 'success' && "bg-emerald-500/10 text-emerald-400",
-              insight.type === 'warning' && "bg-amber-500/10 text-amber-400",
-              insight.type === 'celebration' && "bg-violet-500/10 text-violet-400",
-              insight.type === 'tip' && "bg-blue-500/10 text-blue-400"
-            )}>
-              {insight.icon}
-            </div>
+            <span className="text-xl">{insight.icon}</span>
             <div className="flex-1">
-              <h4 className="font-semibold text-slate-100 mb-1 text-sm">
+              <h4 className="font-semibold text-foreground text-sm mb-0.5">
                 {insight.title}
               </h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-xs text-muted-foreground">
                 {insight.description}
               </p>
             </div>

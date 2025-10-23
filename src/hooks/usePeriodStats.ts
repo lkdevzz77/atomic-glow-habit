@@ -40,6 +40,11 @@ export const usePeriodStats = (period: PeriodType) => {
 
       // Calcular range baseado no período
       switch (period) {
+        case '7d':
+          startDate = subDays(today, 6);
+          intervals = eachDayOfInterval({ start: startDate, end: today });
+          formatLabel = (d) => format(d, 'dd/MM', { locale: ptBR });
+          break;
         case '14d':
           startDate = subDays(today, 13);
           intervals = eachDayOfInterval({ start: startDate, end: today });
@@ -66,7 +71,7 @@ export const usePeriodStats = (period: PeriodType) => {
           formatLabel = (d) => format(startOfMonth(d), 'MMM/yy', { locale: ptBR });
           break;
         default:
-          startDate = subDays(today, 13);
+          startDate = subDays(today, 6);
           intervals = eachDayOfInterval({ start: startDate, end: today });
           formatLabel = (d) => format(d, 'dd/MM', { locale: ptBR });
       }

@@ -1,9 +1,7 @@
 import React from 'react';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useIsMobile } from '@/hooks/use-mobile';
 
-export type PeriodType = '14d' | '1m' | '3m' | '6m' | '1y' | 'custom';
+export type PeriodType = '7d' | '14d' | '1m' | '3m' | '6m' | '1y';
 
 interface PeriodFilterProps {
   selectedPeriod: PeriodType;
@@ -11,7 +9,8 @@ interface PeriodFilterProps {
 }
 
 const PERIODS = [
-  { value: '14d' as const, label: '14 dias' },
+  { value: '7d' as const, label: '1 semana' },
+  { value: '14d' as const, label: '2 semanas' },
   { value: '1m' as const, label: '1 mês' },
   { value: '3m' as const, label: '3 meses' },
   { value: '6m' as const, label: '6 meses' },
@@ -19,39 +18,19 @@ const PERIODS = [
 ];
 
 const PeriodFilter = ({ selectedPeriod, onPeriodChange }: PeriodFilterProps) => {
-  const isMobile = useIsMobile();
-
-  if (isMobile) {
-    return (
-      <Select value={selectedPeriod} onValueChange={onPeriodChange}>
-        <SelectTrigger className="w-[140px] bg-slate-800/60 border-slate-700">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {PERIODS.map((period) => (
-            <SelectItem key={period.value} value={period.value}>
-              {period.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    );
-  }
-
   return (
-    <Tabs value={selectedPeriod} onValueChange={onPeriodChange}>
-      <TabsList className="bg-slate-800/60 border border-slate-700">
+    <Select value={selectedPeriod} onValueChange={onPeriodChange}>
+      <SelectTrigger className="w-[140px] h-9 bg-background/50 border-border text-sm">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
         {PERIODS.map((period) => (
-          <TabsTrigger 
-            key={period.value} 
-            value={period.value}
-            className="data-[state=active]:bg-violet-500/20 data-[state=active]:text-violet-400"
-          >
+          <SelectItem key={period.value} value={period.value}>
             {period.label}
-          </TabsTrigger>
+          </SelectItem>
         ))}
-      </TabsList>
-    </Tabs>
+      </SelectContent>
+    </Select>
   );
 };
 
