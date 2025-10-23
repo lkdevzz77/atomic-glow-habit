@@ -4,26 +4,34 @@ import { AppLayout } from '@/layouts/AppLayout';
 import { PageLoader } from '@/components/PageLoader';
 import { NotionCalendar } from '@/components/NotionCalendar';
 import { AnimatedPage } from '@/components/AnimatedPage';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
 const CalendarPage = () => {
-  const { data: habits, isLoading } = useHabits();
+  const { data: habits, isLoading: habitsLoading } = useHabits();
+  
+  // Buscar completions direto do banco
+  const { data: completions, isLoading: completionsLoading } = useQuery({
+    queryKey: ['habit-completions'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('habit_completions')
+        .select('id, habit_id, date, percentage, completed_at')
+        .order('date', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!habits,
+  });
 
-  if (isLoading) {
+  if (habitsLoading || completionsLoading) {
     return (
       <AppLayout>
         <PageLoader />
       </AppLayout>
     );
   }
-
-  // Buscar todas as completions para o calendário
-  const allCompletions = habits?.flatMap(habit => 
-    (habit as any).completions?.map((c: any) => ({
-      habit_id: habit.id,
-      date: c.date,
-      percentage: c.percentage || 100
-    })) || []
-  ) || [];
 
   return (
     <AppLayout>
@@ -42,7 +50,7 @@ const CalendarPage = () => {
           {/* Calendário */}
           <NotionCalendar 
             habits={habits || []} 
-            completions={allCompletions}
+            completions={completions || []}
             onHabitToggle={() => {}}
           />
         </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, isToday as dateIsToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -67,9 +67,104 @@ export const NotionCalendar: React.FC<NotionCalendarProps> = ({
   const isFuture = (date: Date) => date > new Date();
 
   return (
-    <div className="card-padding neuro-card rounded-2xl">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+    <div className="space-y-8">
+      {/* Timeline View - Linha do Tempo */}
+      <div className="card-padding neuro-card rounded-2xl">
+        <h3 className="text-lg font-bold text-violet-400 mb-4 flex items-center gap-2">
+          <LucideIcons.TrendingUp size={20} />
+          Linha do Tempo - Últimos 14 dias
+        </h3>
+        
+        <div className="overflow-x-auto pb-2">
+          <div className="min-w-[600px] space-y-3">
+            {Array.from({ length: 14 }, (_, i) => {
+              const date = new Date();
+              date.setDate(date.getDate() - (13 - i));
+              const dateStr = format(date, 'yyyy-MM-dd');
+              const dayCompletions = completions.filter(c => c.date === dateStr);
+              const todayDate = dateIsToday(date);
+              const completedHabits = dayCompletions.filter(c => c.percentage >= 100);
+              
+              return (
+                <div key={dateStr} className={cn(
+                  "flex items-center gap-4 p-3 rounded-lg transition-all",
+                  todayDate && "bg-violet-900/20 ring-2 ring-violet-500/40"
+                )}>
+                  {/* Data */}
+                  <div className="w-24 text-sm flex-shrink-0">
+                    <div className={cn(
+                      "font-semibold capitalize",
+                      todayDate && "text-violet-400"
+                    )}>
+                      {format(date, 'EEE', { locale: ptBR })}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {format(date, 'dd/MM')}
+                    </div>
+                  </div>
+                  
+                  {/* Hábitos do dia */}
+                  <div className="flex-1 flex flex-wrap gap-2">
+                    {habits.map((habit) => {
+                      const isCompleted = dayCompletions.some(
+                        c => c.habit_id === habit.id && c.percentage >= 100
+                      );
+                      const Icon = getIconComponent(habit.icon);
+                      
+                      return (
+                        <TooltipProvider key={habit.id}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className={cn(
+                                "w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200",
+                                isCompleted
+                                  ? "bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg shadow-violet-500/40 scale-105"
+                                  : "bg-slate-700/30 border border-slate-600 opacity-40"
+                              )}>
+                                <Icon size={18} className={isCompleted ? 'text-white' : 'text-muted-foreground'} />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="text-xs font-medium">{habit.title}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {isCompleted ? 'Completado ✓' : 'Não completado'}
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      );
+                    })}
+                  </div>
+                  
+                  {/* Progress bar do dia */}
+                  <div className="w-32 flex-shrink-0">
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-2 bg-slate-700/50 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-violet-500 to-purple-600 transition-all duration-500"
+                          style={{ 
+                            width: `${habits.length > 0 ? (completedHabits.length / habits.length) * 100 : 0}%` 
+                          }}
+                        />
+                      </div>
+                      <span className="text-xs font-semibold text-violet-400 min-w-[35px]">
+                        {habits.length > 0 
+                          ? Math.round((completedHabits.length / habits.length) * 100) 
+                          : 0}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Monthly Calendar */}
+      <div className="card-padding neuro-card rounded-2xl">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
         <h2 className="text-section-title capitalize">
           {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
         </h2>
@@ -146,7 +241,7 @@ export const NotionCalendar: React.FC<NotionCalendarProps> = ({
 
               {/* Habits Dots with Tooltips */}
               <div className="flex flex-wrap gap-1.5 items-start w-full">
-                {habits.slice(0, 8).map((habit) => {
+                {habits.slice(0, 6).map((habit) => {
                   const Icon = getIconComponent(habit.icon);
                   const isCompleted = isHabitCompletedOnDay(habit.id, day);
 
@@ -162,15 +257,15 @@ export const NotionCalendar: React.FC<NotionCalendarProps> = ({
                               }
                             }}
                             className={cn(
-                              'w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200',
+                              'w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200',
                               todayDay && !futureDay && 'cursor-pointer hover:scale-125',
                               futureDay && 'opacity-50 cursor-not-allowed',
                               isCompleted 
-                                ? 'bg-gradient-to-br from-emerald-500 to-green-600 shadow-md shadow-emerald-500/30' 
+                                ? 'bg-gradient-to-br from-violet-500 to-purple-600 shadow-md shadow-violet-500/30' 
                                 : 'bg-slate-700/50 border border-slate-600'
                             )}
                           >
-                            <Icon size={12} className={isCompleted ? 'text-white' : 'text-muted-foreground'} />
+                            <Icon size={16} className={isCompleted ? 'text-white' : 'text-muted-foreground'} />
                           </div>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -183,10 +278,10 @@ export const NotionCalendar: React.FC<NotionCalendarProps> = ({
                     </TooltipProvider>
                   );
                 })}
-                {habits.length > 8 && (
-                  <div className="w-6 h-6 rounded-full bg-slate-700/50 border border-slate-600 flex items-center justify-center">
-                    <span className="text-[10px] text-muted-foreground font-medium">
-                      +{habits.length - 8}
+                {habits.length > 6 && (
+                  <div className="w-8 h-8 rounded-lg bg-slate-700/50 border border-slate-600 flex items-center justify-center">
+                    <span className="text-xs text-muted-foreground font-semibold">
+                      +{habits.length - 6}
                     </span>
                   </div>
                 )}
@@ -196,19 +291,20 @@ export const NotionCalendar: React.FC<NotionCalendarProps> = ({
         })}
       </div>
 
-      {/* Legend */}
-      <div className="flex items-center gap-6 mt-8 pt-6 border-t border-border text-sm text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-500 to-green-600" />
-          <span>Completado</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-full bg-slate-700/50 border border-slate-600" />
-          <span>Pendente</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-base">✨</span>
-          <span>Todos completados</span>
+        {/* Legend */}
+        <div className="flex items-center gap-6 mt-8 pt-6 border-t border-border text-sm text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600" />
+            <span>Completado</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 rounded-lg bg-slate-700/50 border border-slate-600" />
+            <span>Pendente</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-base">✨</span>
+            <span>Todos completados</span>
+          </div>
         </div>
       </div>
     </div>
