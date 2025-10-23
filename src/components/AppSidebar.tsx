@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Link, useLocation } from 'react-router-dom';
 import { useLevel } from '@/hooks/useLevel';
-import { Target, TrendingUp, Home, Award, User, Settings, Calendar, BarChart } from 'lucide-react';
+import { Target, Home, Award, User, Settings, Calendar, BarChart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { triggerHaptic } from '@/utils/haptics';
 import LevelBadge from '@/components/LevelBadge';
@@ -27,7 +27,6 @@ const mainItems = [
 
 const secondaryItems = [
   { title: 'Conquistas', url: '/badges', icon: Award },
-  { title: 'Jornada de Nível', url: '/level-journey', icon: TrendingUp },
   { title: 'Perfil', url: '/profile', icon: User },
   { title: 'Configurações', url: '/settings', icon: Settings },
 ];
