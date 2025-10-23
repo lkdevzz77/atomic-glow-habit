@@ -1,7 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Card,
@@ -45,8 +46,58 @@ import { AnimatedPage } from '@/components/AnimatedPage';
 
 export default function SettingsPage() {
   const { user, signOut } = useAuth();
+  const { t, i18n } = useTranslation();
+  const queryClient = useQueryClient();
   const [emailChangeOpen, setEmailChangeOpen] = React.useState(false);
   const [newEmail, setNewEmail] = React.useState('');
+
+  // Fetch user language preference
+  const { data: userProfile } = useQuery({
+    queryKey: ['profile-language', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data } = await supabase
+        .from('profiles')
+        .select('language')
+        .eq('id', user.id)
+        .single();
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  // Update language mutation
+  const updateLanguageMutation = useMutation({
+    mutationFn: async (language: string) => {
+      if (!user?.id) return;
+      const { error } = await supabase
+        .from('profiles')
+        .update({ language })
+        .eq('id', user.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile-language'] });
+      toast({
+        title: t('common.success'),
+        description: i18n.language === 'en' 
+          ? 'Language updated successfully!' 
+          : 'Idioma atualizado com sucesso!',
+      });
+    },
+  });
+
+  // Set initial language from profile
+  React.useEffect(() => {
+    if (userProfile?.language && userProfile.language !== 'auto') {
+      i18n.changeLanguage(userProfile.language);
+    }
+  }, [userProfile, i18n]);
+
+  const handleLanguageChange = (language: string) => {
+    i18n.changeLanguage(language);
+    updateLanguageMutation.mutate(language);
+  };
 
   const updateEmailMutation = useMutation({
     mutationFn: async (email: string) => {
@@ -148,15 +199,17 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Idioma</Label>
-                  <Select defaultValue="pt-BR">
+                  <Label>{t('settings.language')}</Label>
+                  <Select 
+                    value={i18n.language} 
+                    onValueChange={handleLanguageChange}
+                  >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione seu idioma" />
+                      <SelectValue placeholder={t('settings.language')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="pt-BR">Português (Brasil)</SelectItem>
                       <SelectItem value="en">English</SelectItem>
-                      <SelectItem value="es">Español</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

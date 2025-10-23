@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { triggerAtomicAnimation } from "@/utils/atomicParticles";
 import { triggerHaptic } from "@/utils/haptics";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { AppLayout } from "@/layouts/AppLayout";
 import { useHabits } from "@/hooks/useHabits";
 import { useStats } from "@/hooks/useStats";
@@ -14,7 +16,7 @@ import NewHabitModal from "@/components/NewHabitModal";
 import KanbanView from "@/components/views/KanbanView";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ptBR, enUS } from "date-fns/locale";
 import { AnimatedPage } from "@/components/AnimatedPage";
 import { PageLoader } from "@/components/PageLoader";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
@@ -22,11 +24,30 @@ import { Plus } from "lucide-react";
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const { t, i18n } = useTranslation();
   const { data: habits, isLoading: habitsLoading, completeHabit } = useHabits();
   const { weeklyStats, streakStats } = useStats();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
+
+  // Get XP earned today from database
+  const { data: xpEarnedToday } = useQuery({
+    queryKey: ['xp-earned-today', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return 0;
+      const { data, error } = await supabase
+        .rpc('get_user_xp_earned_today', { p_user_id: user.id });
+      if (error) {
+        console.error('Error fetching XP:', error);
+        return 0;
+      }
+      return data || 0;
+    },
+    enabled: !!user?.id,
+  });
+
+  const dateLocale = i18n.language === 'en' ? enUS : ptBR;
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -90,8 +111,13 @@ const Dashboard = () => {
   const today = new Date().toISOString().split('T')[0];
   const completedToday = habits?.filter(h => h.completedToday).length || 0;
   
-  const activeStreaks = habits?.filter(h => (h.streak || 0) > 0).length || 0;
-  const xpEarned = completedToday * 10; // Simplified XP calculation
+  const activeStreaks = habits?.filter(h => {
+    if (!h.streak || h.streak === 0) return false;
+    // Verify if habit was completed today or yesterday
+    return h.completedToday || h.last_completed;
+  }).length || 0;
+  
+  const xpEarned = xpEarnedToday || 0;
   
   // Prepare weekly data for mini graph
   const weeklyData = weeklyStats?.data?.days?.map(day => ({
@@ -106,10 +132,12 @@ const Dashboard = () => {
           <div className="flex items-start justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-foreground">
-                Olá, {userName}
+                {t('dashboard.title')}, {userName}
               </h1>
               <p className="text-sm text-muted-foreground mt-1">
-                Cada ação é um voto para quem você está se tornando
+                {i18n.language === 'en' 
+                  ? 'Every action is a vote for the person you want to become'
+                  : 'Cada ação é um voto para quem você está se tornando'}
               </p>
             </div>
             <Button 
@@ -117,7 +145,7 @@ const Dashboard = () => {
               className="hidden md:flex"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Novo Hábito
+              {t('habits.newHabit')}
             </Button>
           </div>
 

@@ -211,6 +211,7 @@ export type Database = {
           created_at: string
           desired_identity: string | null
           id: string
+          language: string | null
           level: number | null
           longest_streak: number
           name: string
@@ -227,6 +228,7 @@ export type Database = {
           created_at?: string
           desired_identity?: string | null
           id: string
+          language?: string | null
           level?: number | null
           longest_streak?: number
           name: string
@@ -243,6 +245,7 @@ export type Database = {
           created_at?: string
           desired_identity?: string | null
           id?: string
+          language?: string | null
           level?: number | null
           longest_streak?: number
           name?: string
@@ -311,6 +314,7 @@ export type Database = {
           longest_streak: number
         }[]
       }
+      check_and_reset_broken_streaks: { Args: never; Returns: undefined }
       get_habit_completion_xp: {
         Args: { p_date: string; p_habit_id: number; p_user_id: string }
         Returns: {
@@ -328,6 +332,7 @@ export type Database = {
           percentage: number
         }[]
       }
+      get_user_xp_earned_today: { Args: { p_user_id: string }; Returns: number }
       initialize_user_badges: {
         Args: { p_user_id: string }
         Returns: undefined

@@ -12,29 +12,31 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useLevel } from '@/hooks/useLevel';
 import { Target, Home, Award, User, Settings, Calendar, BarChart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { triggerHaptic } from '@/utils/haptics';
 import LevelBadge from '@/components/LevelBadge';
 
-const mainItems = [
-  { title: 'Dashboard', url: '/dashboard', icon: Home },
-  { title: 'Meus Hábitos', url: '/habits', icon: Target },
-  { title: 'Calendário', url: '/calendar', icon: Calendar },
-  { title: 'Estatísticas', url: '/stats', icon: BarChart },
-];
-
-const secondaryItems = [
-  { title: 'Conquistas', url: '/badges', icon: Award },
-  { title: 'Perfil', url: '/profile', icon: User },
-  { title: 'Configurações', url: '/settings', icon: Settings },
-];
-
 export function AppSidebar() {
   const location = useLocation();
+  const { t } = useTranslation();
   const { levelInfo, progress, xp, currentLevelXP, nextLevelXP } = useLevel();
   const { open } = useSidebar();
+
+  const mainItems = [
+    { title: t('nav.dashboard'), url: '/dashboard', icon: Home },
+    { title: t('nav.habits'), url: '/habits', icon: Target },
+    { title: t('nav.calendar'), url: '/calendar', icon: Calendar },
+    { title: t('nav.stats'), url: '/stats', icon: BarChart },
+  ];
+
+  const secondaryItems = [
+    { title: t('nav.badges'), url: '/badges', icon: Award },
+    { title: t('nav.profile'), url: '/profile', icon: User },
+    { title: t('nav.settings'), url: '/settings', icon: Settings },
+  ];
 
   const isActive = (path: string) => location.pathname === path;
 

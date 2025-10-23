@@ -1,6 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { getLevelInfo } from '@/systems/levelSystem';
+import { getLevelTitle } from '@/utils/levelTranslations';
 import {
   Tooltip,
   TooltipContent,
@@ -27,7 +29,9 @@ const LevelBadge: React.FC<LevelBadgeProps> = ({
   xp,
   nextLevelXP 
 }) => {
+  const { i18n } = useTranslation();
   const levelInfo = getLevelInfo(level);
+  const levelTitle = getLevelTitle(level);
   const Icon = levelInfo.icon;
   
   // Cores progressivas por tier
@@ -120,10 +124,12 @@ const LevelBadge: React.FC<LevelBadgeProps> = ({
         </TooltipTrigger>
         <TooltipContent>
           <div className="text-center">
-            <p className="font-semibold">Nível {level} • {levelInfo.title}</p>
+            <p className="font-semibold">
+              {i18n.language === 'en' ? 'Level' : 'Nível'} {level} • {levelTitle}
+            </p>
             {xp !== undefined && nextLevelXP !== undefined && (
               <p className="text-xs text-slate-400 mt-1">
-                {nextLevelXP - xp} votos para próximo nível
+                {nextLevelXP - xp} {i18n.language === 'en' ? 'votes to next level' : 'votos para próximo nível'}
               </p>
             )}
           </div>
