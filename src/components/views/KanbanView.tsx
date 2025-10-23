@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { CheckCircle, Search, GripVertical, Plus, Target, Sparkles } from 'lucide-react';
+import { CheckCircle2, Search, GripVertical, Plus, Target, Sparkles, Square, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import HabitCardCompact from '../HabitCardCompact';
 import EmptyStateCard from '@/components/EmptyStateCard';
 import { triggerMiniAtomicAnimation } from '@/utils/atomicParticles';
@@ -67,35 +69,27 @@ const KanbanView: React.FC<KanbanViewProps> = ({
   
   return <div className="space-y-6">
       {/* Progress Summary */}
-      <div className="bg-slate-800/40 border border-violet-500/20 rounded-2xl p-6">
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-card border border-border rounded-lg p-6"
+      >
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h2 className="text-2xl font-bold text-slate-50">
+            <h2 className="text-xl font-bold text-foreground">
               {completedHabits.length}/{habits.length} Completados
             </h2>
-            <p className="text-slate-400 text-sm mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               {completionPercentage}% do progresso diário
             </p>
           </div>
-          {completionPercentage === 100 && habits.length > 0 && (
-            <motion.div 
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center"
-            >
-              <CheckCircle className="w-6 h-6 text-white" strokeWidth={2.5} />
-            </motion.div>
+          {completionPercentage === 100 && (
+            <CheckCircle2 className="w-6 h-6 text-emerald-500" />
           )}
         </div>
-        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-          <motion.div 
-            className="h-full bg-gradient-to-r from-violet-600 to-purple-600" 
-            initial={{ width: 0 }} 
-            animate={{ width: `${completionPercentage}%` }} 
-            transition={{ duration: 0.5, ease: "easeOut" }} 
-          />
-        </div>
-      </div>
+        
+        <Progress value={completionPercentage} className="h-2" />
+      </motion.div>
 
       {/* Search Bar */}
       {habits.length > 3 && <div className="relative">
@@ -106,25 +100,18 @@ const KanbanView: React.FC<KanbanViewProps> = ({
       {/* Kanban Board */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Pending Column */}
-        <motion.div layout className="bg-slate-800/40 border border-slate-700/80 card-rounded card-padding min-h-[400px] transition-colors duration-300">
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-card border border-border rounded-lg p-6"
+        >
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-amber-500 animate-pulse" />
-              <h2 className="text-lg font-bold heading-sub text-slate-50">Pendentes</h2>
+              <Clock className="w-4 h-4 text-amber-500" />
+              <h2 className="text-lg font-semibold text-foreground">Pendentes</h2>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-slate-700 rounded-full text-xs font-semibold text-slate-300">
-                {pendingHabits.length}
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onAddHabit}
-                className="h-8 w-8 p-0 text-violet-400 hover:text-violet-300 hover:bg-violet-500/10"
-              >
-                <Plus size={16} />
-              </Button>
-            </div>
+            <Badge variant="secondary">{pendingHabits.length}</Badge>
           </div>
           
           <AnimatePresence mode="popLayout">
@@ -144,40 +131,31 @@ const KanbanView: React.FC<KanbanViewProps> = ({
             }} className="group relative">
                     <HabitCardCompact habit={habit} onComplete={() => handleComplete(habit.id)} />
                   </motion.div>)}
-              </div> : <motion.div initial={{
-            opacity: 0,
-            scale: 0.9
-          }} animate={{
-            opacity: 1,
-            scale: 1
-          }} className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center mb-4">
-                  <CheckCircle className="w-10 h-10 text-white" />
+              </div> : <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mb-4">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-500" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-50 mb-2">
-                  Tudo pronto! 🎉
-                </h3>
-                <p className="text-slate-400 text-sm mb-6 max-w-xs">
-                  Você completou todos os hábitos de hoje. Continue assim!
-                </p>
-                {onAddHabit && <button onClick={onAddHabit} className="inline-flex items-center gap-2 px-5 py-2.5 bg-violet-600 hover:bg-violet-700 rounded-lg font-semibold text-sm transition-colors">
-                    <Plus className="w-4 h-4" />
-                    Adicionar Mais Hábitos
-                  </button>}
-              </motion.div>}
+                <p className="text-sm font-medium text-foreground">Tudo concluído!</p>
+                <p className="text-xs text-muted-foreground mt-1">Excelente trabalho hoje!</p>
+              </div>}
           </AnimatePresence>
         </motion.div>
 
         {/* Completed Column */}
-        <motion.div layout className="bg-slate-800/40 border border-slate-700/80 card-rounded card-padding min-h-[400px] transition-colors duration-300">
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-card border border-border rounded-lg p-6"
+        >
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-emerald-500" />
-              <h2 className="text-lg font-bold heading-sub text-slate-50">Completados</h2>
+              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              <h2 className="text-lg font-semibold text-foreground">Completados</h2>
             </div>
-            <span className="px-3 py-1 bg-emerald-900/30 border border-emerald-700/50 rounded-full text-xs font-semibold text-emerald-400">
+            <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
               {completedHabits.length}
-            </span>
+            </Badge>
           </div>
           
           <AnimatePresence mode="popLayout">
@@ -200,20 +178,12 @@ const KanbanView: React.FC<KanbanViewProps> = ({
                       onUndo={onUndo ? () => onUndo(habit.id) : undefined}
                     />
                   </motion.div>)}
-              </div> : <motion.div initial={{
-            opacity: 0,
-            scale: 0.9
-          }} animate={{
-            opacity: 1,
-            scale: 1
-          }} className="flex flex-col items-center justify-center py-16">
-                <div className="w-16 h-16 rounded-full border-2 border-dashed border-slate-700 flex items-center justify-center mb-4">
-                  <Target className="w-8 h-8 text-slate-600" />
+              </div> : <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                  <Square className="w-8 h-8 text-muted-foreground" />
                 </div>
-                <p className="text-slate-500 text-sm">
-                  Nenhum hábito completado ainda
-                </p>
-              </motion.div>}
+                <p className="text-sm text-muted-foreground">Nenhum hábito completado ainda</p>
+              </div>}
           </AnimatePresence>
         </motion.div>
       </div>

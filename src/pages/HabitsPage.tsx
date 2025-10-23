@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Search, Flame, Edit, Trash2, ChevronDown } from 'lucide-react';
+import { Plus, Search, Flame, Edit, Trash2, ChevronDown, Clock, MapPin, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/layouts/AppLayout';
 import { FloatingActionButton } from '@/components/FloatingActionButton';
@@ -104,41 +104,25 @@ export default function HabitsPage() {
         <div className="max-w-6xl mx-auto space-y-4 md:space-y-6">
           <Breadcrumbs />
           
-          {/* Atomic Header */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-800/50 via-violet-900/20 to-slate-800/50 border border-violet-500/20 p-6">
-            {/* Partículas de fundo */}
-            <div className="absolute inset-0 opacity-20 pointer-events-none">
-              <div className="absolute top-4 left-8 w-2 h-2 bg-violet-400 rounded-full animate-pulse" />
-              <div className="absolute top-12 right-12 w-1 h-1 bg-purple-400 rounded-full animate-pulse delay-100" />
-              <div className="absolute bottom-8 left-16 w-1.5 h-1.5 bg-violet-300 rounded-full animate-pulse delay-200" />
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">Meus Hábitos</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                {totalHabits} hábitos ativos • {completedToday} completados hoje
+              </p>
             </div>
-
-            <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent flex items-center gap-2">
-                  ⚛️ Meus Hábitos
-                </h1>
-                <p className="text-slate-400 mt-2 text-sm sm:text-base">
-                  {totalHabits} hábitos ativos • {completedToday} completados hoje
-                </p>
-              </div>
-              
-              {/* Badge de nível */}
-              <Badge variant="outline" className="border-violet-500/50 bg-violet-900/20 text-violet-300">
-                Nível {level}
-              </Badge>
-            </div>
-
-            {/* Desktop button */}
-            <Button 
-              onClick={() => setIsNewHabitModalOpen(true)} 
-              size="lg" 
-              className="w-full sm:w-auto mt-4 hidden md:flex bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700"
-            >
-              <Plus className="mr-2" size={20} />
-              Novo Hábito
-            </Button>
+            <Badge variant="secondary">Nível {level}</Badge>
           </div>
+
+          {/* Desktop button */}
+          <Button 
+            onClick={() => setIsNewHabitModalOpen(true)} 
+            className="w-full sm:w-auto mb-4 hidden md:flex"
+          >
+            <Plus className="mr-2" size={20} />
+            Novo Hábito
+          </Button>
 
           {/* FAB - Mobile only */}
           <FloatingActionButton onClick={() => setIsNewHabitModalOpen(true)} />
@@ -234,27 +218,26 @@ export default function HabitsPage() {
                             <div className="flex items-center gap-2 flex-wrap">
                               <h3 className="text-base sm:text-lg font-semibold">{habit.title}</h3>
                               {isNew && (
-                                <Badge variant="outline" className="text-xs border-violet-500/50 bg-violet-900/20 text-violet-300">
+                                <Badge variant="secondary" className="text-xs">
                                   Novo
                                 </Badge>
                               )}
-                              {streakLevel === 'fire' && (
-                                <Badge variant="outline" className="text-xs border-orange-500/50 bg-orange-900/20 text-orange-300">
-                                  🔥 Em chamas
-                                </Badge>
-                              )}
                               {habit.completedToday && (
-                                <Badge variant="outline" className="text-xs border-emerald-500/50 bg-emerald-900/20 text-emerald-300">
-                                  ✓ Hoje
-                                </Badge>
+                                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                               )}
                             </div>
                             <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-muted-foreground mt-1">
-                              <span>⏰ {habit.when_time}</span>
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {habit.when_time}
+                              </span>
                               <span className="hidden sm:inline">•</span>
-                              <span>📍 {habit.where_location}</span>
+                              <span className="flex items-center gap-1">
+                                <MapPin className="w-3 h-3" />
+                                {habit.where_location}
+                              </span>
                               <span className="hidden sm:inline">•</span>
-                              <span className="text-slate-500">{daysActive} dias ativo</span>
+                              <span>{daysActive} dias ativo</span>
                             </div>
                           </div>
                         </div>
@@ -284,60 +267,60 @@ export default function HabitsPage() {
                       {/* Stats */}
                       <div className="flex flex-wrap items-center gap-3 sm:gap-6">
                         <div className="flex items-center gap-2">
-                          <span className="text-2xl">{streakEmoji}</span>
+                          <Flame className="w-4 h-4 text-muted-foreground" />
                           <div>
-                            <div className="text-base sm:text-lg font-bold">{habit.streak || 0} dias</div>
-                            <div className="text-xs text-muted-foreground">Streak</div>
+                            <div className="text-sm font-semibold text-foreground">{habit.streak || 0}</div>
+                            <div className="text-xs text-muted-foreground">dias</div>
                           </div>
                         </div>
 
-                        <div className="h-10 w-px bg-border hidden sm:block" />
+                        <div className="h-8 w-px bg-border hidden sm:block" />
 
                         <div>
-                          <div className="text-base sm:text-lg font-bold">{habit.total_completions || 0}</div>
-                          <div className="text-xs text-muted-foreground">Conclusões</div>
+                          <div className="text-sm font-semibold text-foreground">{habit.total_completions || 0}</div>
+                          <div className="text-xs text-muted-foreground">conclusões</div>
                         </div>
 
-                        <div className="h-10 w-px bg-border hidden sm:block" />
+                        <div className="h-8 w-px bg-border hidden sm:block" />
 
                         <div className="flex-1 min-w-[120px]">
                           <div className="flex items-center justify-between text-xs mb-1">
-                            <span className="text-muted-foreground">Taxa de Sucesso</span>
-                            <span className="font-semibold">{completionRate}%</span>
+                            <span className="text-muted-foreground">Taxa</span>
+                            <span className="font-semibold text-foreground">{completionRate}%</span>
                           </div>
-                          <Progress value={completionRate} className="h-2" />
+                          <Progress value={completionRate} className="h-1.5" />
                         </div>
                       </div>
 
                       {/* Accordion para as 4 Leis */}
                       {(habit.trigger_activity || habit.temptation_bundle || habit.environment_prep) && (
                         <Collapsible>
-                          <CollapsibleTrigger className="w-full pt-4 border-t flex items-center justify-between text-sm text-violet-400 hover:text-violet-300 transition-colors group">
+                          <CollapsibleTrigger className="w-full pt-4 border-t flex items-center justify-between text-xs text-muted-foreground hover:text-foreground transition-colors group">
                             <div className="flex items-center gap-2">
-                              <span className="text-xs text-slate-500">4 Leis do Comportamento</span>
-                              {habit.trigger_activity && <Badge variant="outline" className="text-xs">Lei 1</Badge>}
-                              {habit.temptation_bundle && <Badge variant="outline" className="text-xs">Lei 2</Badge>}
-                              {habit.environment_prep && <Badge variant="outline" className="text-xs">Lei 3</Badge>}
+                              <span>4 Leis do Comportamento</span>
+                              {habit.trigger_activity && <Badge variant="secondary" className="text-xs">Lei 1</Badge>}
+                              {habit.temptation_bundle && <Badge variant="secondary" className="text-xs">Lei 2</Badge>}
+                              {habit.environment_prep && <Badge variant="secondary" className="text-xs">Lei 3</Badge>}
                             </div>
-                            <ChevronDown className="w-4 h-4 transition-transform group-data-[state=open]:rotate-180" />
+                            <ChevronDown className="w-3 h-3 transition-transform group-data-[state=open]:rotate-180" />
                           </CollapsibleTrigger>
-                          <CollapsibleContent className="pt-3 space-y-2 text-xs sm:text-sm">
+                          <CollapsibleContent className="pt-2 space-y-1.5 text-xs">
                             {habit.trigger_activity && (
-                              <div className="p-2 rounded bg-slate-800/30">
-                                <span className="font-medium text-violet-400">Lei 1 - Óbvio:</span>{' '}
-                                <span className="text-slate-300">{habit.trigger_activity}</span>
+                              <div className="p-2 rounded bg-muted/50">
+                                <span className="font-medium text-foreground">Lei 1:</span>{' '}
+                                <span className="text-muted-foreground">{habit.trigger_activity}</span>
                               </div>
                             )}
                             {habit.temptation_bundle && (
-                              <div className="p-2 rounded bg-slate-800/30">
-                                <span className="font-medium text-violet-400">Lei 2 - Atraente:</span>{' '}
-                                <span className="text-slate-300">{habit.temptation_bundle}</span>
+                              <div className="p-2 rounded bg-muted/50">
+                                <span className="font-medium text-foreground">Lei 2:</span>{' '}
+                                <span className="text-muted-foreground">{habit.temptation_bundle}</span>
                               </div>
                             )}
                             {habit.environment_prep && (
-                              <div className="p-2 rounded bg-slate-800/30">
-                                <span className="font-medium text-violet-400">Lei 3 - Fácil:</span>{' '}
-                                <span className="text-slate-300">{habit.environment_prep}</span>
+                              <div className="p-2 rounded bg-muted/50">
+                                <span className="font-medium text-foreground">Lei 3:</span>{' '}
+                                <span className="text-muted-foreground">{habit.environment_prep}</span>
                               </div>
                             )}
                           </CollapsibleContent>

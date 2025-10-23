@@ -86,10 +86,10 @@ const Dashboard = () => {
         <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
           {/* Header */}
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold text-foreground">
               Olá, {userName}
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               Cada ação é um voto para quem você está se tornando
             </p>
           </div>
