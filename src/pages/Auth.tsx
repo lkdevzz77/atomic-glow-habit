@@ -74,124 +74,123 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-900/20 to-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="text-center mb-8 animate-fade-in">
-          <div className="flex items-center justify-center gap-3 mb-4">
+        <div className="text-center mb-10 animate-fade-in">
+          <div className="flex items-center justify-center mb-6">
             <img 
               src="/atom-logo.png" 
               alt="atomicTracker" 
-              className="w-12 h-12 sm:w-16 sm:h-16 animate-float"
-              style={{
-                filter: 'drop-shadow(0 0 20px rgba(124, 58, 237, 0.8))'
-              }}
+              className="w-16 h-16 sm:w-20 sm:h-20 opacity-90"
             />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tighter gradient-text mb-2">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground mb-2">
             atomicTracker
           </h1>
-          <p className="text-slate-300 text-sm sm:text-base">
+          <p className="text-muted-foreground text-sm sm:text-base">
             Construa hábitos que duram
           </p>
         </div>
 
         {/* Auth Card */}
-        <div className="glass rounded-2xl p-6 sm:p-8 border border-slate-700/50 animate-scale-in">
+        <div className="neuro-card rounded-2xl p-6 sm:p-8 animate-scale-in">
 
           {error && (
-            <div className="mb-4 p-3 bg-red-900/20 border border-red-500/50 rounded-lg flex items-start gap-2 animate-slide-down">
-              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-              <p className="text-red-300 text-sm">{error}</p>
+            <div className="mb-5 p-3.5 bg-destructive/10 border border-destructive/30 rounded-xl flex items-start gap-2.5 animate-slide-down">
+              <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
+              <p className="text-destructive text-sm leading-relaxed">{error}</p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {isSignUp && (
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-foreground/80 mb-2.5">
                   Nome
                 </label>
-                <Input
+                <input
                   type="text"
                   placeholder="Como podemos te chamar?"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   disabled={loading}
                   required
+                  className="w-full px-4 py-3 rounded-xl bg-input border border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 focus:bg-card transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-foreground/80 mb-2.5">
                 Email
               </label>
-              <Input
+              <input
                 type="email"
                 placeholder="seu@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
                 required
+                className="w-full px-4 py-3 rounded-xl bg-input border border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 focus:bg-card transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-foreground/80 mb-2.5">
                 Senha
               </label>
-              <Input
+              <input
                 type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
                 required
+                className="w-full px-4 py-3 rounded-xl bg-input border border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 focus:bg-card transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               />
               {isSignUp && (
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-muted-foreground mt-2">
                   Mínimo de 6 caracteres
                 </p>
               )}
             </div>
 
-            <Button
+            <button
               type="submit"
-              variant="primary"
-              className="w-full group"
               disabled={loading}
+              className="w-full px-6 py-3.5 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 focus:ring-2 focus:ring-primary/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group mt-6"
             >
               {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  {isSignUp ? 'Criando conta...' : 'Entrando...'}
-                </span>
+                <>
+                  <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                  <span>{isSignUp ? 'Criando conta...' : 'Entrando...'}</span>
+                </>
               ) : (
-                <span className="flex items-center justify-center gap-2">
-                  {isSignUp ? 'Criar Conta' : 'Entrar'}
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </span>
+                <>
+                  <span>{isSignUp ? 'Criar Conta' : 'Entrar'}</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                </>
               )}
-            </Button>
+            </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-slate-700">
+          <div className="mt-6 pt-6 border-t border-border/50">
             <button
               onClick={() => {
                 setIsSignUp(!isSignUp);
                 setError('');
               }}
-              className="text-sm text-slate-300 hover:text-violet-400 transition-colors w-full text-center"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors w-full text-center"
               disabled={loading}
             >
               {isSignUp ? (
                 <>
-                  Já tem uma conta? <span className="font-semibold text-violet-400">Entre aqui</span>
+                  Já tem uma conta? <span className="font-medium text-primary">Entre aqui</span>
                 </>
               ) : (
                 <>
-                  Não tem uma conta? <span className="font-semibold text-violet-400">Cadastre-se</span>
+                  Não tem uma conta? <span className="font-medium text-primary">Cadastre-se</span>
                 </>
               )}
             </button>
@@ -199,7 +198,7 @@ const Auth = () => {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-slate-400 text-xs mt-6">
+        <p className="text-center text-muted-foreground/70 text-xs mt-8">
           Grátis para sempre • Sem cartão
         </p>
       </div>
