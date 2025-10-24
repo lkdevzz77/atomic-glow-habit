@@ -55,9 +55,13 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleUpgrade = () => {
+  const handleUpgrade = (plan: 'monthly' | 'yearly') => {
+    const checkoutUrl = plan === 'monthly' 
+      ? 'https://pay.cakto.com.br/spex6qk_620338'
+      : 'https://pay.cakto.com.br/zrgzgpv';
+    
+    window.open(checkoutUrl, '_blank');
     onUpgrade?.();
-    // TODO: Integrar com Stripe quando implementado
   };
   
   return (
@@ -134,11 +138,19 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
           {/* CTA */}
           <div className="space-y-3">
             <Button 
-              onClick={handleUpgrade}
+              onClick={() => handleUpgrade('yearly')}
               className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-base font-semibold"
               size="lg"
             >
-              Começar Trial de 7 Dias
+              Assinar Plano Anual (Melhor Valor)
+            </Button>
+            
+            <Button 
+              onClick={() => handleUpgrade('monthly')}
+              variant="outline"
+              className="w-full text-sm"
+            >
+              Assinar Plano Mensal
             </Button>
             
             <button 
