@@ -405,7 +405,7 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
             {parseInt(activeTab) < 4 ? (
               <Button 
                 onClick={handleNext}
-                className="bg-primary hover:bg-primary/90"
+                className="bg-purple-600 hover:bg-purple-700 text-white"
               >
                 Avançar →
               </Button>
@@ -413,7 +413,7 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
               <Button
                 onClick={handleCreate}
                 disabled={isCreating || !title.trim()}
-                className="bg-primary hover:bg-primary/90"
+                className="bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50"
               >
                 {isCreating ? "Criando..." : "Criar Hábito"}
               </Button>
