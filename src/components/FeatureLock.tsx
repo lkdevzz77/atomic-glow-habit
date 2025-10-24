@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSubscription } from '@/hooks/useSubscription';
+import { useRole } from '@/hooks/useRole';
 import { PaywallModal } from './PaywallModal';
 import { Button } from './ui/button';
 import { Lock } from 'lucide-react';
@@ -31,14 +32,16 @@ export const FeatureLock: React.FC<FeatureLockProps> = ({
   fallback 
 }) => {
   const { isPro, isLoading } = useSubscription();
+  const { isAdmin, isLoading: roleLoading } = useRole();
   const [showPaywall, setShowPaywall] = useState(false);
   const lockMessage = LOCK_MESSAGES[feature];
   
-  if (isLoading) {
+  if (isLoading || roleLoading) {
     return <div className="animate-pulse bg-muted/50 rounded-lg h-64" />;
   }
   
-  if (isPro) {
+  // Admins and Pro users have access
+  if (isPro || isAdmin) {
     return <>{children}</>;
   }
   

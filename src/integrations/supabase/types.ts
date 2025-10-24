@@ -374,6 +374,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_user_role: {
+        Args: {
+          p_role: Database["public"]["Enums"]["app_role"]
+          p_user_id: string
+        }
+        Returns: undefined
+      }
       award_xp: {
         Args: { p_user_id: string; p_xp_amount: number }
         Returns: undefined
@@ -386,6 +393,49 @@ export type Database = {
         }[]
       }
       check_and_reset_broken_streaks: { Args: never; Returns: undefined }
+      get_admin_dashboard_stats: {
+        Args: never
+        Returns: {
+          active_subscriptions: number
+          active_users_30d: number
+          monthly_revenue: number
+          total_subscriptions: number
+          total_users: number
+        }[]
+      }
+      get_all_subscriptions: {
+        Args: never
+        Returns: {
+          created_at: string
+          expires_at: string
+          started_at: string
+          status: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          subscription_id: string
+          tier: string
+          user_email: string
+          user_id: string
+          user_name: string
+        }[]
+      }
+      get_all_users_stats: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          is_admin: boolean
+          last_activity: string
+          name: string
+          subscription_expires_at: string
+          subscription_status: string
+          subscription_tier: string
+          tier: string
+          total_completions: number
+          total_habits: number
+          user_id: string
+        }[]
+      }
       get_habit_completion_xp: {
         Args: { p_date: string; p_habit_id: number; p_user_id: string }
         Returns: {
@@ -414,6 +464,22 @@ export type Database = {
       }
       initialize_user_badges: {
         Args: { p_user_id: string }
+        Returns: undefined
+      }
+      remove_user_role: {
+        Args: {
+          p_role: Database["public"]["Enums"]["app_role"]
+          p_user_id: string
+        }
+        Returns: undefined
+      }
+      update_user_subscription: {
+        Args: {
+          p_expires_at?: string
+          p_status: string
+          p_tier: string
+          p_user_id: string
+        }
         Returns: undefined
       }
     }

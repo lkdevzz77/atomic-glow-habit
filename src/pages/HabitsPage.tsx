@@ -5,6 +5,7 @@ import { AppLayout } from '@/layouts/AppLayout';
 import { FloatingActionButton } from '@/components/FloatingActionButton';
 import { useHabits } from '@/hooks/useHabits';
 import { useSubscription } from '@/hooks/useSubscription';
+import { useRole } from '@/hooks/useRole';
 import { PaywallModal } from '@/components/PaywallModal';
 import { Button } from '@/components/ui/button';
 import NewHabitModal from '@/components/NewHabitModal';
@@ -23,6 +24,7 @@ export default function HabitsPage() {
   const navigate = useNavigate();
   const { data: habits, deleteHabit, isLoading } = useHabits();
   const { isPro, isFree } = useSubscription();
+  const { isAdmin } = useRole();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'archived'>('all');
   const [sortBy, setSortBy] = useState<'recent' | 'streak' | 'name' | 'completion'>('recent');
@@ -80,8 +82,8 @@ export default function HabitsPage() {
   };
 
   const handleCreateHabit = () => {
-    // Checar limite de 3 hábitos para usuários free
-    if (isFree && totalHabits >= 3) {
+    // Checar limite de 3 hábitos para usuários free (admins não têm limite)
+    if (!isAdmin && isFree && totalHabits >= 3) {
       setShowHabitLimitModal(true);
       return;
     }

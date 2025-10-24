@@ -8,6 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AppProvider } from "@/contexts/AppContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import AdminRoute from "@/components/AdminRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import "@/i18n/config";
 import Landing from "./pages/Landing";
@@ -20,6 +21,7 @@ import StatsPage from "./pages/StatsPage";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import BadgesPage from "./pages/BadgesPage";
+import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
 import HabitEditPage from "./pages/HabitEditPage";
 
@@ -41,6 +43,7 @@ function AnimatedRoutes() {
         <Route path="/badges" element={<ProtectedRoute requireAuth requireOnboarding><BadgesPage /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute requireAuth requireOnboarding><Profile /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute requireAuth requireOnboarding><Settings /></ProtectedRoute>} />
+        <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
         <Route path="/404" element={<NotFound />} />
         <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
