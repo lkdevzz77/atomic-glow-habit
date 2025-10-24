@@ -142,7 +142,7 @@ const Dashboard = () => {
             </div>
             <Button 
               onClick={() => setIsNewHabitModalOpen(true)}
-              className="hidden md:flex"
+              className="hidden md:flex shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-shadow"
             >
               <Plus className="w-4 h-4 mr-2" />
               {t('habits.newHabit')}
