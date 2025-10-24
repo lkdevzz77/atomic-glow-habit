@@ -81,16 +81,16 @@ const HabitCardCompact: React.FC<HabitCardCompactProps> = ({ habit, onComplete, 
       whileTap={!completedToday ? { scale: 0.98 } : {}}
       className={cn(
         "group relative flex items-center gap-4 px-5 py-4",
-        "bg-card border border-border rounded-lg",
+        "neuro-card rounded-xl",
         "transition-all duration-200",
-        "touch-target-comfortable", // Mobile touch target
+        "touch-target-comfortable",
         completedToday && "opacity-60",
-        !completedToday && "hover:border-primary/50"
+        !completedToday && "hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06),0_12px_48px_-12px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.08),0_0_60px_-20px_hsl(var(--primary)/0.15)]"
       )}
     >
       {/* Icon */}
-      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-        <Icon className="w-5 h-5 text-muted-foreground" />
+      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+        <Icon className="w-5 h-5 text-primary" />
       </div>
 
       {/* Content */}
