@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Drawer, DrawerContent } from "@/components/ui/drawer";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
 import { X, BookOpen, Dumbbell, Brain, Heart, Droplet, Utensils, Moon, Sun, Target, Zap, Award } from "lucide-react";
 import { useHabits } from "@/hooks/useHabits";
 import { toast } from "sonner";
@@ -145,13 +145,30 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
   return (
     <Container open={open} onOpenChange={handleDialogChange}>
       <Content className={cn(
-        "overflow-hidden border-border/50 p-0",
+        "overflow-hidden border-border/50 p-0 flex flex-col",
         isMobile 
           ? "h-[95vh] rounded-t-3xl" 
           : "max-w-3xl w-full max-h-[90vh] rounded-2xl"
       )}>
+        {/* Accessibility components */}
+        {isMobile ? (
+          <>
+            <DrawerTitle className="sr-only">Novo Hábito</DrawerTitle>
+            <DrawerDescription className="sr-only">
+              Crie um novo hábito seguindo os 4 passos baseados nas Leis dos Hábitos Atômicos
+            </DrawerDescription>
+          </>
+        ) : (
+          <>
+            <DialogTitle className="sr-only">Novo Hábito</DialogTitle>
+            <DialogDescription className="sr-only">
+              Crie um novo hábito seguindo os 4 passos baseados nas Leis dos Hábitos Atômicos
+            </DialogDescription>
+          </>
+        )}
+        
         {/* Header */}
-        <div className="border-b border-border/50 px-6 py-4">
+        <div className="border-b border-border/50 px-6 py-4 shrink-0">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-foreground">Novo Hábito</h2>
             <Button
@@ -205,7 +222,7 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
         </div>
 
         {/* Content */}
-        <div className="overflow-y-auto p-6" style={{ maxHeight: 'calc(90vh - 180px)' }}>
+        <div className="overflow-y-auto p-6 flex-1 min-h-0">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             {/* Tab 1: Óbvio */}
             <TabsContent value="1" className="space-y-4 mt-0">
@@ -363,7 +380,7 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-border/50 p-4 flex justify-between">
+        <div className="border-t border-border/50 p-4 flex justify-between shrink-0 bg-background">
           <div className="flex gap-2">
             <Button
               variant="ghost"
