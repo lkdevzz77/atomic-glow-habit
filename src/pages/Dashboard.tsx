@@ -24,7 +24,7 @@ import { Plus, Atom } from "lucide-react";
 const Dashboard = () => {
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
-  const { data: habits, isLoading: habitsLoading, completeHabit } = useHabits();
+  const { data: habits, isLoading: habitsLoading, completeHabit, undoHabit } = useHabits();
   const { weeklyStats, streakStats } = useStats();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -85,11 +85,7 @@ const Dashboard = () => {
   };
 
   const handleUndoHabit = async (habitId: number) => {
-    const today = new Date().toISOString().split('T')[0];
-    await supabase.from('habit_completions').delete().eq('habit_id', habitId).eq('date', today);
-    queryClient.invalidateQueries({
-      queryKey: ['habits']
-    });
+    undoHabit(habitId);
     toast.info("Conclusão desfeita", {
       duration: 2000
     });

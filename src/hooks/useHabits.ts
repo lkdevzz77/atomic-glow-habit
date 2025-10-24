@@ -285,6 +285,95 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
     },
   });
 
+  const undoHabitMutation = useMutation({
+    mutationFn: async (habitId: number) => {
+      if (!user) throw new Error('User not authenticated');
+      
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Deletar completion de hoje
+      const { error } = await supabase
+        .from('habit_completions')
+        .delete()
+        .eq('habit_id', habitId)
+        .eq('user_id', user.id)
+        .eq('date', today);
+      
+      if (error) throw error;
+      
+      // Atualizar streak e last_completed no hábito
+      const { data: habitData } = await supabase
+        .from('habits')
+        .select('streak, longest_streak')
+        .eq('id', habitId)
+        .single();
+      
+      const newStreak = Math.max(0, (habitData?.streak || 0) - 1);
+      
+      await supabase
+        .from('habits')
+        .update({ 
+          streak: newStreak,
+          last_completed: null 
+        })
+        .eq('id', habitId);
+    },
+    onMutate: async (habitId) => {
+      const currentToday = new Date().toISOString().split('T')[0];
+      
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all', currentToday) });
+      
+      const previousHabits = queryClient.getQueryData(QUERY_KEYS.userHabits(user?.id || '', status || 'all', currentToday));
+      
+      // Optimistic update - desmarcar como completo e decrementar streak
+      queryClient.setQueryData(
+        QUERY_KEYS.userHabits(user?.id || '', status || 'all', currentToday),
+        (old: any) => {
+          if (!old) return old;
+          return old.map((h: any) => 
+            h.id === habitId 
+              ? { ...h, completedToday: false, streak: Math.max(0, (h.streak || 0) - 1) }
+              : h
+          );
+        }
+      );
+      
+      return { previousHabits };
+    },
+    onError: (error: Error, variables, context) => {
+      const currentToday = new Date().toISOString().split('T')[0];
+      if (context?.previousHabits) {
+        queryClient.setQueryData(QUERY_KEYS.userHabits(user?.id || '', status || 'all', currentToday), context.previousHabits);
+      }
+      toast({
+        title: 'Erro ao desfazer',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+    onSuccess: async () => {
+      toast({
+        title: 'Hábito desmarcado',
+        description: 'Conclusão removida com sucesso.',
+      });
+      
+      await Promise.all([
+        queryClient.invalidateQueries({ 
+          predicate: (query) => query.queryKey[0] === 'habits'
+        }),
+        queryClient.invalidateQueries({ queryKey: ['stats'] }),
+        queryClient.invalidateQueries({ queryKey: ['weekly-data'] }),
+        queryClient.invalidateQueries({ queryKey: ['profile'] }),
+      ]);
+      
+      const currentToday = new Date().toISOString().split('T')[0];
+      await queryClient.refetchQueries({ 
+        queryKey: QUERY_KEYS.userHabits(user?.id || '', status || 'all', currentToday),
+        type: 'active'
+      });
+    },
+  });
+
   return {
     // Query Results
     data: habits.data,
@@ -305,11 +394,13 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
     updateHabit: updateHabitMutation.mutate,
     deleteHabit: deleteHabitMutation.mutate,
     completeHabit: completeHabitMutation.mutate,
+    undoHabit: undoHabitMutation.mutate,
 
     // Mutation States
     isCreating: createHabitMutation.isPending,
     isUpdating: updateHabitMutation.isPending,
     isDeleting: deleteHabitMutation.isPending,
     isCompleting: completeHabitMutation.isPending,
+    isUndoing: undoHabitMutation.isPending,
   };
 }
