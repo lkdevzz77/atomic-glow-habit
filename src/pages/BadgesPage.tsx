@@ -1,142 +1,53 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import BadgeDisplay from '@/components/BadgeDisplay';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Trophy, Target, Flame, User, TrendingUp } from 'lucide-react';
-import { ICON_SIZES } from '@/config/iconSizes';
+import React from 'react';
+import { Lock } from 'lucide-react';
 import { AppLayout } from '@/layouts/AppLayout';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { AnimatedPage } from '@/components/AnimatedPage';
-import { PageLoader } from '@/components/PageLoader';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 export default function BadgesPage() {
-  const { user } = useAuth();
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-
-  const { data: stats, isLoading } = useQuery({
-    queryKey: ['badges-stats', user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('user_badges')
-        .select('unlocked')
-        .eq('user_id', user?.id);
-
-      if (error) throw error;
-
-      const total = data.length;
-      const unlocked = data.filter(b => b.unlocked).length;
-      const percentage = total > 0 ? Math.round((unlocked / total) * 100) : 0;
-
-      return { total, unlocked, percentage };
-    },
-    enabled: !!user?.id,
-  });
-
-  if (isLoading) {
-    return (
-      <AppLayout>
-        <PageLoader />
-      </AppLayout>
-    );
-  }
+  const navigate = useNavigate();
 
   return (
     <AppLayout>
       <AnimatedPage>
-        <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
+        <div className="max-w-2xl mx-auto space-y-6">
           <Breadcrumbs />
-          {/* Header */}
-          <div className="space-y-2">
-            <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
-              <Trophy className="text-amber-500" size={ICON_SIZES['2xl']} />
-              Suas Conquistas
-            </h1>
-            <p className="text-slate-400">
-              Acompanhe seu progresso e desbloqueie novas conquistas
-            </p>
-          </div>
-
-          {/* Stats */}
-          {stats && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="card-rounded card-padding bg-gradient-to-br from-amber-500/20 to-yellow-500/20 border-2 border-amber-500/30">
-                <div className="flex items-center gap-3">
-                  <Trophy className="text-amber-500" size={ICON_SIZES.xl} />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Conquistadas</p>
-                    <p className="text-xl sm:text-2xl font-bold text-amber-400">{stats.unlocked}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="card-rounded card-padding bg-card border-2 border-border">
-                <div className="flex items-center gap-3">
-                  <Target className="text-violet-400" size={ICON_SIZES.xl} />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Total</p>
-                    <p className="text-xl sm:text-2xl font-bold">{stats.total}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="card-rounded card-padding bg-card border-2 border-border">
-                <div className="flex items-center gap-3">
-                  <TrendingUp className="text-emerald-400" size={ICON_SIZES.xl} />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Progresso</p>
-                    <p className="text-xl sm:text-2xl font-bold text-emerald-400">{stats.percentage}%</p>
-                  </div>
+          
+          {/* Card de "Em Desenvolvimento" */}
+          <Card className="p-12 text-center space-y-6">
+            <div className="flex justify-center">
+              <div className="relative">
+                <div className="absolute inset-0 bg-amber-500/20 blur-2xl rounded-full" />
+                <div className="relative bg-gradient-to-br from-amber-500/20 to-yellow-500/20 p-6 rounded-full border-2 border-amber-500/30">
+                  <Lock className="w-16 h-16 text-amber-500" />
                 </div>
               </div>
             </div>
-          )}
-
-          {/* Filtros */}
-          <Tabs defaultValue="all" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 lg:w-auto">
-              <TabsTrigger value="all">Todas</TabsTrigger>
-              <TabsTrigger value="unlocked">Conquistadas</TabsTrigger>
-              <TabsTrigger value="locked">Bloqueadas</TabsTrigger>
-              <TabsTrigger value="streaks">Streaks</TabsTrigger>
-              <TabsTrigger value="habits">Hábitos</TabsTrigger>
-              <TabsTrigger value="identity">Identidade</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="all" className="mt-6">
-              <BadgeDisplay mode="grid" filter="all" />
-            </TabsContent>
-
-            <TabsContent value="unlocked" className="mt-6">
-              <BadgeDisplay mode="grid" filter="unlocked" />
-            </TabsContent>
-
-            <TabsContent value="locked" className="mt-6">
-              <BadgeDisplay mode="grid" filter="locked" />
-            </TabsContent>
-
-            <TabsContent value="streaks" className="mt-6">
-              <p className="text-muted-foreground text-sm mb-4">
-                Conquistas relacionadas a sequências e consistência
+            
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold text-foreground">
+                🚧 Em Desenvolvimento
+              </h1>
+              <p className="text-lg text-muted-foreground">
+                A página de conquistas estará disponível em breve!
               </p>
-              <BadgeDisplay mode="grid" filter="streak" />
-            </TabsContent>
-
-            <TabsContent value="habits" className="mt-6">
-              <p className="text-muted-foreground text-sm mb-4">
-                Conquistas relacionadas à criação e conclusão de hábitos
+              <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                Estamos trabalhando para trazer um sistema completo de badges e recompensas 
+                para tornar sua jornada ainda mais motivadora.
               </p>
-              <BadgeDisplay mode="grid" filter="habits" />
-            </TabsContent>
-
-            <TabsContent value="identity" className="mt-6">
-              <p className="text-muted-foreground text-sm mb-4">
-                Conquistas relacionadas à construção de identidade
-              </p>
-              <BadgeDisplay mode="grid" filter="identity" />
-            </TabsContent>
-          </Tabs>
+            </div>
+            
+            <Button 
+              onClick={() => navigate('/dashboard')}
+              size="lg"
+              className="mt-4"
+            >
+              Voltar ao Dashboard
+            </Button>
+          </Card>
         </div>
       </AnimatedPage>
     </AppLayout>

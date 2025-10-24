@@ -157,13 +157,19 @@ const Dashboard = () => {
             onUndo={handleUndoHabit}
           />
 
-          {/* Daily Progress Card */}
+          {/* Daily Progress Card - PARTE 1: Timeline */}
           <DailyProgressCard
             completedToday={completedToday}
             totalHabits={habits?.length || 0}
             activeStreaks={activeStreaks}
             xpEarned={xpEarned}
-            weeklyData={weeklyData}
+            habits={habits?.map(h => ({
+              id: h.id,
+              title: h.title,
+              icon: h.icon,
+              completed: h.completedToday || false,
+              completedAt: h.last_completed || undefined
+            }))}
           />
         </div>
 

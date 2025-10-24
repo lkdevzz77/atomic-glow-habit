@@ -147,11 +147,9 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
       return;
     }
 
-    if (isTabComplete(activeTab)) {
-      setCompletedTabs(prev => new Set(prev).add(activeTab));
-    }
-
+    // PARTE 2: Marcar aba como completa APENAS ao avançar
     if (currentTabNum < 4) {
+      setCompletedTabs(prev => new Set(prev).add(activeTab));
       const nextTab = (currentTabNum + 1).toString();
       setActiveTab(nextTab);
       setMaxTabReached(Math.max(maxTabReached, currentTabNum + 1));
@@ -255,16 +253,16 @@ const NewHabitModal = ({ open, onClose, onOpenChange }: NewHabitModalProps) => {
             </Button>
           </div>
 
-          {/* Progress Bar */}
+          {/* Progress Bar - PARTE 2: Baseado em tabs avançadas */}
           <div className="space-y-2 mb-4">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Progresso do hábito</span>
-              <span className="font-medium text-purple-400">{getCompletionPercentage()}% completo</span>
+              <span className="text-muted-foreground">Progresso</span>
+              <span className="font-medium text-purple-400">{Math.round((completedTabs.size / 4) * 100)}%</span>
             </div>
             <div className="flex-1 bg-secondary rounded-full h-2 overflow-hidden">
               <div 
                 className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full transition-all duration-500 ease-out" 
-                style={{ width: `${getCompletionPercentage()}%` }} 
+                style={{ width: `${(completedTabs.size / 4) * 100}%` }} 
               />
             </div>
           </div>

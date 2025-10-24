@@ -264,7 +264,7 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
         });
       }
       
-      // ⚡ FASE 5: Invalidação agressiva
+      // ⚡ PARTE 5: Invalidação completa incluindo level
       await new Promise(resolve => setTimeout(resolve, 500));
       
       await Promise.all([
@@ -274,6 +274,7 @@ export function useHabits(status?: 'active' | 'archived' | 'pending') {
         queryClient.invalidateQueries({ queryKey: ['stats'] }),
         queryClient.invalidateQueries({ queryKey: ['weekly-data'] }),
         queryClient.invalidateQueries({ queryKey: ['profile'] }),
+        queryClient.invalidateQueries({ queryKey: ['level'] }), // PARTE 5: Invalidar level
       ]);
       
       // Forçar refetch

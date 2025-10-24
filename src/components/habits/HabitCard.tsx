@@ -20,6 +20,8 @@ export const HabitCard = ({ habit, onEdit, onDelete }: HabitCardProps) => {
   const Icon = getIconComponent(habit.icon);
   const completionRate = calculateCompletionRate(habit);
   const isCompleted = habit.completedToday;
+  const isPending = habit.status === 'pending';
+  const isActive = habit.status === 'active';
 
   return (
     <Card className="p-4 transition-colors hover:bg-muted/30">
@@ -45,9 +47,20 @@ export const HabitCard = ({ habit, onEdit, onDelete }: HabitCardProps) => {
             <h3 className="text-base font-medium text-foreground truncate">
               {habit.title}
             </h3>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              {habit.when_time} • {habit.where_location}
-            </p>
+            
+            {/* PARTE 7: Mostrar detalhes apenas se PENDING */}
+            {isPending && (
+              <p className="text-sm text-muted-foreground mt-0.5">
+                {habit.when_time} • {habit.where_location}
+              </p>
+            )}
+            
+            {/* PARTE 7: Hábitos ACTIVE mostram apenas info mínima */}
+            {isActive && habit.when_time && (
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {habit.when_time}
+              </p>
+            )}
           </div>
         </div>
 
@@ -64,9 +77,11 @@ export const HabitCard = ({ habit, onEdit, onDelete }: HabitCardProps) => {
                 🔥 {habit.streak}
               </div>
             )}
-            <div className="text-muted-foreground font-medium">
-              {completionRate}%
-            </div>
+            {isActive && (
+              <div className="text-muted-foreground font-medium">
+                {completionRate}%
+              </div>
+            )}
           </div>
 
           <HabitActionsMenu

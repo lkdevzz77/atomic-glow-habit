@@ -3,23 +3,19 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { calculateLevel, checkLevelUp, type LevelUpResult } from '@/systems/levelSystem';
 import { toast } from 'sonner';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 export function useLevel() {
   const { user } = useAuth();
-  const [xp, setXp] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [isAwarding, setIsAwarding] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      fetchXP();
-    }
-  }, [user]);
-
-  const fetchXP = async () => {
-    if (!user) return;
-    
-    try {
+  // PARTE 5: Usar useQuery para cache automático
+  const { data: profileData, isLoading, refetch } = useQuery({
+    queryKey: ['level', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('xp, level')
@@ -27,13 +23,14 @@ export function useLevel() {
         .single();
 
       if (error) throw error;
-      setXp(data.xp || 0);
-    } catch (error) {
-      console.error('Error fetching XP:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      return data;
+    },
+    enabled: !!user,
+    staleTime: 1000, // Curto staleTime para refetch rápido
+    refetchOnWindowFocus: true,
+  });
+
+  const xp = profileData?.xp || 0;
 
   const awardXP = async (amount: number, reason: string): Promise<LevelUpResult> => {
     if (!user) return { didLevelUp: false };
@@ -50,7 +47,9 @@ export function useLevel() {
 
       if (error) throw error;
       
-      setXp(newXP);
+      // PARTE 5: Invalidar cache após atualizar XP
+      await queryClient.invalidateQueries({ queryKey: ['level', user.id] });
+      
       const levelUpResult = checkLevelUp(oldXP, newXP);
       
       if (!levelUpResult.didLevelUp) {
@@ -81,6 +80,6 @@ export function useLevel() {
     isLoading,
     isAwarding,
     awardXP,
-    refetch: fetchXP,
+    refetch,
   };
 }

@@ -104,3 +104,22 @@ export function Icon({ name, size = 20, className = '', strokeWidth = 2 }: IconP
 
   return <IconComponent size={size} className={className} strokeWidth={strokeWidth} />;
 }
+
+// Export helper to get icon component by name string
+export function getIconComponent(iconName: string): LucideIcon {
+  // Try to find in all icon categories
+  for (const category of Object.values(ICON_MAP)) {
+    if (iconName in category) {
+      return category[iconName as keyof typeof category];
+    }
+  }
+  
+  // If not found in map, try direct import from lucide-react
+  const LucideIcons = require('lucide-react');
+  if (LucideIcons[iconName]) {
+    return LucideIcons[iconName];
+  }
+  
+  // Fallback to Target icon
+  return Target;
+}
