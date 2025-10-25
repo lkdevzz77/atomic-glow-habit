@@ -63,11 +63,11 @@ const App = () => (
           <AuthProvider>
             <AppProvider>
               <AnimatedRoutes />
-          </AppProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </ErrorBoundary>
-    <ReactQueryDevtools initialIsOpen={false} />
+            </AppProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </ErrorBoundary>
+      <ReactQueryDevtools initialIsOpen={false} />
     </TooltipProvider>
   </QueryClientProvider>
 );
