@@ -1,3 +1,4 @@
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -53,23 +54,25 @@ function AnimatedRoutes() {
   );
 }
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <ErrorBoundary>
-        <BrowserRouter>
-          <AuthProvider>
-            <AppProvider>
-              <AnimatedRoutes />
-            </AppProvider>
-          </AuthProvider>
-        </BrowserRouter>
-      </ErrorBoundary>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App: React.FC = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <ErrorBoundary>
+          <BrowserRouter>
+            <AuthProvider>
+              <AppProvider>
+                <AnimatedRoutes />
+              </AppProvider>
+            </AuthProvider>
+          </BrowserRouter>
+        </ErrorBoundary>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
