@@ -125,14 +125,14 @@ const Dashboard = () => {
       <AnimatedPage>
         <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
           {/* Header */}
-          <div className="flex items-start justify-between gap-4">
-            <div className="space-y-1">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1 flex-1">
               <p className="text-xs uppercase tracking-wide text-muted-foreground/70">
                 {todayFormatted}
               </p>
               <h1 className="text-3xl md:text-4xl font-bold flex items-center gap-3">
-                <Atom className="w-8 h-8 md:w-9 md:h-9 text-violet-500 drop-shadow-[0_0_12px_rgba(139,92,246,0.6)]" />
-                <span className="text-violet-500">Olá {userName}</span>
+                <Atom className="w-8 h-8 md:w-9 md:h-9 text-primary drop-shadow-[0_0_12px_rgba(139,92,246,0.6)]" />
+                <span className="text-primary">Olá {userName}</span>
               </h1>
               <p className="text-sm text-muted-foreground/90 mt-2 max-w-xl">
                 {i18n.language === 'en' 
@@ -140,9 +140,11 @@ const Dashboard = () => {
                   : 'Cada ação é um voto para quem você está se tornando'}
               </p>
             </div>
+            
+            {/* MOBILE: Botão de Novo Hábito sempre visível */}
             <Button 
               onClick={() => setIsNewHabitModalOpen(true)}
-              className="hidden md:flex bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-500/20 hover:shadow-xl hover:shadow-purple-500/30 transition-shadow"
+              className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-shadow rounded-xl h-11"
             >
               <Plus className="w-4 h-4 mr-2" />
               {t('habits.newHabit')}
