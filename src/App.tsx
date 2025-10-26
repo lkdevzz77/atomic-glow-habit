@@ -23,6 +23,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import BadgesPage from "./pages/BadgesPage";
 import AdminPanel from "./pages/AdminPanel";
+import SetupAdmin from "./pages/SetupAdmin";
 import NotFound from "./pages/NotFound";
 import HabitEditPage from "./pages/HabitEditPage";
 import HabitDetailPage from "./pages/HabitDetailPage";
@@ -47,6 +48,7 @@ function AnimatedRoutes() {
         <Route path="/profile" element={<ProtectedRoute requireAuth requireOnboarding><Profile /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute requireAuth requireOnboarding><Settings /></ProtectedRoute>} />
         <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
+        <Route path="/setup-admin" element={<ProtectedRoute requireAuth><SetupAdmin /></ProtectedRoute>} />
         <Route path="/404" element={<NotFound />} />
         <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
