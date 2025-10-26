@@ -3,14 +3,17 @@ import { useHabits } from '@/hooks/useHabits';
 import { AppLayout } from '@/layouts/AppLayout';
 import { PageLoader } from '@/components/PageLoader';
 import { NotionCalendar } from '@/components/NotionCalendar';
+import { CalendarTimeline } from '@/components/calendar/CalendarTimeline';
 import { AnimatedPage } from '@/components/AnimatedPage';
 import { FeatureLock } from '@/components/FeatureLock';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { Calendar } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const CalendarPage = () => {
   const { data: habits, isLoading: habitsLoading } = useHabits();
+  const isMobile = useIsMobile();
   
   // Buscar completions direto do banco
   const { data: completions, isLoading: completionsLoading } = useQuery({
@@ -54,13 +57,20 @@ const CalendarPage = () => {
             </div>
           </div>
 
-          {/* Calendário com bloqueio */}
+          {/* Calendário/Timeline com bloqueio */}
           <FeatureLock feature="calendar">
-            <NotionCalendar 
-              habits={habits || []} 
-              completions={completions || []}
-              onHabitToggle={() => {}}
-            />
+            {isMobile ? (
+              <CalendarTimeline 
+                habits={habits || []} 
+                completions={completions || []}
+              />
+            ) : (
+              <NotionCalendar 
+                habits={habits || []} 
+                completions={completions || []}
+                onHabitToggle={() => {}}
+              />
+            )}
           </FeatureLock>
         </div>
       </AnimatedPage>
